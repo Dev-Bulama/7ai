@@ -1,0 +1,131 @@
+<x-app-layout title="Case Studies — 7AI" description="Real results from real clients across Africa.">
+<div class="page-hero">
+  <div class="section-inner" style="max-width:1280px;margin:0 auto;">
+    <div class="section-badge" style="display:inline-flex;">Case Studies</div>
+    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">Real Results,<br>Real Impact.</h1>
+    <p style="font-size:18px;color:var(--gray-600);max-width:500px;line-height:1.7;">See how 7AI has transformed homes, businesses, and communities across Africa.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section-inner">
+    <!-- CASE STUDY 1 - Featured -->
+    <div style="background:var(--teal-dark);border-radius:20px;padding:60px;margin-bottom:40px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+      <div>
+        <span style="font-size:11px;font-weight:600;color:var(--green);letter-spacing:0.1em;text-transform:uppercase;">Smart Commercial · Lagos</span>
+        <h2 style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em;margin:16px 0;">Meridian Group Headquarters</h2>
+        <p style="font-size:16px;color:rgba(255,255,255,0.7);line-height:1.75;margin-bottom:32px;">Complete smart building automation for a 14-story commercial tower in Lagos Island — reducing energy costs by 45% and eliminating manual building management.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;">
+          <div><div style="font-size:36px;font-weight:700;color:#fff;">45%</div><div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px;">Energy cost reduction</div></div>
+          <div><div style="font-size:36px;font-weight:700;color:#fff;">90%</div><div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px;">Reduction in security incidents</div></div>
+          <div><div style="font-size:36px;font-weight:700;color:#fff;">₦48M</div><div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px;">Annual savings</div></div>
+          <div><div style="font-size:36px;font-weight:700;color:#fff;">6mo</div><div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px;">To positive ROI</div></div>
+        </div>
+        <a href="{{ route('contact') }}" class="btn btn-white">Read Full Case Study</a>
+      </div>
+      <div style="background:rgba(255,255,255,0.05);border-radius:16px;height:300px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);">
+        <div style="text-align:center;color:rgba(255,255,255,0.15);">
+          <div style="font-size:64px;">🏢</div>
+          <div style="font-size:14px;margin-top:12px;">Meridian HQ — Lagos</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASE STUDIES GRID -->
+    <div class="grid-3">
+      <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="height:180px;background:linear-gradient(135deg,#1a3a2a,#2d6a4f);display:flex;align-items:center;justify-content:center;font-size:48px;">🌿</div>
+        <div style="padding:28px;">
+          <span class="blog-tag" style="background:rgba(34,197,94,0.1);color:#15803D;">Smart Home · Accra</span>
+          <h3 style="font-size:18px;font-weight:600;color:var(--dark);margin:12px 0;">Solaris Premium Estates</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:16px;">Solar-integrated smart home deployment across 45-unit luxury estate in East Legon. Full automation, security, and energy management.</p>
+          <div style="display:flex;gap:24px;margin-bottom:20px;">
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">60%</div><div style="font-size:12px;color:var(--gray-400);">Energy savings</div></div>
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">45</div><div style="font-size:12px;color:var(--gray-400);">Units automated</div></div>
+          </div>
+          <a href="{{ route('contact') }}" style="font-size:13px;font-weight:600;color:var(--teal);text-decoration:none;">Read Case Study →</a>
+        </div>
+      </div>
+
+      <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="height:180px;background:linear-gradient(135deg,#0D1B2A,var(--teal));display:flex;align-items:center;justify-content:center;font-size:48px;">📊</div>
+        <div style="padding:28px;">
+          <span class="blog-tag">AI Analytics · Nairobi</span>
+          <h3 style="font-size:18px;font-weight:600;color:var(--dark);margin:12px 0;">PanAfrica Supply Chain</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:16px;">AI-powered demand forecasting and supply chain optimisation for a pan-African logistics firm serving 8 countries.</p>
+          <div style="display:flex;gap:24px;margin-bottom:20px;">
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">70%</div><div style="font-size:12px;color:var(--gray-400);">Fewer stockouts</div></div>
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">3x</div><div style="font-size:12px;color:var(--gray-400);">Faster decisions</div></div>
+          </div>
+          <a href="{{ route('contact') }}" style="font-size:13px;font-weight:600;color:var(--teal);text-decoration:none;">Read Case Study →</a>
+        </div>
+      </div>
+
+      <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="height:180px;background:linear-gradient(135deg,#2C1810,#6B3A1F);display:flex;align-items:center;justify-content:center;font-size:48px;">🌾</div>
+        <div style="padding:28px;">
+          <span class="blog-tag" style="background:rgba(202,138,4,0.1);color:#92400E;">AI Vision · Abuja</span>
+          <h3 style="font-size:18px;font-weight:600;color:var(--dark);margin:12px 0;">GreenField Agri Tech</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:16px;">Computer vision for crop disease detection across 12,000 hectares. Early detection saving millions in potential losses.</p>
+          <div style="display:flex;gap:24px;margin-bottom:20px;">
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">94%</div><div style="font-size:12px;color:var(--gray-400);">Detection accuracy</div></div>
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">$2M</div><div style="font-size:12px;color:var(--gray-400);">Losses prevented</div></div>
+          </div>
+          <a href="{{ route('contact') }}" style="font-size:13px;font-weight:600;color:var(--teal);text-decoration:none;">Read Case Study →</a>
+        </div>
+      </div>
+
+      <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="height:180px;background:linear-gradient(135deg,#1B1B2F,#2D3561);display:flex;align-items:center;justify-content:center;font-size:48px;">🏨</div>
+        <div style="padding:28px;">
+          <span class="blog-tag">Smart Hotel · Cape Town</span>
+          <h3 style="font-size:18px;font-weight:600;color:var(--dark);margin:12px 0;">Azure Boutique Hotels</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:16px;">Full smart hotel automation for 120-room boutique hotel chain — guest experience AI, energy management, and predictive maintenance.</p>
+          <div style="display:flex;gap:24px;margin-bottom:20px;">
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">38%</div><div style="font-size:12px;color:var(--gray-400);">Energy reduction</div></div>
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">4.9★</div><div style="font-size:12px;color:var(--gray-400);">Guest rating</div></div>
+          </div>
+          <a href="{{ route('contact') }}" style="font-size:13px;font-weight:600;color:var(--teal);text-decoration:none;">Read Case Study →</a>
+        </div>
+      </div>
+
+      <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="height:180px;background:linear-gradient(135deg,#0A2A40,var(--teal-light));display:flex;align-items:center;justify-content:center;font-size:48px;">🏥</div>
+        <div style="padding:28px;">
+          <span class="blog-tag" style="background:rgba(239,68,68,0.1);color:#B91C1C;">Healthcare AI · Kampala</span>
+          <h3 style="font-size:18px;font-weight:600;color:var(--dark);margin:12px 0;">Nexus Health Clinics</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:16px;">AI diagnostic support, smart facility management, and patient flow optimisation across 12 clinic locations in Uganda.</p>
+          <div style="display:flex;gap:24px;margin-bottom:20px;">
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">40%</div><div style="font-size:12px;color:var(--gray-400);">Faster diagnosis</div></div>
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">12</div><div style="font-size:12px;color:var(--gray-400);">Clinics deployed</div></div>
+          </div>
+          <a href="{{ route('contact') }}" style="font-size:13px;font-weight:600;color:var(--teal);text-decoration:none;">Read Case Study →</a>
+        </div>
+      </div>
+
+      <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="height:180px;background:linear-gradient(135deg,#1a1a2e,#e94560);display:flex;align-items:center;justify-content:center;font-size:48px;">🎓</div>
+        <div style="padding:28px;">
+          <span class="blog-tag" style="background:rgba(139,92,246,0.1);color:#7C3AED;">EdTech AI · Kigali</span>
+          <h3 style="font-size:18px;font-weight:600;color:var(--dark);margin:12px 0;">Kigali Academy Network</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:16px;">Smart campus deployment with AI-powered learning systems, energy management, and student safety monitoring.</p>
+          <div style="display:flex;gap:24px;margin-bottom:20px;">
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">52%</div><div style="font-size:12px;color:var(--gray-400);">Engagement increase</div></div>
+            <div><div style="font-size:22px;font-weight:700;color:var(--teal);">8</div><div style="font-size:12px;color:var(--gray-400);">Campuses</div></div>
+          </div>
+          <a href="{{ route('contact') }}" style="font-size:13px;font-weight:600;color:var(--teal);text-decoration:none;">Read Case Study →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section"><div class="section-inner">
+  <h2>Ready to Write Your Success Story?</h2>
+  <p>Join 120+ businesses that have transformed with 7AI. Start with a free consultation.</p>
+  <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+    <a href="{{ route('contact') }}" class="btn btn-white btn-lg">Book Consultation</a>
+    <a href="{{ route('pricing') }}" class="btn btn-lg" style="border:1.5px solid rgba(255,255,255,0.4);color:rgba(255,255,255,0.9);background:transparent;">View Pricing</a>
+  </div>
+</div></section>
+</x-app-layout>

@@ -1,0 +1,102 @@
+<x-app-layout title="Documentation — 7AI" description="Technical documentation for 7AI products.">
+<div style="display:flex;min-height:100vh;padding-top:68px;">
+  <!-- SIDEBAR -->
+  <aside style="width:260px;flex-shrink:0;border-right:1px solid var(--gray-200);padding:32px 24px;position:sticky;top:68px;height:calc(100vh - 68px);overflow-y:auto;background:var(--gray-50);">
+    <div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;">Getting Started</div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;margin-bottom:32px;">
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--teal);background:rgba(11,79,108,0.08);font-weight:600;text-decoration:none;">Introduction</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Quick Start</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Installation</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Authentication</a></li>
+    </ul>
+
+    <div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;">Smart Home SDK</div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;margin-bottom:32px;">
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Hub Setup</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Device Discovery</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Automation Rules</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Scenes</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Energy API</a></li>
+    </ul>
+
+    <div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;">AI API</div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;margin-bottom:32px;">
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">API Overview</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Predictions</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Models</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Agents</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Webhooks</a></li>
+    </ul>
+
+    <div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;">Reference</div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;">
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">REST API Reference</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Error Codes</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Rate Limits</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">SDKs</a></li>
+      <li><a href="#" style="display:block;padding:7px 12px;border-radius:8px;font-size:14px;color:var(--gray-600);text-decoration:none;">Changelog</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main style="flex:1;padding:48px 64px;max-width:860px;">
+    <div class="breadcrumb" style="margin-bottom:32px;"><a href="{{ route('home') }}">Home</a><span class="sep">›</span><a href="#">Docs</a><span class="sep">›</span>Introduction</div>
+
+    <h1 style="font-size:36px;font-weight:700;color:var(--dark);letter-spacing:-0.02em;margin-bottom:16px;">7AI Platform Documentation</h1>
+    <p style="font-size:17px;color:var(--gray-600);line-height:1.75;margin-bottom:40px;">Welcome to the 7AI developer documentation. This guide covers everything you need to integrate, configure, and build with the 7AI platform — from smart home automation to enterprise AI APIs.</p>
+
+    <div style="background:rgba(11,79,108,0.06);border:1px solid rgba(11,79,108,0.15);border-radius:12px;padding:24px;margin-bottom:40px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:20px;">💡</span>
+        <div>
+          <div style="font-weight:600;color:var(--dark);margin-bottom:6px;">New to 7AI?</div>
+          <div style="font-size:14px;color:var(--gray-600);line-height:1.6;">Start with the <a href="#" style="color:var(--teal);font-weight:500;">Quick Start Guide</a> to get your first device connected in under 10 minutes, or explore our <a href="#" style="color:var(--teal);font-weight:500;">API Overview</a> for integration options.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="font-size:24px;font-weight:700;color:var(--dark);margin-bottom:16px;border-bottom:1px solid var(--gray-200);padding-bottom:16px;">Platform Overview</h2>
+    <p style="font-size:15px;color:var(--gray-700);line-height:1.75;margin-bottom:20px;">The 7AI Platform consists of three integrated layers:</p>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:16px;margin-bottom:32px;">
+      <li style="display:flex;gap:16px;align-items:flex-start;">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">1</div>
+        <div><strong style="color:var(--dark);">Smart Home Layer</strong><br><span style="font-size:14px;color:var(--gray-600);">Device management, automation rules, energy monitoring, and control interfaces for residential and commercial deployments.</span></div>
+      </li>
+      <li style="display:flex;gap:16px;align-items:flex-start;">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">2</div>
+        <div><strong style="color:var(--dark);">AI Intelligence Layer</strong><br><span style="font-size:14px;color:var(--gray-600);">Machine learning models, predictive analytics, AI agents, and computer vision APIs for enterprise applications.</span></div>
+      </li>
+      <li style="display:flex;gap:16px;align-items:flex-start;">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">3</div>
+        <div><strong style="color:var(--dark);">Management Layer</strong><br><span style="font-size:14px;color:var(--gray-600);">Multi-tenant admin dashboard, CMS, user management, analytics, and campaign tools for platform operators.</span></div>
+      </li>
+    </ul>
+
+    <h2 style="font-size:24px;font-weight:700;color:var(--dark);margin-bottom:16px;border-bottom:1px solid var(--gray-200);padding-bottom:16px;">API Authentication</h2>
+    <p style="font-size:15px;color:var(--gray-700);line-height:1.75;margin-bottom:20px;">All API requests must include your API key in the Authorization header:</p>
+    <div style="background:#0F172A;border-radius:12px;padding:24px;margin-bottom:32px;position:relative;">
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:12px;font-family:monospace;">HTTP Request</div>
+      <pre style="font-family:'Courier New',monospace;font-size:14px;color:#E2E8F0;line-height:1.6;margin:0;overflow-x:auto;">GET /api/v1/devices HTTP/1.1
+Host: api.7ai.africa
+Authorization: Bearer <span style="color:#3EE07F;">YOUR_API_KEY</span>
+Content-Type: application/json</pre>
+    </div>
+
+    <h2 style="font-size:24px;font-weight:700;color:var(--dark);margin-bottom:16px;border-bottom:1px solid var(--gray-200);padding-bottom:16px;">Quick Start</h2>
+    <div style="background:#0F172A;border-radius:12px;padding:24px;margin-bottom:32px;">
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:12px;font-family:monospace;">curl</div>
+      <pre style="font-family:'Courier New',monospace;font-size:14px;color:#E2E8F0;line-height:1.6;margin:0;overflow-x:auto;">curl -X GET "https://api.7ai.africa/v1/devices" \
+  -H "Authorization: Bearer <span style="color:#3EE07F;">your_api_key</span>" \
+  -H "Content-Type: application/json"</pre>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:48px;padding-top:32px;border-top:1px solid var(--gray-200);">
+      <span style="font-size:14px;color:var(--gray-400);">Was this page helpful?</span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm">👍 Yes</button>
+        <button class="btn btn-outline btn-sm">👎 No</button>
+      </div>
+    </div>
+  </main>
+</div>
+</x-app-layout>

@@ -1,0 +1,65 @@
+<x-app-layout title="Solutions — 7AI" description="Explore 7AI's complete suite of smart home and AI solutions.">
+<div class="page-hero page-hero-dark">
+  <div class="section-inner" style="max-width:1280px;margin:0 auto;">
+    <div class="breadcrumb"><a href="{{ route('home') }}" style="color:rgba(255,255,255,0.5);">Home</a><span class="sep" style="color:rgba(255,255,255,0.3);">›</span><span style="color:rgba(255,255,255,0.7);">Solutions</span></div>
+    <div class="section-badge">All Solutions</div>
+    <h1 style="font-size:clamp(36px,4.5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:700px;line-height:1.1;margin-bottom:20px;">Complete Intelligent<br>Technology Solutions</h1>
+    <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:540px;line-height:1.7;">From smart homes to enterprise AI — one partner for all your intelligent technology needs.</p>
+  </div>
+</div>
+
+<section class="section" style="padding-bottom:0;">
+  <div class="section-inner">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:80px;">
+      <a href="{{ route('smart-homes') }}" style="text-decoration:none;">
+        <div style="background:var(--teal-dark);border-radius:20px;padding:48px;position:relative;overflow:hidden;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+          <div style="position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,rgba(62,224,127,0.12) 0%,transparent 60%);"></div>
+          <div style="position:relative;">
+            <div style="font-size:11px;font-weight:600;color:var(--green);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">Smart Home</div>
+            <h2 style="font-size:32px;font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-0.02em;">Home Automation</h2>
+            <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;max-width:380px;">Complete smart home systems — lighting, security, energy, climate, access, and IoT integration.</p>
+            <div style="margin-top:24px;display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;">Explore Smart Homes <span>→</span></div>
+          </div>
+        </div>
+      </a>
+      <a href="{{ route('ai-solutions') }}" style="text-decoration:none;">
+        <div style="background:var(--dark);border-radius:20px;padding:48px;position:relative;overflow:hidden;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+          <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 70%,rgba(11,79,108,0.4) 0%,transparent 60%);"></div>
+          <div style="position:relative;">
+            <div style="font-size:11px;font-weight:600;color:var(--green);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">AI Services</div>
+            <h2 style="font-size:32px;font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-0.02em;">Enterprise AI</h2>
+            <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;max-width:380px;">Machine learning, predictive analytics, AI agents, computer vision, and custom AI development.</p>
+            <div style="margin-top:24px;display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;">Explore AI Solutions <span>→</span></div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-gray">
+  <div class="section-inner">
+    <div class="section-header" style="text-align:center;">
+      <div class="section-badge">Why 7AI</div>
+      <h2 class="section-title">The 7AI Difference</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card"><div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><h3>Built for Africa</h3><p>Designed with African infrastructure, climate, and business realities in mind — not adapted from elsewhere.</p></div>
+      <div class="card"><div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>Enterprise Security</h3><p>Military-grade encryption, local data sovereignty, and compliance-ready architecture for every deployment.</p></div>
+      <div class="card"><div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><h3>Real-Time Intelligence</h3><p>Live monitoring, instant alerts, and continuous AI optimisation — your systems always improving.</p></div>
+      <div class="card"><div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M2 12h4m12 0h4"/></svg></div><h3>Scalable Architecture</h3><p>Start with one room or one process. Scale to entire estates and enterprise operations seamlessly.</p></div>
+      <div class="card"><div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div><h3>Proven ROI</h3><p>Average 40-60% reduction in energy costs, 70% reduction in manual processes, within 6 months.</p></div>
+      <div class="card"><div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127 1.004.361 1.99.7 2.94a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.14-1.14a2 2 0 012.11-.45c.95.339 1.936.573 2.94.7A2 2 0 0122 14.92z"/></svg></div><h3>24/7 Local Support</h3><p>Dedicated support teams in Lagos, Accra, Nairobi, and Johannesburg — always there when you need us.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section"><div class="section-inner">
+  <h2>Find the Right Solution for You</h2>
+  <p>Talk to our experts and get a tailored recommendation for your home or business.</p>
+  <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+    <a href="{{ route('contact') }}" class="btn btn-white btn-lg">Book Consultation</a>
+    <a href="{{ route('pricing') }}" class="btn btn-lg" style="border:1.5px solid rgba(255,255,255,0.4);color:rgba(255,255,255,0.9);background:transparent;">View Pricing</a>
+  </div>
+</div></section>
+</x-app-layout>

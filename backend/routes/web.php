@@ -16,8 +16,24 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Customer\TicketController as CustomerTicketController;
 use App\Http\Controllers\LeadCaptureController;
+use App\Http\Controllers\FrontendController;
 
-Route::get('/', fn() => view('welcome'));
+// Public frontend routes
+Route::get('/', [FrontendController::class, 'home'])->name('home');
+Route::get('/solutions', [FrontendController::class, 'solutions'])->name('solutions');
+Route::get('/smart-homes', [FrontendController::class, 'smartHomes'])->name('smart-homes');
+Route::get('/ai-solutions', [FrontendController::class, 'aiSolutions'])->name('ai-solutions');
+Route::get('/pricing', [FrontendController::class, 'pricing'])->name('pricing');
+Route::get('/case-studies', [FrontendController::class, 'caseStudies'])->name('case-studies');
+Route::get('/industries', [FrontendController::class, 'industries'])->name('industries');
+Route::get('/about', [FrontendController::class, 'about'])->name('about');
+Route::get('/careers', [FrontendController::class, 'careers'])->name('careers');
+Route::get('/blog', [FrontendController::class, 'blog'])->name('blog');
+Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
+Route::get('/support', [FrontendController::class, 'support'])->name('support');
+Route::get('/docs', [FrontendController::class, 'docs'])->name('docs');
+Route::get('/privacy', [FrontendController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [FrontendController::class, 'terms'])->name('terms');
 Route::post('/contact', [LeadCaptureController::class, 'store'])->name('contact.submit');
 
 Route::middleware('guest')->group(function () {
