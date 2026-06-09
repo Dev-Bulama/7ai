@@ -1,8 +1,8 @@
-<x-app-layout title="Support — 7AI" description="Get help from the 7AI support team.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Support — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'Get help from the 7AI support team.' }}">
 <div class="page-hero" style="background:var(--teal-dark);border-bottom:none;text-align:center;">
   <div class="section-inner" style="max-width:800px;margin:0 auto;">
-    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:#fff;letter-spacing:-0.025em;margin-bottom:20px;">How can we help?</h1>
-    <p style="font-size:18px;color:rgba(255,255,255,0.7);margin-bottom:32px;">Search our help center or browse categories below.</p>
+    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:#fff;letter-spacing:-0.025em;margin-bottom:20px;">{{ $page?->hero_title ?? 'How can we help?' }}</h1>
+    <p style="font-size:18px;color:rgba(255,255,255,0.7);margin-bottom:32px;">{{ $page?->hero_description ?? 'Search our help center or browse categories below.' }}</p>
     <div style="position:relative;max-width:520px;margin:0 auto;">
       <input type="text" placeholder="Search for help..." style="width:100%;padding:16px 20px 16px 48px;border:none;border-radius:12px;font-size:15px;color:var(--dark);outline:none;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
       <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--gray-400);">

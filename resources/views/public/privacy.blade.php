@@ -1,8 +1,8 @@
-<x-app-layout title="Privacy Policy — 7AI" description="7AI privacy policy and data practices.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Privacy Policy — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? '7AI privacy policy and data practices.' }}">
 <div class="page-hero">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;">
     <div class="breadcrumb"><a href="{{ route('home') }}">Home</a><span class="sep">›</span>Privacy Policy</div>
-    <h1 style="font-size:clamp(28px,3.5vw,44px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:12px;">Privacy Policy</h1>
+    <h1 style="font-size:clamp(28px,3.5vw,44px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:12px;">{{ $page?->hero_title ?? 'Privacy Policy' }}</h1>
     <p style="font-size:16px;color:var(--gray-500);">Last updated: June 1, 2025</p>
   </div>
 </div>

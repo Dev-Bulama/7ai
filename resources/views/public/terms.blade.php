@@ -1,8 +1,8 @@
-<x-app-layout title="Terms of Service — 7AI" description="7AI terms of service.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Terms of Service — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? '7AI terms of service.' }}">
 <div class="page-hero">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;">
     <div class="breadcrumb"><a href="{{ route('home') }}">Home</a><span class="sep">›</span>Terms of Service</div>
-    <h1 style="font-size:clamp(28px,3.5vw,44px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:12px;">Terms of Service</h1>
+    <h1 style="font-size:clamp(28px,3.5vw,44px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:12px;">{{ $page?->hero_title ?? 'Terms of Service' }}</h1>
     <p style="font-size:16px;color:var(--gray-500);">Last updated: June 1, 2025</p>
   </div>
 </div>

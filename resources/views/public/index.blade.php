@@ -1,4 +1,4 @@
-<x-app-layout title="{{ $settings['site_name'] ?? '7AI' }} — African Intelligence, Amplified" description="Smart home automation and enterprise AI solutions built for Africa.">
+<x-app-layout title="{{ $page?->seo_title ?? ($settings['site_name'].' — '.$settings['site_tagline']) }}" description="{{ $page?->seo_description ?? 'Smart home automation and enterprise AI solutions built for Africa.' }}">
 
 <!-- HERO -->
 <section class="hero">
@@ -9,17 +9,17 @@
   <div class="hero-content">
     <div class="hero-badge">
       <span class="dot"></span>
-      Now Available Across Africa
+      {{ $heroCta?->subtitle ?? 'Now Available Across Africa' }}
     </div>
 
-    <h1>{{ $heroCta?->title ?? 'African Intelligence,' }}<br>
-      @if(!$heroCta)<span class="accent">Amplified.</span>@endif
+    <h1>{{ $page?->hero_title ?? $heroCta?->title ?? 'African Intelligence,' }}<br>
+      @if(!($page?->hero_title) && !$heroCta)<span class="accent">Amplified.</span>@endif
     </h1>
 
-    <p>{{ $heroCta?->text ?? 'Transforming homes, businesses, and communities through AI-powered automation and intelligent technology solutions built for Africa\'s future.' }}</p>
+    <p>{{ $page?->hero_description ?? $heroCta?->text ?? 'Transforming homes, businesses, and communities through AI-powered automation and intelligent technology solutions built for Africa\'s future.' }}</p>
 
     <div class="hero-actions">
-      <a href="{{ $heroCta?->button_url ?? route('contact') }}" class="btn btn-primary btn-lg">{{ $heroCta?->button_label ?? 'Book Consultation' }}</a>
+      <a href="{{ $heroCta?->button_url ?? route('contact') }}" class="btn btn-primary btn-lg">{{ $page?->cta_text ?? $heroCta?->button_label ?? 'Book Consultation' }}</a>
       @if($heroCta?->button2_label)
       <a href="{{ $heroCta->button2_url ?? route('investors') }}" class="btn btn-white btn-lg">{{ $heroCta->button2_label }}</a>
       @else
@@ -33,19 +33,19 @@
 
     <div class="hero-stats">
       <div class="stat-item">
-        <div class="stat-number"><span data-target="500" data-suffix="+">500+</span></div>
+        <div class="stat-number">{{ $settings['homes_automated'] }}</div>
         <div class="stat-label">Homes Automated</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number"><span data-target="120" data-suffix="+">120+</span></div>
+        <div class="stat-number">{{ $settings['business_clients'] }}</div>
         <div class="stat-label">Business Clients</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number"><span data-target="98" data-suffix="%">98%</span></div>
+        <div class="stat-number">{{ $settings['satisfaction_rate'] }}</div>
         <div class="stat-label">Client Satisfaction</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number"><span data-target="12" data-suffix="">12</span><span class="green">+</span></div>
+        <div class="stat-number">{{ $settings['african_countries'] }}</div>
         <div class="stat-label">African Countries</div>
       </div>
     </div>
@@ -145,13 +145,21 @@
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;margin-top:16px;">
-      @foreach([['1','Discovery Call','We understand your goals, environment, and requirements in depth.'],['2','Custom Design','Our engineers design a tailored solution architecture for your needs.'],['3','Installation','Certified technicians deploy and configure all hardware and software.'],['4','Training','Full onboarding and training for you and your team or household.'],['5','24/7 Support','Ongoing monitoring, updates, and support to keep everything running perfectly.']] as [$num,$title,$desc])
+      @forelse($processCards as $step)
       <div style="text-align:center;">
-        <div style="width:64px;height:64px;border-radius:50%;background:rgba(11,79,108,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;font-weight:700;color:var(--teal);">{{ $num }}</div>
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(11,79,108,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;font-weight:700;color:var(--teal);">{{ $loop->iteration }}</div>
+        <h3 style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:10px;">{{ $step->title }}</h3>
+        <p style="font-size:14px;color:var(--gray-600);line-height:1.6;">{{ $step->description }}</p>
+      </div>
+      @empty
+      @foreach([['Discovery Call','We understand your goals, environment, and requirements in depth.'],['Custom Design','Our engineers design a tailored solution architecture for your needs.'],['Installation','Certified technicians deploy and configure all hardware and software.'],['Training','Full onboarding and training for you and your team or household.'],['24/7 Support','Ongoing monitoring, updates, and support to keep everything running perfectly.']] as $i => [$title,$desc])
+      <div style="text-align:center;">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(11,79,108,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;font-weight:700;color:var(--teal);">{{ $i+1 }}</div>
         <h3 style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:10px;">{{ $title }}</h3>
         <p style="font-size:14px;color:var(--gray-600);line-height:1.6;">{{ $desc }}</p>
       </div>
       @endforeach
+      @endforelse
     </div>
   </div>
 </section>
@@ -164,17 +172,23 @@
       <h2 class="section-title">Built for Every<br>African Sector</h2>
       <p class="section-sub">Our solutions adapt to the unique requirements of different industries across the continent.</p>
     </div>
+    @php $industryCards = \App\Models\Card::where('is_active',true)->where('group','industries')->orderBy('sort_order')->limit(8)->get(); @endphp
     <div class="grid-4">
-      @foreach([['Residential','M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z'],['Commercial','M2 3h20v14H2zM8 21h8M12 17v4'],['Manufacturing','M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z'],['Healthcare','M22 12h-4l-3 9L9 3l-3 9H2'],['Hospitality','M2 7h20v14H2zM16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z'],['Education','M3 3h18v18H3zM3 9h18M9 21V9'],['Agriculture','M12 2a10 10 0 100 20A10 10 0 0012 2zm0 0v20M2 12h20'],['Finance','M2 2h20v20H2zM16 8h-6a2 2 0 00-2 2v5a2 2 0 002 2h6M14 15l3-3-3-3']] as [$name, $svgPath])
-      <a href="{{ route('industries') }}" style="text-decoration:none;">
+      @forelse($industryCards as $card)
+      <a href="{{ $card->link ?? route('industries') }}" style="text-decoration:none;">
         <div class="card" style="text-align:center;">
-          <div class="card-icon" style="margin:0 auto 16px;">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="{{ $svgPath }}"/></svg>
-          </div>
-          <h3 style="font-size:16px;">{{ $name }}</h3>
+          @if($card->icon)
+          <div class="card-icon" style="margin:0 auto 16px;">{!! $card->icon !!}</div>
+          @endif
+          <h3 style="font-size:16px;">{{ $card->title }}</h3>
+          @if($card->description)<p style="font-size:13px;color:var(--gray-500);margin-top:4px;">{{ $card->description }}</p>@endif
         </div>
       </a>
+      @empty
+      @foreach(['Residential','Commercial','Manufacturing','Healthcare','Hospitality','Education','Agriculture','Finance'] as $name)
+      <a href="{{ route('industries') }}" style="text-decoration:none;"><div class="card" style="text-align:center;"><h3 style="font-size:16px;">{{ $name }}</h3></div></a>
       @endforeach
+      @endforelse
     </div>
   </div>
 </section>

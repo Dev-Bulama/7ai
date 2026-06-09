@@ -1,9 +1,9 @@
-<x-app-layout title="Blog — 7AI" description="Insights on smart homes, AI and technology for Africa.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Blog — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'Insights on smart homes, AI and technology for Africa.' }}">
 <div class="page-hero">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;">
     <div class="section-badge" style="display:inline-flex;">Blog</div>
-    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">Intelligence Insights</h1>
-    <p style="font-size:18px;color:var(--gray-600);max-width:480px;line-height:1.7;">Perspectives on AI, smart homes, energy, and technology shaping Africa's future.</p>
+    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">{{ $page?->hero_title ?? 'Intelligence Insights' }}</h1>
+    <p style="font-size:18px;color:var(--gray-600);max-width:480px;line-height:1.7;">{{ $page?->hero_description ?? "Perspectives on AI, smart homes, energy, and technology shaping Africa's future." }}</p>
   </div>
 </div>
 

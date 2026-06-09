@@ -1,9 +1,9 @@
-<x-app-layout title="Pricing — 7AI" description="Transparent pricing for smart home and AI solutions.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Pricing — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'Transparent pricing for smart home and AI solutions.' }}">
 <div class="page-hero" style="padding-top:140px;">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;text-align:center;">
     <div class="section-badge" style="display:inline-flex;margin-bottom:20px;">Pricing</div>
-    <h1 style="font-size:clamp(36px,4.5vw,56px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">Simple, Transparent Pricing</h1>
-    <p style="font-size:18px;color:var(--gray-600);max-width:500px;margin:0 auto;">No hidden fees, no surprises. Choose the plan that fits your needs and scale as you grow.</p>
+    <h1 style="font-size:clamp(36px,4.5vw,56px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">{{ $page?->hero_title ?? 'Simple, Transparent Pricing' }}</h1>
+    <p style="font-size:18px;color:var(--gray-600);max-width:500px;margin:0 auto;">{{ $page?->hero_description ?? 'No hidden fees, no surprises. Choose the plan that fits your needs and scale as you grow.' }}</p>
 
     <!-- TABS -->
     <div style="display:inline-flex;background:var(--gray-100);border-radius:10px;padding:4px;margin-top:32px;">
