@@ -8,7 +8,7 @@
   @if(isset($ogImage))
   <meta property="og:image" content="{{ $ogImage }}">
   @endif
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   {{ $head ?? '' }}
 </head>
@@ -17,7 +17,7 @@
 <nav class="{{ $navClass ?? 'dark-nav' }}" id="nav">
   <div class="nav-inner">
     <a href="{{ route('home') }}" class="nav-logo">
-      <img src="/assets/images/logo-white.svg" alt="7AI Logo" id="nav-logo-img">
+      <img src="{{ asset('assets/images/logo-white.svg') }}" alt="7AI Logo" id="nav-logo-img">
     </a>
     <ul class="nav-links">
       <li class="dropdown">
@@ -63,7 +63,7 @@
   <div class="footer-inner">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="/assets/images/logo-white.svg" alt="7AI">
+        <img src="{{ asset('assets/images/logo-white.svg') }}" alt="7AI">
         <p>African Intelligence, Amplified. Transforming homes and businesses through AI-powered automation built for Africa's future.</p>
         <div class="social-links" style="margin-top:24px;">
           <a href="#" title="Twitter">𝕏</a>
@@ -114,7 +114,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js"></script>
+<script src="{{ asset('assets/js/main.js') }}"></script>
 {{ $scripts ?? '' }}
 </body>
 </html>
