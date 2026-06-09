@@ -196,6 +196,43 @@ class FrontendController extends Controller
         return view('public.terms', compact('page', 'settings'));
     }
 
+    public function smartHome()
+    {
+        $page     = $this->page('smart-home');
+        $features = Card::where('is_active', true)->where('group', 'smart-home-features')->orderBy('sort_order')->get();
+        $faqs     = Faq::where('is_active', true)->where('category', 'Smart Home')->orderBy('sort_order')->limit(8)->get();
+        $settings = $this->siteSettings();
+        return view('public.smart-home', compact('page', 'features', 'faqs', 'settings'));
+    }
+
+    public function businessAutomation()
+    {
+        $page     = $this->page('business-automation');
+        $features = Card::where('is_active', true)->where('group', 'business-automation-features')->orderBy('sort_order')->get();
+        $sectors  = Card::where('is_active', true)->where('group', 'business-sectors')->orderBy('sort_order')->get();
+        $faqs     = Faq::where('is_active', true)->where('category', 'Business Automation')->orderBy('sort_order')->limit(8)->get();
+        $settings = $this->siteSettings();
+        return view('public.business-automation', compact('page', 'features', 'sectors', 'faqs', 'settings'));
+    }
+
+    public function personalAi()
+    {
+        $page     = $this->page('personal-ai');
+        $modules  = Card::where('is_active', true)->where('group', 'personal-ai-modules')->orderBy('sort_order')->get();
+        $faqs     = Faq::where('is_active', true)->where('category', 'Personal AI')->orderBy('sort_order')->limit(8)->get();
+        $settings = $this->siteSettings();
+        return view('public.personal-ai', compact('page', 'modules', 'faqs', 'settings'));
+    }
+
+    public function advisory()
+    {
+        $page     = $this->page('advisory');
+        $services = Card::where('is_active', true)->where('group', 'advisory-services')->orderBy('sort_order')->get();
+        $faqs     = Faq::where('is_active', true)->where('category', 'Advisory')->orderBy('sort_order')->limit(8)->get();
+        $settings = $this->siteSettings();
+        return view('public.advisory', compact('page', 'services', 'faqs', 'settings'));
+    }
+
     public function investors()
     {
         $page            = $this->page('investors');
