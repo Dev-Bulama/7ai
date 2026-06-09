@@ -16,16 +16,22 @@ class FormController extends Controller
     public function create() { return view('admin.forms.create'); }
     public function store(Request $request) {
         $data = $request->validate([
-            'name' => 'required|max:255',
-            'slug' => 'nullable|unique:forms,slug',
-            'description' => 'nullable',
-            'success_message' => 'nullable',
-            'redirect_url' => 'nullable|max:255',
+            'name'               => 'required|max:255',
+            'slug'               => 'nullable|unique:forms,slug',
+            'public_path'        => 'nullable|max:100',
+            'title'              => 'nullable|max:255',
+            'subtitle'           => 'nullable|max:500',
+            'description'        => 'nullable',
+            'success_message'    => 'nullable',
+            'redirect_url'       => 'nullable|max:255',
             'notification_email' => 'nullable|email|max:255',
-            'store_submissions' => 'nullable|boolean',
-            'is_active' => 'nullable|boolean',
+            'store_submissions'  => 'nullable|boolean',
+            'is_active'          => 'nullable|boolean',
         ]);
         if (empty($data['slug'])) $data['slug'] = Str::slug($data['name']);
+        if (!empty($data['public_path']) && !str_starts_with($data['public_path'], '/')) {
+            $data['public_path'] = '/' . $data['public_path'];
+        }
         $data['store_submissions'] = $request->boolean('store_submissions', true);
         $data['is_active'] = $request->boolean('is_active', true);
         $form = Form::create($data);
@@ -37,16 +43,22 @@ class FormController extends Controller
     }
     public function update(Request $request, Form $form) {
         $data = $request->validate([
-            'name' => 'required|max:255',
-            'slug' => 'nullable|unique:forms,slug,' . $form->id,
-            'description' => 'nullable',
-            'success_message' => 'nullable',
-            'redirect_url' => 'nullable|max:255',
+            'name'               => 'required|max:255',
+            'slug'               => 'nullable|unique:forms,slug,' . $form->id,
+            'public_path'        => 'nullable|max:100',
+            'title'              => 'nullable|max:255',
+            'subtitle'           => 'nullable|max:500',
+            'description'        => 'nullable',
+            'success_message'    => 'nullable',
+            'redirect_url'       => 'nullable|max:255',
             'notification_email' => 'nullable|email|max:255',
-            'store_submissions' => 'nullable|boolean',
-            'is_active' => 'nullable|boolean',
+            'store_submissions'  => 'nullable|boolean',
+            'is_active'          => 'nullable|boolean',
         ]);
         if (empty($data['slug'])) $data['slug'] = Str::slug($data['name']);
+        if (!empty($data['public_path']) && !str_starts_with($data['public_path'], '/')) {
+            $data['public_path'] = '/' . $data['public_path'];
+        }
         $data['store_submissions'] = $request->boolean('store_submissions', true);
         $data['is_active'] = $request->boolean('is_active', true);
         $form->update($data);

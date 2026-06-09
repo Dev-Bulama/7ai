@@ -18,6 +18,7 @@ use App\Models\Setting;
 use App\Models\Banner;
 use App\Models\User;
 use App\Models\Page;
+use App\Models\SitePopup;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
@@ -433,6 +434,26 @@ class CmsSeeder extends Seeder
             ['Description',     'description',  'textarea', 'Describe your issue in detail...', true, 60],
         ]);
 
+        // Abuja registration form
+        $abujaForm = Form::updateOrCreate(['slug' => 'abuja'], [
+            'name'              => 'Abuja Registration',
+            'public_path'       => '/abuja',
+            'title'             => 'Register for 7AI — Abuja',
+            'subtitle'          => 'Join the 7AI community in Abuja. Fill in your details below and we\'ll be in touch.',
+            'description'       => 'Abuja community registration form',
+            'success_message'   => 'Thank you for registering! We\'ll reach out to you shortly.',
+            'notification_email'=> 'hello@7ai.africa',
+            'store_submissions' => true,
+            'is_active'         => true,
+        ]);
+        $this->seedFormFields($abujaForm->id, [
+            ['Full Name',          'full_name',    'text',     'Enter your full name',            true,  10],
+            ['What Do You Do?',    'occupation',   'text',     'e.g. Engineer, Business Owner…',  true,  20],
+            ['Attendance Type',    'attendance',   'select',   '',                                true,  30, "Online\nPhysical"],
+            ['Phone Number',       'phone',        'phone',    '+234…',                           true,  40],
+            ['Email Address',      'email',        'email',    'you@example.com',                 true,  50],
+        ]);
+
         // ═══════════════════════════════════════════════════════════════
         //  MENUS
         // ═══════════════════════════════════════════════════════════════
@@ -722,6 +743,15 @@ class CmsSeeder extends Seeder
         $this->command->info('   Forms: ' . Form::count());
         $this->command->info('   Blog Posts: ' . Post::count());
         $this->command->info('   Settings: ' . Setting::count());
+
+        // Default popup (disabled by default — admin activates it)
+        \App\Models\SitePopup::updateOrCreate(['name' => 'Welcome Flyer'], [
+            'image_path'  => null,
+            'link_url'    => '/abuja',
+            'link_text'   => 'Register Now',
+            'show_times'  => 2,
+            'is_active'   => false,
+        ]);
     }
 
     private function seedFormFields(int $formId, array $fields): void

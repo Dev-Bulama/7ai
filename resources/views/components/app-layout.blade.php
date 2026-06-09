@@ -190,5 +190,54 @@
 
 <script src="{{ asset('assets/js/main.js') }}"></script>
 {{ $scripts ?? '' }}
+
+@php
+  $activePopup = \App\Models\SitePopup::where('is_active', true)
+    ->where(fn($q) => $q->whereNull('start_date')->orWhereDate('start_date','<=',now()))
+    ->where(fn($q) => $q->whereNull('end_date')->orWhereDate('end_date','>=',now()))
+    ->first();
+@endphp
+@if($activePopup)
+<!-- POPUP FLYER -->
+<div id="site-popup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;padding:20px;">
+  <div style="position:relative;max-width:520px;width:100%;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.4);">
+    <button onclick="closePopup()" style="position:absolute;top:12px;right:12px;z-index:1;background:rgba(0,0,0,0.5);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:20px;line-height:36px;text-align:center;cursor:pointer;">×</button>
+    @if($activePopup->image_path)
+    <img src="{{ asset('storage/'.$activePopup->image_path) }}" alt="{{ $activePopup->name }}" style="width:100%;max-height:500px;object-fit:contain;display:block;">
+    @else
+    <div style="background:linear-gradient(135deg,var(--teal-dark),var(--teal));padding:60px 40px;text-align:center;">
+      <div style="font-size:48px;font-weight:700;color:#fff;margin-bottom:8px;">7AI</div>
+      <div style="font-size:18px;color:rgba(255,255,255,0.8);">{{ $activePopup->name }}</div>
+    </div>
+    @endif
+    @if($activePopup->link_url)
+    <div style="padding:20px;text-align:center;border-top:1px solid #f0f0f0;">
+      <a href="{{ $activePopup->link_url }}" class="btn btn-primary" style="min-width:200px;" onclick="closePopup()">{{ $activePopup->link_text ?? 'Learn More' }}</a>
+    </div>
+    @endif
+  </div>
+</div>
+<script>
+(function() {
+  var key = 'popup_shown_{{ $activePopup->id }}';
+  var max = {{ $activePopup->show_times }};
+  var shown = parseInt(localStorage.getItem(key) || '0');
+  if (shown < max) {
+    setTimeout(function() {
+      var el = document.getElementById('site-popup');
+      if (el) { el.style.display = 'flex'; }
+      localStorage.setItem(key, shown + 1);
+    }, 1500);
+  }
+})();
+function closePopup() {
+  var el = document.getElementById('site-popup');
+  if (el) { el.style.display = 'none'; }
+}
+document.getElementById('site-popup')?.addEventListener('click', function(e) {
+  if (e.target === this) closePopup();
+});
+</script>
+@endif
 </body>
 </html>

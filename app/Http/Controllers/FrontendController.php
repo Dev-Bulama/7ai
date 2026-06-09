@@ -205,6 +205,22 @@ class FrontendController extends Controller
         return view('public.investors', compact('page', 'investorForm', 'heroCta', 'settings'));
     }
 
+    public function showForm(Form $form)
+    {
+        if (!$form->is_active) abort(404);
+        $form->load('fields');
+        $settings = $this->siteSettings();
+        return view('public.form-page', compact('form', 'settings'));
+    }
+
+    public function dynamicFormPage(string $formPath)
+    {
+        $form = Form::where('public_path', '/'.$formPath)->where('is_active', true)->with('fields')->first();
+        if (!$form) abort(404);
+        $settings = $this->siteSettings();
+        return view('public.form-page', compact('form', 'settings'));
+    }
+
     public function submitForm(Request $request, Form $form)
     {
         if (!$form->is_active) {

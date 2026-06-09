@@ -49,8 +49,14 @@ Route::post('/contact', [LeadCaptureController::class, 'store'])->name('contact.
 Route::get('/investors', [FrontendController::class, 'investors'])->name('investors');
 Route::post('/investors/register', [InvestorController::class, 'store'])->name('investors.register');
 
-// Public form submission
+// Public form view & submission
+Route::get('/forms/{form:slug}', [FrontendController::class, 'showForm'])->name('forms.show');
 Route::post('/forms/{form}/submit', [FrontendController::class, 'submitForm'])->name('forms.submit');
+
+// Dynamic public form paths (e.g. /abuja) — must come LAST before auth routes
+Route::get('/{formPath}', [FrontendController::class, 'dynamicFormPage'])
+    ->where('formPath', '[a-z0-9\-]+')
+    ->name('form.dynamic');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');
@@ -135,4 +141,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('site-settings', [SiteSettingsController::class, 'update'])->name('site-settings.update');
     Route::post('site-settings/social', [SiteSettingsController::class, 'storeSocial'])->name('site-settings.social.store');
     Route::delete('site-settings/social/{socialLink}', [SiteSettingsController::class, 'destroySocial'])->name('site-settings.social.destroy');
+
+    // Popup Flyer Manager
+    Route::get('popups', [\App\Http\Controllers\Admin\PopupController::class, 'index'])->name('popups.index');
+    Route::post('popups', [\App\Http\Controllers\Admin\PopupController::class, 'store'])->name('popups.store');
+    Route::put('popups/{popup}', [\App\Http\Controllers\Admin\PopupController::class, 'update'])->name('popups.update');
+    Route::delete('popups/{popup}', [\App\Http\Controllers\Admin\PopupController::class, 'destroy'])->name('popups.destroy');
+    Route::post('popups/{popup}/toggle', [\App\Http\Controllers\Admin\PopupController::class, 'toggle'])->name('popups.toggle');
 });
