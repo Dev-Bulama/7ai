@@ -1,9 +1,9 @@
-<x-app-layout title="Industries — 7AI" description="7AI solutions for every industry across Africa.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Industries — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? '7AI solutions for every industry across Africa.' }}">
 <div class="page-hero">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;">
     <div class="section-badge" style="display:inline-flex;">Industries</div>
-    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">Intelligence for<br>Every Sector</h1>
-    <p style="font-size:18px;color:var(--gray-600);max-width:500px;line-height:1.7;">7AI solutions adapt to the unique needs, regulations, and challenges of every African industry.</p>
+    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">{!! nl2br(e($page?->hero_title ?? "Built for Every\nAfrican Sector")) !!}</h1>
+    <p style="font-size:18px;color:var(--gray-600);max-width:500px;line-height:1.7;">{{ $page?->hero_description ?? '7AI solutions adapt to the unique needs, regulations, and challenges of every African industry.' }}</p>
   </div>
 </div>
 

@@ -1,12 +1,12 @@
-<x-app-layout title="AI Solutions — 7AI" description="Enterprise AI, machine learning and intelligent automation.">
+<x-app-layout title="{{ $page?->seo_title ?? 'AI Solutions — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'Enterprise AI, machine learning and intelligent automation.' }}">
 <div class="page-hero page-hero-dark">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;">
     <div class="breadcrumb"><a href="{{ route('home') }}" style="color:rgba(255,255,255,0.5);">Home</a><span class="sep" style="color:rgba(255,255,255,0.3);">›</span><a href="{{ route('solutions') }}" style="color:rgba(255,255,255,0.5);">Solutions</a><span class="sep" style="color:rgba(255,255,255,0.3);">›</span><span style="color:rgba(255,255,255,0.7);">AI Solutions</span></div>
     <div class="section-badge">Enterprise AI</div>
-    <h1 style="font-size:clamp(36px,4.5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:700px;line-height:1.1;margin-bottom:20px;">AI That Works<br>at Africa's Scale.</h1>
-    <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:540px;line-height:1.7;">Enterprise-grade AI solutions built on real African data, designed to solve real African business challenges.</p>
+    <h1 style="font-size:clamp(36px,4.5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:700px;line-height:1.1;margin-bottom:20px;">{!! nl2br(e($page?->hero_title ?? 'Enterprise AI Solutions')) !!}</h1>
+    <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:540px;line-height:1.7;">{{ $page?->hero_description ?? 'Purpose-built AI solutions for African business.' }}</p>
     <div style="margin-top:40px;display:flex;gap:16px;flex-wrap:wrap;">
-      <a href="{{ route('contact') }}" class="btn btn-primary btn-lg">Request AI Assessment</a>
+      <a href="{{ $heroCta?->button_url ?? route('contact') }}" class="btn btn-primary btn-lg">{{ $page?->cta_text ?? $heroCta?->button_label ?? 'Start Your AI Journey' }}</a>
       <a href="{{ route('case-studies') }}" class="btn btn-white btn-lg">View Case Studies</a>
     </div>
   </div>
@@ -97,6 +97,14 @@
   <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
     <a href="{{ route('contact') }}" class="btn btn-white btn-lg">Request Assessment</a>
     <a href="{{ route('case-studies') }}" class="btn btn-lg" style="border:1.5px solid rgba(255,255,255,0.4);color:rgba(255,255,255,0.9);background:transparent;">View Case Studies</a>
+  </div>
+</div></section>
+
+<section class="cta-section"><div class="section-inner">
+  <h2>{{ $bottomCta?->title ?? 'Ready to Leverage AI for Your Business?' }}</h2>
+  <p>{{ $bottomCta?->text ?? 'Talk to our AI specialists and get a custom solution roadmap.' }}</p>
+  <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+    <a href="{{ $bottomCta?->button_url ?? route('contact') }}" class="btn btn-white btn-lg">{{ $bottomCta?->button_label ?? 'Start Your AI Journey' }}</a>
   </div>
 </div></section>
 </x-app-layout>

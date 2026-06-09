@@ -1,11 +1,11 @@
-<x-app-layout title="About — 7AI" description="The team building African intelligence.">
+<x-app-layout title="{{ $page?->seo_title ?? 'About — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'The team building African intelligence.' }}">
 <!-- PAGE HERO -->
 <div class="page-hero page-hero-dark">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;">
     <div class="breadcrumb"><a href="{{ route('home') }}">Home</a><span class="sep">›</span>About Us</div>
     <div class="section-badge">Our Story</div>
-    <h1 style="font-size:clamp(36px,4.5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:680px;line-height:1.1;margin-bottom:20px;">Built by Africans,<br>for Africa's Future.</h1>
-    <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:520px;line-height:1.7;">We founded 7AI with a single belief: Africa deserves world-class intelligence technology built specifically for its communities, climates, and aspirations.</p>
+    <h1 style="font-size:clamp(36px,4.5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:680px;line-height:1.1;margin-bottom:20px;">{!! nl2br(e($page?->hero_title ?? 'Built for Africa\'s Future')) !!}</h1>
+    <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:520px;line-height:1.7;">{{ $page?->hero_description ?? 'We are a team of engineers, designers, and technologists building intelligent solutions for Africa.' }}</p>
   </div>
 </div>
 
@@ -15,10 +15,14 @@
     <div class="feature-split">
       <div>
         <div class="section-badge">Mission</div>
-        <h2 class="section-title">Amplifying African<br>Intelligence at Scale</h2>
-        <p style="font-size:16px;color:var(--gray-600);line-height:1.75;margin-bottom:24px;">7AI was founded in 2021 with a clear mission: to build intelligent technology infrastructure that works for Africa — not technology retrofitted from elsewhere and forced to fit.</p>
+        <h2 class="section-title">{{ $page?->hero_subtitle ?? 'Amplifying African Intelligence at Scale' }}</h2>
+        @if($page?->content)
+        <div style="font-size:16px;color:var(--gray-600);line-height:1.75;">{!! \Illuminate\Support\Str::markdown($page->content) !!}</div>
+        @else
+        <p style="font-size:16px;color:var(--gray-600);line-height:1.75;margin-bottom:24px;">7AI was founded in {{ \App\Models\Setting::get('company_founded','2021') }} with a clear mission: to build intelligent technology infrastructure that works for Africa — not technology retrofitted from elsewhere and forced to fit.</p>
         <p style="font-size:16px;color:var(--gray-600);line-height:1.75;margin-bottom:24px;">From smart home automation in Lagos apartments to AI-powered supply chains serving agri-businesses in Kenya, we design solutions that understand Africa's unique infrastructure, connectivity challenges, and opportunities.</p>
         <p style="font-size:16px;color:var(--gray-600);line-height:1.75;">We are engineers, designers, and problem-solvers committed to one outcome: making African homes, businesses, and communities more intelligent, more efficient, and more resilient.</p>
+        @endif
       </div>
       <div class="feature-visual feature-visual-dark" style="min-height:380px;">
         <div style="text-align:center;color:rgba(255,255,255,0.15);padding:40px;">
@@ -126,7 +130,7 @@
   <h2>Join the 7AI Movement</h2>
   <p>Work with us, partner with us, or let us transform your home or business. Africa's intelligence era starts now.</p>
   <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
-    <a href="{{ route('contact') }}" class="btn btn-white btn-lg">Get In Touch</a>
+    <a href="{{ $heroCta?->button_url ?? route('contact') }}" class="btn btn-white btn-lg">{{ $heroCta?->button_label ?? 'Get in Touch' }}</a>
     <a href="{{ route('careers') }}" class="btn btn-lg" style="border:1.5px solid rgba(255,255,255,0.4);color:rgba(255,255,255,0.9);background:transparent;">View Careers</a>
   </div>
 </div></section>

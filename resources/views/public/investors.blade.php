@@ -1,14 +1,19 @@
-<x-app-layout title="Investor Relations — 7AI" description="Join 7AI as an investor. Be part of Africa's AI revolution.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Investor Relations — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'Join 7AI as an investor. Be part of Africa\'s AI revolution.' }}">
 
 <div class="page-hero page-hero-dark">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;text-align:center;">
     <div class="section-badge" style="margin:0 auto 20px;">Investor Relations</div>
     <h1 style="font-size:clamp(32px,5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:680px;margin:0 auto 20px;line-height:1.1;">
-      Be Part of Africa's<br>AI Revolution
+      {!! nl2br(e($page?->hero_title ?? "Invest in Africa's AI Future")) !!}
     </h1>
     <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:520px;margin:0 auto;line-height:1.7;">
-      7AI is building the infrastructure for Africa's intelligent future. We're inviting aligned investors to grow with us.
+      {{ $page?->hero_description ?? '7AI is building the infrastructure for Africa\'s intelligent future. We\'re inviting aligned investors to grow with us.' }}
     </p>
+    @if($page?->cta_text)
+    <div style="margin-top:32px;">
+      <a href="{{ $page->cta_link ?? route('contact') }}" class="btn btn-primary btn-lg">{{ $page->cta_text }}</a>
+    </div>
+    @endif
   </div>
 </div>
 

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Page;
 use App\Models\Category;
 use App\Models\Setting;
 use App\Models\Testimonial;
@@ -20,139 +21,188 @@ class FrontendController extends Controller
     private function siteSettings(): array
     {
         return [
-            'site_name'    => Setting::get('site_name', '7AI'),
-            'contact_phone'=> Setting::get('contact_phone', ''),
-            'contact_email'=> Setting::get('contact_email', ''),
-            'address'      => Setting::get('address', ''),
-            'footer_text'  => Setting::get('footer_text', 'African Intelligence, Amplified.'),
-            'copyright'    => Setting::get('copyright_text', '© 2025 7AI Technologies. All rights reserved.'),
-            'logo'         => Setting::get('logo', '/assets/images/logo-white.svg'),
+            'site_name'         => Setting::get('site_name', '7AI Technologies'),
+            'site_tagline'      => Setting::get('site_tagline', 'African Intelligence, Amplified.'),
+            'contact_phone'     => Setting::get('contact_phone', ''),
+            'contact_email'     => Setting::get('contact_email', ''),
+            'address'           => Setting::get('address', ''),
+            'footer_text'       => Setting::get('footer_text', 'African Intelligence, Amplified.'),
+            'copyright'         => Setting::get('copyright_text', '© 2025 7AI Technologies. All rights reserved.'),
+            'logo'              => Setting::get('logo', '/assets/images/logo-white.svg'),
+            'homes_automated'   => Setting::get('homes_automated', '500+'),
+            'business_clients'  => Setting::get('business_clients', '120+'),
+            'satisfaction_rate' => Setting::get('satisfaction_rate', '98%'),
+            'african_countries' => Setting::get('african_countries', '12+'),
+            'whatsapp_number'   => Setting::get('whatsapp_number', ''),
         ];
+    }
+
+    private function page(string $slug): ?Page
+    {
+        return Page::where('slug', $slug)->where('status', 'published')->first();
     }
 
     public function home()
     {
+        $page         = $this->page('home');
         $testimonials = Testimonial::where('is_active', true)->orderBy('sort_order')->limit(6)->get();
-        $homeCards = Card::where('is_active', true)->where('group', 'smart-home')->orderBy('sort_order')->limit(9)->get();
-        $aiCards = Card::where('is_active', true)->where('group', 'ai-solutions')->orderBy('sort_order')->limit(9)->get();
-        $heroCta = Cta::where('is_active', true)->where('name', 'home_hero')->first();
-        $bottomCta = Cta::where('is_active', true)->where('name', 'home_cta')->first();
-        $latestPosts = Post::with('category')->where('status', 'published')->orderByDesc('published_at')->limit(3)->get();
-        $settings = $this->siteSettings();
-        return view('public.index', compact('testimonials', 'homeCards', 'aiCards', 'heroCta', 'bottomCta', 'latestPosts', 'settings'));
+        $homeCards    = Card::where('is_active', true)->where('group', 'smart-home')->orderBy('sort_order')->limit(9)->get();
+        $aiCards      = Card::where('is_active', true)->where('group', 'ai-solutions')->orderBy('sort_order')->limit(9)->get();
+        $processCards = Card::where('is_active', true)->where('group', 'process')->orderBy('sort_order')->limit(6)->get();
+        $heroCta      = Cta::where('is_active', true)->where('name', 'home_hero')->first();
+        $bottomCta    = Cta::where('is_active', true)->where('name', 'home_cta')->first();
+        $latestPosts  = Post::with('category')->where('status', 'published')->orderByDesc('published_at')->limit(3)->get();
+        $settings     = $this->siteSettings();
+        return view('public.index', compact('page', 'testimonials', 'homeCards', 'aiCards', 'processCards', 'heroCta', 'bottomCta', 'latestPosts', 'settings'));
     }
 
     public function solutions()
     {
+        $page             = $this->page('solutions');
         $serviceCategories = ServiceCategory::with('services')->where('is_active', true)->orderBy('sort_order')->get();
-        $settings = $this->siteSettings();
-        return view('public.solutions', compact('serviceCategories', 'settings'));
+        $heroCta          = Cta::where('is_active', true)->where('name', 'solutions_hero')->first();
+        $settings         = $this->siteSettings();
+        return view('public.solutions', compact('page', 'serviceCategories', 'heroCta', 'settings'));
     }
 
     public function smartHomes()
     {
+        $page     = $this->page('smart-homes');
         $category = ServiceCategory::where('slug', 'smart-homes')->first();
         $services = Service::where('status', 'published')
             ->when($category, fn($q) => $q->where('category_id', $category->id))
             ->orderBy('sort_order')->get();
-        $cards = Card::where('is_active', true)->where('group', 'smart-home')->orderBy('sort_order')->get();
-        $faqs = Faq::where('is_active', true)->where('category', 'Smart Home')->orderBy('sort_order')->limit(8)->get();
+        $cards    = Card::where('is_active', true)->where('group', 'smart-home')->orderBy('sort_order')->get();
+        $faqs     = Faq::where('is_active', true)->where('category', 'Smart Home')->orderBy('sort_order')->limit(8)->get();
+        $heroCta  = Cta::where('is_active', true)->where('name', 'smart_homes_hero')->first();
+        $bottomCta = Cta::where('is_active', true)->where('name', 'smart_homes_cta')->first();
         $settings = $this->siteSettings();
-        return view('public.smart-homes', compact('services', 'cards', 'faqs', 'settings'));
+        return view('public.smart-homes', compact('page', 'services', 'cards', 'faqs', 'heroCta', 'bottomCta', 'settings'));
     }
 
     public function aiSolutions()
     {
+        $page     = $this->page('ai-solutions');
         $category = ServiceCategory::where('slug', 'ai-solutions')->first();
         $services = Service::where('status', 'published')
             ->when($category, fn($q) => $q->where('category_id', $category->id))
             ->orderBy('sort_order')->get();
-        $cards = Card::where('is_active', true)->where('group', 'ai-solutions')->orderBy('sort_order')->get();
-        $faqs = Faq::where('is_active', true)->where('category', 'AI Solutions')->orderBy('sort_order')->limit(8)->get();
+        $cards    = Card::where('is_active', true)->where('group', 'ai-solutions')->orderBy('sort_order')->get();
+        $faqs     = Faq::where('is_active', true)->where('category', 'AI Solutions')->orderBy('sort_order')->limit(8)->get();
+        $heroCta  = Cta::where('is_active', true)->where('name', 'ai_solutions_hero')->first();
+        $bottomCta = Cta::where('is_active', true)->where('name', 'ai_solutions_cta')->first();
         $settings = $this->siteSettings();
-        return view('public.ai-solutions', compact('services', 'cards', 'faqs', 'settings'));
+        return view('public.ai-solutions', compact('page', 'services', 'cards', 'faqs', 'heroCta', 'bottomCta', 'settings'));
     }
 
     public function pricing()
     {
-        $settings = $this->siteSettings();
-        return view('public.pricing', compact('settings'));
+        $page      = $this->page('pricing');
+        $cards     = Card::where('is_active', true)->where('group', 'pricing')->orderBy('sort_order')->get();
+        $heroCta   = Cta::where('is_active', true)->where('name', 'pricing_cta')->first();
+        $faqs      = Faq::where('is_active', true)->where('category', 'Pricing')->orderBy('sort_order')->limit(8)->get();
+        $settings  = $this->siteSettings();
+        return view('public.pricing', compact('page', 'cards', 'heroCta', 'faqs', 'settings'));
     }
 
     public function caseStudies()
     {
+        $page     = $this->page('case-studies');
         $settings = $this->siteSettings();
-        return view('public.case-studies', compact('settings'));
+        return view('public.case-studies', compact('page', 'settings'));
     }
 
     public function industries()
     {
-        $cards = Card::where('is_active', true)->where('group', 'industries')->orderBy('sort_order')->get();
+        $page     = $this->page('industries');
+        $cards    = Card::where('is_active', true)->where('group', 'industries')->orderBy('sort_order')->get();
+        $heroCta  = Cta::where('is_active', true)->where('name', 'solutions_hero')->first();
         $settings = $this->siteSettings();
-        return view('public.industries', compact('cards', 'settings'));
+        return view('public.industries', compact('page', 'cards', 'heroCta', 'settings'));
     }
 
     public function about()
     {
+        $page         = $this->page('about');
         $testimonials = Testimonial::where('is_active', true)->where('is_featured', true)->orderBy('sort_order')->limit(3)->get();
-        $settings = $this->siteSettings();
-        return view('public.about', compact('testimonials', 'settings'));
+        $heroCta      = Cta::where('is_active', true)->where('name', 'about_cta')->first();
+        $settings     = $this->siteSettings();
+        return view('public.about', compact('page', 'testimonials', 'heroCta', 'settings'));
     }
 
     public function careers()
     {
+        $page     = $this->page('careers');
+        $heroCta  = Cta::where('is_active', true)->where('name', 'careers_hero')->first();
         $settings = $this->siteSettings();
-        return view('public.careers', compact('settings'));
+        return view('public.careers', compact('page', 'heroCta', 'settings'));
     }
 
     public function blog()
     {
-        $posts = Post::with('author', 'category')
-            ->where('status', 'published')
-            ->orderByDesc('published_at')
-            ->paginate(9);
+        $page       = $this->page('blog');
+        $posts      = Post::with('author', 'category')->where('status', 'published')->orderByDesc('published_at')->paginate(9);
         $categories = Category::all();
+        $heroCta    = Cta::where('is_active', true)->where('name', 'blog_cta')->first();
+        $settings   = $this->siteSettings();
+        return view('public.blog', compact('page', 'posts', 'categories', 'heroCta', 'settings'));
+    }
+
+    public function blogPost(Post $post)
+    {
+        if ($post->status !== 'published') abort(404);
+        $related  = Post::with('category')->where('status', 'published')->where('id', '!=', $post->id)->orderByDesc('published_at')->limit(3)->get();
         $settings = $this->siteSettings();
-        return view('public.blog', compact('posts', 'categories', 'settings'));
+        return view('public.blog-post', compact('post', 'related', 'settings'));
     }
 
     public function contact()
     {
+        $page        = $this->page('contact');
         $contactForm = Form::where('slug', 'contact')->where('is_active', true)->with('fields')->first();
-        $faqs = Faq::where('is_active', true)->where('category', 'Contact')->orderBy('sort_order')->limit(5)->get();
-        $settings = $this->siteSettings();
-        return view('public.contact', compact('contactForm', 'faqs', 'settings'));
+        $faqs        = Faq::where('is_active', true)->where('category', 'Contact')->orderBy('sort_order')->limit(5)->get();
+        $heroCta     = Cta::where('is_active', true)->where('name', 'contact_hero')->first();
+        $settings    = $this->siteSettings();
+        return view('public.contact', compact('page', 'contactForm', 'faqs', 'heroCta', 'settings'));
     }
 
     public function support()
     {
-        $faqs = Faq::where('is_active', true)->orderBy('sort_order')->limit(12)->get();
+        $page     = $this->page('support');
+        $faqs     = Faq::where('is_active', true)->orderBy('sort_order')->limit(12)->get();
+        $heroCta  = Cta::where('is_active', true)->where('name', 'support_hero')->first();
         $settings = $this->siteSettings();
-        return view('public.support', compact('faqs', 'settings'));
+        return view('public.support', compact('page', 'faqs', 'heroCta', 'settings'));
     }
 
     public function docs()
     {
+        $page     = $this->page('docs');
         $settings = $this->siteSettings();
-        return view('public.docs', compact('settings'));
+        return view('public.docs', compact('page', 'settings'));
     }
 
     public function privacy()
     {
+        $page     = $this->page('privacy');
         $settings = $this->siteSettings();
-        return view('public.privacy', compact('settings'));
+        return view('public.privacy', compact('page', 'settings'));
     }
 
     public function terms()
     {
+        $page     = $this->page('terms');
         $settings = $this->siteSettings();
-        return view('public.terms', compact('settings'));
+        return view('public.terms', compact('page', 'settings'));
     }
 
     public function investors()
     {
-        $settings = $this->siteSettings();
-        return view('public.investors', compact('settings'));
+        $page            = $this->page('investors');
+        $investorForm    = Form::where('slug', 'investor-registration')->where('is_active', true)->with('fields')->first();
+        $heroCta         = Cta::where('is_active', true)->where('name', 'investors_hero')->first();
+        $settings        = $this->siteSettings();
+        return view('public.investors', compact('page', 'investorForm', 'heroCta', 'settings'));
     }
 
     public function submitForm(Request $request, Form $form)
@@ -162,7 +212,7 @@ class FrontendController extends Controller
         }
 
         $rules = [];
-        $data = [];
+        $data  = [];
         foreach ($form->fields as $field) {
             if (!$field->is_active) continue;
             $fieldRules = [];

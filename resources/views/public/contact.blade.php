@@ -1,9 +1,9 @@
-<x-app-layout title="Contact — 7AI" description="Get in touch with the 7AI team.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Contact — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'Get in touch with the 7AI team.' }}">
 <div class="page-hero">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;">
     <div class="section-badge" style="display:inline-flex;">Contact</div>
-    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">Let's Build Something<br>Intelligent Together</h1>
-    <p style="font-size:18px;color:var(--gray-600);max-width:500px;line-height:1.7;">Book a consultation, request a quote, or just reach out. Our team responds within 24 hours.</p>
+    <h1 style="font-size:clamp(32px,4vw,52px);font-weight:700;color:var(--dark);letter-spacing:-0.025em;margin-bottom:16px;">{!! nl2br(e($page?->hero_title ?? "Let's Build Something\nIntelligent Together")) !!}</h1>
+    <p style="font-size:18px;color:var(--gray-600);max-width:500px;line-height:1.7;">{{ $page?->hero_description ?? 'Book a consultation, request a quote, or just reach out. Our team responds within 24 hours.' }}</p>
   </div>
 </div>
 
@@ -22,7 +22,7 @@
             </div>
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Offices</div>
-              <div style="font-size:15px;color:var(--dark);line-height:1.7;">Lagos, Nigeria · Accra, Ghana<br>Nairobi, Kenya · Johannesburg, SA</div>
+              <div style="font-size:15px;color:var(--dark);line-height:1.7;">{{ \App\Models\Setting::get('address', 'Lagos, Nigeria · Accra, Ghana') }}</div>
             </div>
           </div>
 
@@ -32,7 +32,7 @@
             </div>
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Phone</div>
-              <div style="font-size:15px;color:var(--dark);">+234 800 7AI TECH<br>+233 302 000 7AI</div>
+              <div style="font-size:15px;color:var(--dark);">{{ $settings['contact_phone'] ?: '+234 800 7AI TECH' }}</div>
             </div>
           </div>
 
@@ -42,7 +42,7 @@
             </div>
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Email</div>
-              <div style="font-size:15px;color:var(--dark);">hello@7ai.africa<br>enterprise@7ai.africa</div>
+              <div style="font-size:15px;color:var(--dark);">{{ $settings['contact_email'] ?: 'hello@7ai.africa' }}</div>
             </div>
           </div>
 
@@ -52,7 +52,7 @@
             </div>
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Business Hours</div>
-              <div style="font-size:15px;color:var(--dark);">Monday – Friday: 8am – 6pm WAT<br>Saturday: 9am – 2pm WAT</div>
+              <div style="font-size:15px;color:var(--dark);">{{ \App\Models\Setting::get('contact_hours', 'Monday – Friday: 8am – 6pm WAT') }}</div>
             </div>
           </div>
         </div>

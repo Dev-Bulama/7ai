@@ -1,9 +1,9 @@
-<x-app-layout title="Careers — 7AI" description="Join the team building Africa's intelligent future.">
+<x-app-layout title="{{ $page?->seo_title ?? 'Careers — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'Join the team building Africa\'s intelligent future.' }}">
 <div class="page-hero page-hero-dark">
   <div class="section-inner" style="max-width:1280px;margin:0 auto;">
     <div class="section-badge">Careers</div>
-    <h1 style="font-size:clamp(36px,4.5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:700px;line-height:1.1;margin-bottom:20px;">Build Africa's<br>Intelligent Future.</h1>
-    <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:520px;line-height:1.7;">Join a diverse team of engineers, researchers, and innovators working on technology that matters — built by Africans, for Africa.</p>
+    <h1 style="font-size:clamp(36px,4.5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:700px;line-height:1.1;margin-bottom:20px;">{!! nl2br(e($page?->hero_title ?? "Build Africa's Intelligent Future.")) !!}</h1>
+    <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:520px;line-height:1.7;">{{ $page?->hero_description ?? 'Join a diverse team of engineers, researchers, and innovators working on technology that matters — built by Africans, for Africa.' }}</p>
     <div style="margin-top:32px;display:flex;gap:24px;flex-wrap:wrap;">
       <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:20px 28px;"><div style="font-size:28px;font-weight:700;color:#fff;">18</div><div style="font-size:13px;color:rgba(255,255,255,0.6);">Open Positions</div></div>
       <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:20px 28px;"><div style="font-size:28px;font-weight:700;color:#fff;">4</div><div style="font-size:13px;color:rgba(255,255,255,0.6);">Countries</div></div>
