@@ -1,11 +1,36 @@
-// Mobile Menu
-const mobileBtn = document.querySelector('.mobile-menu-btn');
-const mobileMenu = document.querySelector('.mobile-menu');
-if (mobileBtn && mobileMenu) {
-  mobileBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('open');
-  });
+// Mobile Drawer
+const mobileBtn     = document.querySelector('.mobile-menu-btn');
+const mobileMenu    = document.getElementById('mobile-menu');
+const mobileOverlay = document.getElementById('mobile-overlay');
+const mobileClose   = document.getElementById('mobile-menu-close');
+
+function openDrawer() {
+  mobileMenu.classList.add('open');
+  mobileOverlay.classList.add('open');
+  mobileBtn.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
 }
+
+function closeDrawer() {
+  mobileMenu.classList.remove('open');
+  mobileOverlay.classList.remove('open');
+  mobileBtn.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+if (mobileBtn) mobileBtn.addEventListener('click', () => {
+  mobileMenu.classList.contains('open') ? closeDrawer() : openDrawer();
+});
+if (mobileClose)   mobileClose.addEventListener('click', closeDrawer);
+if (mobileOverlay) mobileOverlay.addEventListener('click', closeDrawer);
+
+// Close drawer on nav link click
+if (mobileMenu) mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', closeDrawer);
+});
+
+// Close on Escape key
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
 
 // Accordion
 document.querySelectorAll('.accordion-btn').forEach(btn => {

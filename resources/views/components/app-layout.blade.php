@@ -43,18 +43,51 @@
     </button>
   </div>
 </nav>
-<div class="mobile-menu">
-  <a href="{{ route('solutions') }}">Solutions</a>
-  <a href="{{ route('smart-homes') }}">Smart Homes</a>
-  <a href="{{ route('ai-solutions') }}">AI Solutions</a>
-  <a href="{{ route('pricing') }}">Pricing</a>
-  <a href="{{ route('blog') }}">Blog</a>
-  <a href="{{ route('about') }}">About</a>
-  <a href="{{ route('contact') }}">Contact</a>
-  <a href="{{ route('support') }}">Support</a>
-  @guest
-  <a href="{{ route('login') }}">Sign In</a>
-  @endguest
+<!-- Mobile overlay -->
+<div class="mobile-overlay" id="mobile-overlay"></div>
+
+<!-- Mobile slide-in drawer -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Navigation">
+  <div class="mobile-menu-header">
+    <a href="{{ route('home') }}" class="mobile-menu-logo">
+      <div class="mobile-menu-logo-mark">7A</div>
+      <div class="mobile-menu-logo-text">7AI</div>
+    </a>
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">✕</button>
+  </div>
+
+  <div class="mobile-nav-section">
+    <div class="mobile-nav-label">Solutions</div>
+    <a href="{{ route('solutions') }}">All Solutions</a>
+    <a href="{{ route('smart-homes') }}" class="sub">↳ Smart Homes</a>
+    <a href="{{ route('ai-solutions') }}" class="sub">↳ AI Solutions</a>
+    <a href="{{ route('industries') }}" class="sub">↳ Industries</a>
+  </div>
+
+  <div class="mobile-nav-section">
+    <div class="mobile-nav-label">Company</div>
+    <a href="{{ route('pricing') }}">Pricing</a>
+    <a href="{{ route('case-studies') }}">Case Studies</a>
+    <a href="{{ route('blog') }}">Blog</a>
+    <a href="{{ route('about') }}">About Us</a>
+    <a href="{{ route('careers') }}">Careers</a>
+  </div>
+
+  <div class="mobile-nav-section">
+    <div class="mobile-nav-label">Help</div>
+    <a href="{{ route('support') }}">Support Center</a>
+    <a href="{{ route('docs') }}">Documentation</a>
+    <a href="{{ route('contact') }}">Contact Us</a>
+  </div>
+
+  <div class="mobile-menu-footer">
+    @auth
+      <a href="{{ route('customer.dashboard') }}" class="btn btn-outline btn-sm">My Dashboard</a>
+    @else
+      <a href="{{ route('login') }}" class="btn btn-outline btn-sm">Sign In</a>
+    @endauth
+    <a href="{{ route('contact') }}" class="btn btn-primary btn-sm">Book Consultation</a>
+  </div>
 </div>
 
 {{ $slot }}
