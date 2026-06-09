@@ -7,12 +7,25 @@
 {{-- Form Settings --}}
 <div class="card" style="margin-bottom:24px;">
   <div style="font-weight:700;color:var(--dark);margin-bottom:16px;font-size:14px;">Form Settings</div>
+  @if($form->public_path)
+  <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--gray-600);">
+    📎 Public URL: <a href="{{ $form->public_path }}" target="_blank" style="color:var(--teal);font-weight:600;">{{ request()->getSchemeAndHttpHost() }}{{ $form->public_path }}</a>
+  </div>
+  @endif
   <form method="POST" action="{{ route('admin.forms.update', $form) }}">
     @csrf @method('PUT')
     <div class="form-grid">
       <div class="form-group"><label class="form-label">Form Name *</label><input type="text" name="name" class="form-input" value="{{ old('name', $form->name) }}" required></div>
       <div class="form-group"><label class="form-label">Slug</label><input type="text" name="slug" class="form-input" value="{{ old('slug', $form->slug) }}"></div>
     </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Public URL Path <span style="font-weight:400;color:var(--gray-400);">(e.g. /abuja)</span></label>
+        <input type="text" name="public_path" class="form-input" value="{{ old('public_path', $form->public_path) }}" placeholder="/abuja">
+      </div>
+      <div class="form-group"><label class="form-label">Page Title</label><input type="text" name="title" class="form-input" value="{{ old('title', $form->title) }}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Page Subtitle / Tagline</label><input type="text" name="subtitle" class="form-input" value="{{ old('subtitle', $form->subtitle) }}"></div>
     <div class="form-group"><label class="form-label">Success Message</label><textarea name="success_message" class="form-input" rows="2">{{ old('success_message', $form->success_message) }}</textarea></div>
     <div class="form-grid">
       <div class="form-group"><label class="form-label">Redirect URL</label><input type="text" name="redirect_url" class="form-input" value="{{ old('redirect_url', $form->redirect_url) }}"></div>
