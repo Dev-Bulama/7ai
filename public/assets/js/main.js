@@ -1,36 +1,46 @@
-// Mobile Drawer
-const mobileBtn     = document.querySelector('.mobile-menu-btn');
-const mobileMenu    = document.getElementById('mobile-menu');
-const mobileOverlay = document.getElementById('mobile-overlay');
-const mobileClose   = document.getElementById('mobile-menu-close');
+// ── Mobile Drawer ────────────────────────────────────────
+(function () {
+  var btn     = document.querySelector('.mobile-menu-btn');
+  var menu    = document.getElementById('mobile-menu');
+  var overlay = document.getElementById('mobile-overlay');
+  var closeBtn= document.getElementById('mobile-menu-close');
 
-function openDrawer() {
-  mobileMenu.classList.add('open');
-  mobileOverlay.classList.add('open');
-  mobileBtn.classList.add('is-open');
-  document.body.style.overflow = 'hidden';
-}
+  if (!btn || !menu) return;
 
-function closeDrawer() {
-  mobileMenu.classList.remove('open');
-  mobileOverlay.classList.remove('open');
-  mobileBtn.classList.remove('is-open');
-  document.body.style.overflow = '';
-}
+  function open() {
+    menu.classList.add('open');
+    overlay.classList.add('open');
+    btn.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    menu.classList.remove('open');
+    overlay.classList.remove('open');
+    btn.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
 
-if (mobileBtn) mobileBtn.addEventListener('click', () => {
-  mobileMenu.classList.contains('open') ? closeDrawer() : openDrawer();
-});
-if (mobileClose)   mobileClose.addEventListener('click', closeDrawer);
-if (mobileOverlay) mobileOverlay.addEventListener('click', closeDrawer);
+  btn.addEventListener('click', function() { menu.classList.contains('open') ? close() : open(); });
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  if (overlay)  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') close(); });
 
-// Close drawer on nav link click
-if (mobileMenu) mobileMenu.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', closeDrawer);
-});
+  // Close on link click (not accordion button)
+  menu.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', close); });
 
-// Close on Escape key
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+  // Solutions accordion inside drawer
+  var accBtn   = document.getElementById('solutions-acc-btn');
+  var accPanel = document.getElementById('solutions-acc-panel');
+  if (accBtn && accPanel) {
+    accBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isOpen = accPanel.classList.contains('open');
+      accPanel.classList.toggle('open', !isOpen);
+      accBtn.classList.toggle('open', !isOpen);
+      accBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+  }
+})();
 
 // Accordion
 document.querySelectorAll('.accordion-btn').forEach(btn => {
