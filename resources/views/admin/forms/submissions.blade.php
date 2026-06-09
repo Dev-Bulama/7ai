@@ -25,7 +25,7 @@
           <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $sub->data[$field->name] ?? '—' }}</td>
           @endforeach
           <td style="font-size:12px;color:var(--gray-400);">{{ $sub->ip_address }}</td>
-          <td>{{ $sub->is_read ? '✓' : '<span style="color:var(--teal);font-weight:600;">New</span>' }}</td>
+          <td>@if($sub->is_read)✓@else<span style="color:#0b9e6e;font-weight:600;">New</span>@endif</td>
           <td>
             @if(!$sub->is_read)
             <form method="POST" action="{{ route('admin.form-submissions.read', $sub) }}" style="display:inline;">
