@@ -1,79 +1,65 @@
-<x-admin-layout title="New Page">
-<style>
-  .editor-layout{display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
-  .card{background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;margin-bottom:20px;}
-  .card-head{padding:18px 24px;border-bottom:1px solid #f3f4f6;}
-  .card-head h3{font-size:15px;font-weight:600;color:#0d1b2a;}
-  .card-body{padding:20px 24px;}
-  label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;}
-  input[type=text],select,textarea{width:100%;padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;outline:none;}
-  input:focus,select:focus,textarea:focus{border-color:#0B4F6C;}
-  textarea{resize:vertical;}
-  .form-group{margin-bottom:20px;}
-  .btn-primary{padding:11px 24px;background:#0B4F6C;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
-  .btn-ghost{padding:11px 24px;background:#f9fafb;color:#374151;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none;}
-</style>
-<div style="margin-bottom:20px;"><a href="{{ route('admin.pages.index') }}" style="font-size:13px;color:#6b7280;text-decoration:none;">← Back to Pages</a></div>
-<form method="POST" action="{{ route('admin.pages.store') }}">
-  @csrf
-  <div class="editor-layout">
-    <div>
-      <div class="card">
-        <div class="card-head"><h3>Page Content</h3></div>
-        <div class="card-body">
-          <div class="form-group">
-            <label>Title *</label>
-            <input type="text" name="title" value="{{ old('title') }}" required id="title">
-          </div>
-          <div class="form-group">
-            <label>Slug</label>
-            <input type="text" name="slug" value="{{ old('slug') }}" id="slug">
-          </div>
-          <div class="form-group">
-            <label>Content</label>
-            <textarea name="content" rows="16" placeholder="Page content (HTML or Markdown)...">{{ old('content') }}</textarea>
-          </div>
-        </div>
+<x-admin-layout title="Create Page">
+<div class="section-header">
+  <span class="section-title">Create Page</span>
+  <a href="{{ route('admin.pages.index') }}" class="btn btn-outline btn-sm">← Back</a>
+</div>
+<div class="card">
+  <form method="POST" action="{{ route('admin.pages.store') }}">
+    @csrf
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Page Title *</label><input type="text" name="title" class="form-input" value="{{ old('title') }}" required></div>
+      <div class="form-group"><label class="form-label">Slug (auto)</label><input type="text" name="slug" class="form-input" value="{{ old('slug') }}" placeholder="my-page"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Parent Page</label>
+        <select name="parent_id" class="form-input"><option value="">— None —</option>
+          @foreach($parents as $p)<option value="{{ $p->id }}" {{ old('parent_id') == $p->id ? 'selected' : '' }}>{{ $p->title }}</option>@endforeach
+        </select>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>SEO</h3></div>
-        <div class="card-body">
-          <div class="form-group"><label>Meta Title</label><input type="text" name="meta_title" value="{{ old('meta_title') }}"></div>
-          <div class="form-group"><label>Meta Description</label><textarea name="meta_description" rows="2">{{ old('meta_description') }}</textarea></div>
-        </div>
+      <div class="form-group"><label class="form-label">Template</label>
+        <select name="template" class="form-input">
+          <option value="default">Default</option>
+          <option value="home">Home</option>
+          <option value="landing">Landing</option>
+          <option value="service">Service</option>
+          <option value="contact">Contact</option>
+          <option value="blank">Blank</option>
+        </select>
       </div>
     </div>
-    <div>
-      <div class="card">
-        <div class="card-head"><h3>Settings</h3></div>
-        <div class="card-body">
-          <div class="form-group">
-            <label>Status</label>
-            <select name="status">
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Template</label>
-            <select name="template">
-              <option value="default">Default</option>
-              <option value="full-width">Full Width</option>
-              <option value="landing">Landing Page</option>
-            </select>
-          </div>
-          <div style="display:flex;gap:12px;margin-top:8px;">
-            <button type="submit" class="btn-primary" style="flex:1;">Create</button>
-            <a href="{{ route('admin.pages.index') }}" class="btn-ghost">Cancel</a>
-          </div>
-        </div>
-      </div>
+    <div class="form-group"><label class="form-label">Featured Image URL</label><input type="text" name="featured_image" class="form-input" value="{{ old('featured_image') }}"></div>
+
+    <div style="border-top:1px solid var(--gray-200);margin:20px 0;padding-top:16px;font-weight:700;font-size:13px;color:var(--dark);">Hero Section</div>
+    <div class="form-group"><label class="form-label">Hero Title</label><input type="text" name="hero_title" class="form-input" value="{{ old('hero_title') }}"></div>
+    <div class="form-group"><label class="form-label">Hero Subtitle</label><input type="text" name="hero_subtitle" class="form-input" value="{{ old('hero_subtitle') }}"></div>
+    <div class="form-group"><label class="form-label">Hero Description</label><textarea name="hero_description" class="form-input" rows="3">{{ old('hero_description') }}</textarea></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">CTA Button Text</label><input type="text" name="cta_text" class="form-input" value="{{ old('cta_text') }}"></div>
+      <div class="form-group"><label class="form-label">CTA Button Link</label><input type="text" name="cta_link" class="form-input" value="{{ old('cta_link') }}"></div>
     </div>
-  </div>
-</form>
-<script>
-document.getElementById('title').addEventListener('input',function(){
-  document.getElementById('slug').value=this.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-});
-</script>
+
+    <div style="border-top:1px solid var(--gray-200);margin:20px 0;padding-top:16px;font-weight:700;font-size:13px;color:var(--dark);">Page Content</div>
+    <div class="form-group"><label class="form-label">Content (HTML/Markdown)</label><textarea name="content" class="form-input" rows="8">{{ old('content') }}</textarea></div>
+
+    <div style="border-top:1px solid var(--gray-200);margin:20px 0;padding-top:16px;font-weight:700;font-size:13px;color:var(--dark);">SEO</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">SEO Title</label><input type="text" name="meta_title" class="form-input" value="{{ old('meta_title') }}"></div>
+      <div class="form-group"><label class="form-label">SEO Keywords</label><input type="text" name="seo_keywords" class="form-input" value="{{ old('seo_keywords') }}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">SEO Description</label><textarea name="meta_description" class="form-input" rows="2">{{ old('meta_description') }}</textarea></div>
+    <div class="form-group"><label class="form-label">OG Image URL</label><input type="text" name="og_image" class="form-input" value="{{ old('og_image') }}"></div>
+
+    <div style="border-top:1px solid var(--gray-200);margin:20px 0;padding-top:16px;"></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Status *</label>
+        <select name="status" class="form-input">
+          <option value="draft" {{ old('status','draft') === 'draft' ? 'selected' : '' }}>Draft</option>
+          <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Published</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Sort Order</label><input type="number" name="sort_order" class="form-input" value="{{ old('sort_order', 0) }}"></div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Page</button>
+  </form>
+</div>
 </x-admin-layout>
