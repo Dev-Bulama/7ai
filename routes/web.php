@@ -49,6 +49,12 @@ Route::post('/contact', [LeadCaptureController::class, 'store'])->name('contact.
 Route::get('/investors', [FrontendController::class, 'investors'])->name('investors');
 Route::post('/investors/register', [InvestorController::class, 'store'])->name('investors.register');
 
+// New pillar pages
+Route::get('/smart-home', [FrontendController::class, 'smartHome'])->name('smart-home');
+Route::get('/business-automation', [FrontendController::class, 'businessAutomation'])->name('business-automation');
+Route::get('/personal-ai', [FrontendController::class, 'personalAi'])->name('personal-ai');
+Route::get('/advisory', [FrontendController::class, 'advisory'])->name('advisory');
+
 // Public form view & submission
 Route::get('/forms/{form:slug}', [FrontendController::class, 'showForm'])->name('forms.show');
 Route::post('/forms/{form}/submit', [FrontendController::class, 'submitForm'])->name('forms.submit');
