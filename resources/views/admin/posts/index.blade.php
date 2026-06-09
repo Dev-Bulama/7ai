@@ -27,6 +27,6 @@
       </tbody>
     </table>
   </div>
-  <div class="pagination">{{ $posts->links('pagination::simple-default') }}</div>
+  <div class="pagination">{{ $posts->links() }}</div>
 </div>
 </x-admin-layout>

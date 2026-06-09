@@ -30,6 +30,6 @@
       </tbody>
     </table>
   </div>
-  <div class="pagination">{{ $users->appends(request()->query())->links('pagination::simple-default') }}</div>
+  <div class="pagination">{{ $users->appends(request()->query())->links() }}</div>
 </div>
 </x-admin-layout>

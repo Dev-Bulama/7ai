@@ -30,7 +30,7 @@
           </tbody>
         </table>
       </div>
-      <div class="pagination">{{ $subscribers->appends(request()->query())->links('pagination::simple-default') }}</div>
+      <div class="pagination">{{ $subscribers->appends(request()->query())->links() }}</div>
     </div>
   </div>
 

@@ -28,6 +28,6 @@
       </tbody>
     </table>
   </div>
-  <div class="pagination">{{ $campaigns->links('pagination::simple-default') }}</div>
+  <div class="pagination">{{ $campaigns->links() }}</div>
 </div>
 </x-admin-layout>

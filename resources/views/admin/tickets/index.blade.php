@@ -28,6 +28,6 @@
       </tbody>
     </table>
   </div>
-  <div class="pagination">{{ $tickets->appends(request()->query())->links('pagination::simple-default') }}</div>
+  <div class="pagination">{{ $tickets->appends(request()->query())->links() }}</div>
 </div>
 </x-admin-layout>
