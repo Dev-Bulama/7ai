@@ -59,9 +59,9 @@ Route::get('/advisory', [FrontendController::class, 'advisory'])->name('advisory
 Route::get('/forms/{form:slug}', [FrontendController::class, 'showForm'])->name('forms.show');
 Route::post('/forms/{form}/submit', [FrontendController::class, 'submitForm'])->name('forms.submit');
 
-// Dynamic public form paths (e.g. /abuja) — must come LAST before auth routes
+// Dynamic public form paths (e.g. /abuja) — excluded known routes via regex
 Route::get('/{formPath}', [FrontendController::class, 'dynamicFormPage'])
-    ->where('formPath', '[a-z0-9\-]+')
+    ->where('formPath', '^(?!login|register|logout|admin|dashboard|forms|solutions|smart-homes?|ai-solutions|pricing|case-studies|industries|about|careers|blog|contact|support|docs|privacy|terms|investors|business-automation|personal-ai|advisory)[a-z0-9][a-z0-9\-]*$')
     ->name('form.dynamic');
 
 Route::middleware('guest')->group(function () {
