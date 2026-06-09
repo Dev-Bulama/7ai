@@ -1155,3 +1155,82 @@ select.form-input { cursor: pointer; }
   .pricing-tabs { flex-direction: column; align-items: stretch; }
   .pricing-tab { text-align: center; }
 }
+
+/* ===================== CRITICAL MOBILE OVERFLOW FIXES ===================== */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img, video, iframe, embed, object {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Tables on mobile — scrollable */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Grid 4 becomes 2-col on mobile */
+@media (max-width: 600px) {
+  .grid-4 { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+}
+
+/* Hero canvas should not overflow */
+#hero-canvas {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Mobile nav button visible */
+@media (max-width: 900px) {
+  .mobile-menu-btn { display: flex !important; }
+  .nav-links { display: none !important; }
+  .nav-cta { display: none !important; }
+}
+
+/* Footer on small screens */
+@media (max-width: 520px) {
+  .footer-grid { grid-template-columns: 1fr !important; }
+  .footer-col { margin-bottom: 16px; }
+}
+
+/* Hero stats wrapping */
+@media (max-width: 520px) {
+  .hero-stats {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .stat-item { text-align: center; }
+}
+
+/* Form inputs on mobile */
+@media (max-width: 480px) {
+  input, select, textarea {
+    font-size: 16px !important; /* prevents iOS zoom */
+  }
+}
+
+/* CTA section flex wrap */
+.cta-section .btn {
+  min-width: 160px;
+}
+
+@media (max-width: 480px) {
+  .cta-section > .section-inner > div:last-child {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cta-section .btn {
+    text-align: center;
+    justify-content: center;
+  }
+}
+
