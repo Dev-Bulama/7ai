@@ -23,7 +23,7 @@
 
     <div class="hero-actions">
       <a href="{{ route('contact') }}" class="btn btn-primary btn-lg">Book Consultation</a>
-      <a href="{{ route('solutions') }}" class="btn btn-white btn-lg">Explore Solutions</a>
+      <a href="{{ route('investors') }}" class="btn btn-white btn-lg">Register as Investor</a>
       <a href="#demo" class="btn btn-ghost btn-lg" style="color:rgba(255,255,255,0.75)">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 8.5l-5 3A.5.5 0 0 1 6 11V5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .25.07l5 3a.5.5 0 0 1 0 .86z"/></svg>
         Watch Demo

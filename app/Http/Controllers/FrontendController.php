@@ -34,4 +34,9 @@ class FrontendController extends Controller
         $categories = Category::all();
         return view('public.blog', compact('posts', 'categories'));
     }
+
+    public function investors()
+    {
+        return view('public.investors');
+    }
 }

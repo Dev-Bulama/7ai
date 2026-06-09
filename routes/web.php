@@ -17,6 +17,7 @@ use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Customer\TicketController as CustomerTicketController;
 use App\Http\Controllers\LeadCaptureController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\InvestorController;
 
 // Public frontend routes
 Route::get('/', [FrontendController::class, 'home'])->name('home');
@@ -35,6 +36,8 @@ Route::get('/docs', [FrontendController::class, 'docs'])->name('docs');
 Route::get('/privacy', [FrontendController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [FrontendController::class, 'terms'])->name('terms');
 Route::post('/contact', [LeadCaptureController::class, 'store'])->name('contact.submit');
+Route::get('/investors', [FrontendController::class, 'investors'])->name('investors');
+Route::post('/investors/register', [InvestorController::class, 'store'])->name('investors.register');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');

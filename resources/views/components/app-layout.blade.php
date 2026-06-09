@@ -33,6 +33,7 @@
       <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') ? 'active' : '' }}">Blog</a></li>
       <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
       <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
+      <li><a href="{{ route('investors') }}" class="{{ request()->routeIs('investors') ? 'active' : '' }}">Investors</a></li>
     </ul>
     <div class="nav-cta">
       <a href="{{ route('support') }}" class="btn btn-ghost" style="color:rgba(255,255,255,0.8)">Support</a>
@@ -78,6 +79,8 @@
     <a href="{{ route('blog') }}">Blog</a>
     <a href="{{ route('about') }}">About Us</a>
     <a href="{{ route('careers') }}">Careers</a>
+
+    <a href="{{ route('investors') }}">Investors</a>
 
     <div class="mobile-nav-label">Help</div>
     <a href="{{ route('support') }}">Support Center</a>
