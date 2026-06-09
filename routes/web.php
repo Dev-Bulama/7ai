@@ -13,6 +13,16 @@ use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\ServiceCategoryController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\FormController;
+use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\CtaController;
+use App\Http\Controllers\Admin\CardController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Customer\TicketController as CustomerTicketController;
 use App\Http\Controllers\LeadCaptureController;
@@ -39,6 +49,9 @@ Route::post('/contact', [LeadCaptureController::class, 'store'])->name('contact.
 Route::get('/investors', [FrontendController::class, 'investors'])->name('investors');
 Route::post('/investors/register', [InvestorController::class, 'store'])->name('investors.register');
 
+// Public form submission
+Route::post('/forms/{form}/submit', [FrontendController::class, 'submitForm'])->name('forms.submit');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
@@ -57,21 +70,69 @@ Route::middleware(['auth'])->prefix('dashboard')->name('customer.')->group(funct
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Users
     Route::resource('users', UserController::class)->except(['create','store']);
+
+    // CMS Pages
     Route::resource('pages', PageController::class);
+    Route::post('pages/{page}/toggle-status', [PageController::class, 'toggleStatus'])->name('pages.toggle-status');
+
+    // Blog Posts
     Route::resource('posts', PostController::class);
+
+    // Services
+    Route::resource('service-categories', ServiceCategoryController::class);
+    Route::resource('services', ServiceController::class);
+
+    // Testimonials, FAQs, Cards, CTAs, Banners
+    Route::resource('testimonials', TestimonialController::class)->except(['show']);
+    Route::resource('faqs', FaqController::class)->except(['show']);
+    Route::resource('cards', CardController::class)->except(['show']);
+    Route::resource('ctas', CtaController::class)->except(['show']);
+    Route::resource('banners', BannerController::class)->except(['show']);
+
+    // Form Builder
+    Route::resource('forms', FormController::class)->except(['show']);
+    Route::post('forms/{form}/fields', [FormController::class, 'storeField'])->name('forms.fields.store');
+    Route::put('forms/{form}/fields/{field}', [FormController::class, 'updateField'])->name('forms.fields.update');
+    Route::delete('forms/{form}/fields/{field}', [FormController::class, 'destroyField'])->name('forms.fields.destroy');
+    Route::get('forms/{form}/submissions', [FormController::class, 'submissions'])->name('forms.submissions');
+    Route::post('form-submissions/{submission}/read', [FormController::class, 'markRead'])->name('form-submissions.read');
+
+    // Menu Builder
+    Route::resource('menus', MenuController::class)->except(['show']);
+    Route::post('menus/{menu}/items', [MenuController::class, 'storeItem'])->name('menus.items.store');
+    Route::put('menus/{menu}/items/{item}', [MenuController::class, 'updateItem'])->name('menus.items.update');
+    Route::delete('menus/{menu}/items/{item}', [MenuController::class, 'destroyItem'])->name('menus.items.destroy');
+
+    // Email Marketing
     Route::resource('campaigns', CampaignController::class);
     Route::post('campaigns/ai-generate', [CampaignController::class, 'generateAi'])->name('campaigns.ai-generate');
     Route::get('subscribers', [SubscriberController::class, 'index'])->name('subscribers.index');
     Route::post('subscribers', [SubscriberController::class, 'store'])->name('subscribers.store');
     Route::delete('subscribers/{subscriber}', [SubscriberController::class, 'destroy'])->name('subscribers.destroy');
     Route::post('subscriber-lists', [SubscriberController::class, 'storeList'])->name('subscriber-lists.store');
+
+    // CRM
     Route::resource('leads', LeadController::class)->except(['create','store']);
+
+    // Support
     Route::resource('tickets', AdminTicketController::class)->only(['index','show','update']);
     Route::post('tickets/{ticket}/reply', [AdminTicketController::class, 'reply'])->name('tickets.reply');
+
+    // Media Library
     Route::get('media', [MediaController::class, 'index'])->name('media.index');
     Route::post('media', [MediaController::class, 'store'])->name('media.store');
     Route::delete('media/{medium}', [MediaController::class, 'destroy'])->name('media.destroy');
+
+    // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+
+    // Site Settings (new - with social links)
+    Route::get('site-settings', [SiteSettingsController::class, 'index'])->name('site-settings.index');
+    Route::put('site-settings', [SiteSettingsController::class, 'update'])->name('site-settings.update');
+    Route::post('site-settings/social', [SiteSettingsController::class, 'storeSocial'])->name('site-settings.social.store');
+    Route::delete('site-settings/social/{socialLink}', [SiteSettingsController::class, 'destroySocial'])->name('site-settings.social.destroy');
 });

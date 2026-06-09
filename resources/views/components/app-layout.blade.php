@@ -2,14 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ $title ?? '7AI — African Intelligence, Amplified' }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{{ $title ?? config('app.name', '7AI') . ' — African Intelligence, Amplified' }}</title>
   <meta name="description" content="{{ $description ?? 'Smart home automation and AI solutions built for Africa.' }}">
   @if(isset($ogImage))
   <meta property="og:image" content="{{ $ogImage }}">
   @endif
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Mobile-first critical overrides */
+    html, body { max-width: 100%; overflow-x: hidden; }
+    img { max-width: 100%; height: auto; }
+    * { box-sizing: border-box; }
+    /* Ensure nav doesn't overflow on mobile */
+    @media (max-width: 900px) {
+      .nav-links, .nav-cta { display: none !important; }
+      .mobile-menu-btn { display: flex !important; }
+    }
+  </style>
   {{ $head ?? '' }}
 </head>
 <body>
@@ -17,7 +28,8 @@
 <nav class="{{ $navClass ?? 'dark-nav' }}" id="nav">
   <div class="nav-inner">
     <a href="{{ route('home') }}" class="nav-logo">
-      <img src="{{ asset('assets/images/logo-white.svg') }}" alt="7AI Logo" id="nav-logo-img">
+      @php $logoSrc = \App\Models\Setting::get('logo', '/assets/images/logo-white.svg'); @endphp
+      <img src="{{ $logoSrc }}" alt="{{ \App\Models\Setting::get('site_name','7AI') }} Logo" id="nav-logo-img">
     </a>
     <ul class="nav-links">
       <li class="dropdown">
@@ -39,32 +51,29 @@
       <a href="{{ route('support') }}" class="btn btn-ghost" style="color:rgba(255,255,255,0.8)">Support</a>
       <a href="{{ route('contact') }}" class="btn btn-primary">Book Consultation</a>
     </div>
-    <button class="mobile-menu-btn" aria-label="Menu">
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
+
 <!-- Mobile overlay -->
 <div class="mobile-overlay" id="mobile-overlay"></div>
 
 <!-- Mobile slide-in drawer -->
 <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
-
   <div class="mobile-menu-header">
     <a href="{{ route('home') }}" class="mobile-menu-logo">
-      <img src="{{ asset('assets/images/logo-white.svg') }}" alt="7AI">
-      <span class="mobile-menu-logo-name">7AI</span>
+      <img src="{{ $logoSrc ?? '/assets/images/logo-white.svg' }}" alt="7AI">
+      <span class="mobile-menu-logo-name">{{ \App\Models\Setting::get('site_name','7AI') }}</span>
     </a>
     <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">&times;</button>
   </div>
 
   <div class="mobile-menu-body">
-
     <div class="mobile-nav-label">Solutions</div>
-
     <button class="mobile-acc-btn" id="solutions-acc-btn" aria-expanded="false">
-      Solutions
-      <span class="acc-arrow">&#9660;</span>
+      Solutions <span class="acc-arrow">&#9660;</span>
     </button>
     <div class="mobile-acc-panel" id="solutions-acc-panel">
       <a href="{{ route('solutions') }}">All Solutions</a>
@@ -79,14 +88,12 @@
     <a href="{{ route('blog') }}">Blog</a>
     <a href="{{ route('about') }}">About Us</a>
     <a href="{{ route('careers') }}">Careers</a>
-
     <a href="{{ route('investors') }}">Investors</a>
 
     <div class="mobile-nav-label">Help</div>
     <a href="{{ route('support') }}">Support Center</a>
     <a href="{{ route('docs') }}">Documentation</a>
     <a href="{{ route('contact') }}">Contact Us</a>
-
   </div>
 
   <div class="mobile-menu-footer">
@@ -97,23 +104,44 @@
     @endauth
     <a href="{{ route('contact') }}" class="btn btn-primary">Book Consultation</a>
   </div>
-
 </div>
 
 {{ $slot }}
 
 <footer>
   <div class="footer-inner">
+    @php
+      $footerText  = \App\Models\Setting::get('footer_text', 'African Intelligence, Amplified. Transforming homes and businesses through AI-powered automation built for Africa\'s future.');
+      $copyright   = \App\Models\Setting::get('copyright_text', '© 2025 7AI Technologies. All rights reserved. Built for Africa.');
+      $socialLinks = \App\Models\SocialLink::where('is_active', true)->orderBy('sort_order')->get();
+    @endphp
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="{{ asset('assets/images/logo-white.svg') }}" alt="7AI">
-        <p>African Intelligence, Amplified. Transforming homes and businesses through AI-powered automation built for Africa's future.</p>
+        <img src="{{ \App\Models\Setting::get('logo', '/assets/images/logo-white.svg') }}" alt="7AI">
+        <p>{{ $footerText }}</p>
+        @if($socialLinks->isNotEmpty())
+        <div class="social-links" style="margin-top:24px;display:flex;gap:12px;">
+          @foreach($socialLinks as $social)
+          <a href="{{ $social->url }}" title="{{ ucfirst($social->platform) }}" target="_blank" rel="noopener">
+            @switch($social->platform)
+              @case('twitter') 𝕏 @break
+              @case('linkedin') in @break
+              @case('youtube') ▶ @break
+              @case('instagram') ◉ @break
+              @case('facebook') f @break
+              @default {{ substr($social->platform,0,1) }}
+            @endswitch
+          </a>
+          @endforeach
+        </div>
+        @else
         <div class="social-links" style="margin-top:24px;">
           <a href="#" title="Twitter">𝕏</a>
           <a href="#" title="LinkedIn">in</a>
           <a href="#" title="YouTube">▶</a>
           <a href="#" title="Instagram">◉</a>
         </div>
+        @endif
       </div>
       <div class="footer-col">
         <h4>Solutions</h4>
@@ -151,8 +179,11 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2025 7AI Technologies. All rights reserved. Built for Africa.</p>
-      <p style="color:rgba(255,255,255,0.3);">Lagos · Accra · Nairobi · Johannesburg</p>
+      <p>{{ $copyright }}</p>
+      @php $addr = \App\Models\Setting::get('address','Lagos · Accra · Nairobi · Johannesburg'); @endphp
+      @if($addr)
+      <p style="color:rgba(255,255,255,0.3);">{{ $addr }}</p>
+      @endif
     </div>
   </div>
 </footer>
