@@ -1,137 +1,180 @@
-<x-app-layout title="{{ $page?->seo_title ?? 'About — '.($settings['site_name']) }}" description="{{ $page?->seo_description ?? 'The team building African intelligence.' }}">
-<!-- PAGE HERO -->
-<div class="page-hero page-hero-dark">
-  <div class="section-inner" style="max-width:1280px;margin:0 auto;">
-    <div class="breadcrumb"><a href="{{ route('home') }}">Home</a><span class="sep">›</span>About Us</div>
-    <div class="section-badge">Our Story</div>
-    <h1 style="font-size:clamp(36px,4.5vw,60px);font-weight:700;color:#fff;letter-spacing:-0.025em;max-width:680px;line-height:1.1;margin-bottom:20px;">{!! nl2br(e($page?->hero_title ?? 'Built for Africa\'s Future')) !!}</h1>
-    <p style="font-size:18px;color:rgba(255,255,255,0.7);max-width:520px;line-height:1.7;">{{ $page?->hero_description ?? 'We are a team of engineers, designers, and technologists building intelligent solutions for Africa.' }}</p>
+<x-app-layout :title="$page?->seo_title ?? 'About 7ai — African Intelligence, Amplified'" :description="$page?->seo_description ?? 'We are a team of engineers, designers, and technologists building intelligent solutions for Africa.'">
+
+<!-- HERO -->
+<div class="page-hero page-hero-navy">
+  <div class="hero-ghost" style="color:rgba(168,205,184,0.05);font-size:clamp(140px,20vw,320px);">7ai</div>
+  <div class="hero-inner">
+    <div class="breadcrumb">
+      <a href="{{ route('home') }}">Home</a><span>/</span>
+      <strong>About</strong>
+    </div>
+    <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text">Our story</span></div>
+    <h1>{!! $page?->hero_title ? nl2br(e($page->hero_title)) : 'Built for Africa\'s<br><em>AI future.</em>' !!}</h1>
+    <p class="hero-sub-text">{{ $page?->hero_description ?? 'We founded 7ai with a single belief: Africa deserves world-class intelligence technology built specifically for its communities, climates, and aspirations.' }}</p>
   </div>
 </div>
 
 <!-- MISSION -->
-<section class="section">
-  <div class="section-inner">
-    <div class="feature-split">
-      <div>
-        <div class="section-badge">Mission</div>
-        <h2 class="section-title">{{ $page?->hero_subtitle ?? 'Amplifying African Intelligence at Scale' }}</h2>
-        @if($page?->content)
-        <div style="font-size:16px;color:var(--gray-600);line-height:1.75;">{!! \Illuminate\Support\Str::markdown($page->content) !!}</div>
-        @else
-        <p style="font-size:16px;color:var(--gray-600);line-height:1.75;margin-bottom:24px;">7AI was founded in {{ \App\Models\Setting::get('company_founded','2021') }} with a clear mission: to build intelligent technology infrastructure that works for Africa — not technology retrofitted from elsewhere and forced to fit.</p>
-        <p style="font-size:16px;color:var(--gray-600);line-height:1.75;margin-bottom:24px;">From smart home automation in Lagos apartments to AI-powered supply chains serving agri-businesses in Kenya, we design solutions that understand Africa's unique infrastructure, connectivity challenges, and opportunities.</p>
-        <p style="font-size:16px;color:var(--gray-600);line-height:1.75;">We are engineers, designers, and problem-solvers committed to one outcome: making African homes, businesses, and communities more intelligent, more efficient, and more resilient.</p>
-        @endif
+<section class="fe-section bg-navy-mid">
+  <div class="two-col">
+    <div>
+      <div class="section-label">Mission</div>
+      <h2>Amplifying African<br><em>intelligence at scale.</em></h2>
+      <p class="body-text">7ai was founded with a clear purpose: to build intelligent technology infrastructure that works for Africa — not technology retrofitted from elsewhere and forced to fit.</p>
+      <p class="body-text">From smart home automation in Lagos apartments to AI-powered advisory for businesses in Nairobi, we design solutions that understand Africa's unique infrastructure, connectivity challenges, and opportunities.</p>
+      <p class="body-text">We are engineers, designers, and problem-solvers committed to one outcome: making African homes, businesses, and communities more intelligent, more efficient, and more resilient.</p>
+    </div>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-num">01</div>
+        <div><div class="feature-title">Build</div><div class="feature-desc">Africa-first AI products and smart home solutions built for African contexts, languages, and challenges.</div></div>
       </div>
-      <div class="feature-visual feature-visual-dark" style="min-height:380px;">
-        <div style="text-align:center;color:rgba(255,255,255,0.15);padding:40px;">
-          <div style="font-size:80px;font-weight:700;">7AI</div>
-          <div style="font-size:16px;margin-top:8px;">African Intelligence, Amplified</div>
-        </div>
+      <div class="feature-item">
+        <div class="feature-num">02</div>
+        <div><div class="feature-title">Learn</div><div class="feature-desc">Structured AI training pathways for individuals, teams, and government — practical, accessible, Africa-built.</div></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">03</div>
+        <div><div class="feature-title">Advise</div><div class="feature-desc">Strategic guidance for organisations navigating the AI transition. We help leaders understand what AI means for their sector.</div></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- VALUES -->
-<section class="section section-gray">
-  <div class="section-inner">
-    <div class="section-header" style="text-align:center;">
-      <div class="section-badge">Values</div>
-      <h2 class="section-title">What We Stand For</h2>
+<section class="fe-section bg-navy-deep">
+  <div class="section-header">
+    <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text">Values</span></div>
+    <h2>What we<br><em>stand for.</em></h2>
+  </div>
+  <div class="sectors-grid">
+    <div class="sector-card">
+      <div class="sector-accent"></div>
+      <div class="sector-title">Africa First</div>
+      <p class="sector-desc">Every solution we build is designed with African conditions in mind — climate, connectivity, culture, and community.</p>
     </div>
-    <div class="grid-3">
-      <div class="card">
-        <div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
-        <h3>Africa First</h3>
-        <p>Every solution we build is designed with African conditions in mind — climate, connectivity, culture, and community.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <h3>Trust & Reliability</h3>
-        <p>We build systems that work when power fluctuates, when connectivity drops, and when conditions are imperfect.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
-        <h3>Long-Term Impact</h3>
-        <p>We measure success by the lasting positive change we create in communities, not just by client contracts signed.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <h3>Talent Development</h3>
-        <p>We actively build Africa's AI talent pipeline — training engineers, partnering with universities, and creating opportunities.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
-        <h3>Open & Transparent</h3>
-        <p>We believe in honest pricing, clear communication, and building partnerships — not vendor lock-in relationships.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-        <h3>Innovation</h3>
-        <p>We push the boundaries of what's possible — researching, experimenting, and deploying technology that matters.</p>
-      </div>
+    <div class="sector-card">
+      <div class="sector-accent"></div>
+      <div class="sector-title">Trust &amp; Reliability</div>
+      <p class="sector-desc">We build systems that work when power fluctuates, when connectivity drops, and when conditions are imperfect.</p>
+    </div>
+    <div class="sector-card">
+      <div class="sector-accent"></div>
+      <div class="sector-title">Long-Term Impact</div>
+      <p class="sector-desc">We measure success by the lasting positive change we create in communities, not just by client contracts signed.</p>
+    </div>
+    <div class="sector-card">
+      <div class="sector-accent"></div>
+      <div class="sector-title">Talent Development</div>
+      <p class="sector-desc">We actively build Africa's AI talent pipeline — training engineers, partnering with universities, and creating opportunities.</p>
+    </div>
+    <div class="sector-card">
+      <div class="sector-accent"></div>
+      <div class="sector-title">Open &amp; Transparent</div>
+      <p class="sector-desc">Honest pricing, clear communication, and genuine partnerships — not vendor lock-in relationships.</p>
+    </div>
+    <div class="sector-card">
+      <div class="sector-accent"></div>
+      <div class="sector-title">Innovation</div>
+      <p class="sector-desc">We push the boundaries of what's possible — researching, experimenting, and deploying technology that matters.</p>
     </div>
   </div>
 </section>
 
 <!-- TEAM -->
-<section class="section">
-  <div class="section-inner">
-    <div class="section-header" style="text-align:center;">
-      <div class="section-badge">Team</div>
-      <h2 class="section-title">The Minds Behind 7AI</h2>
-      <p class="section-sub" style="margin:0 auto;">A diverse team of engineers, strategists, and innovators united by one vision for Africa.</p>
+<section class="fe-section bg-navy-mid">
+  <div class="section-header">
+    <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text">The team</span></div>
+    <h2>The minds<br><em>behind 7ai.</em></h2>
+    <p class="section-sub">A diverse team of engineers, strategists, and innovators united by one vision for Africa.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;background:var(--border-sage);border:0.5px solid var(--border-sage);border-radius:4px;overflow:hidden;">
+    <div style="background:var(--navy-deep);padding:36px 28px;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">AO</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">Adaeze Obi</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">Co-Founder &amp; CEO</div>
+      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">Lagos, Nigeria</div>
     </div>
-    <div class="grid-4">
-      <div style="text-align:center;">
-        <div style="width:80px;height:80px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto 16px;">AO</div>
-        <h3 style="font-size:16px;font-weight:600;color:var(--dark);">Adaeze Obi</h3>
-        <p style="font-size:13px;color:var(--teal);font-weight:500;margin-bottom:6px;">Co-Founder & CEO</p>
-        <p style="font-size:13px;color:var(--gray-400);">Lagos, Nigeria</p>
-      </div>
-      <div style="text-align:center;">
-        <div style="width:80px;height:80px;border-radius:50%;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto 16px;">KA</div>
-        <h3 style="font-size:16px;font-weight:600;color:var(--dark);">Kofi Asante</h3>
-        <p style="font-size:13px;color:var(--teal);font-weight:500;margin-bottom:6px;">Co-Founder & CTO</p>
-        <p style="font-size:13px;color:var(--gray-400);">Accra, Ghana</p>
-      </div>
-      <div style="text-align:center;">
-        <div style="width:80px;height:80px;border-radius:50%;background:var(--teal-dark);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto 16px;">FN</div>
-        <h3 style="font-size:16px;font-weight:600;color:var(--dark);">Fatima Njoroge</h3>
-        <p style="font-size:13px;color:var(--teal);font-weight:500;margin-bottom:6px;">VP of Engineering</p>
-        <p style="font-size:13px;color:var(--gray-400);">Nairobi, Kenya</p>
-      </div>
-      <div style="text-align:center;">
-        <div style="width:80px;height:80px;border-radius:50%;background:#0D1B2A;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto 16px;">TM</div>
-        <h3 style="font-size:16px;font-weight:600;color:var(--dark);">Themba Mokoena</h3>
-        <p style="font-size:13px;color:var(--teal);font-weight:500;margin-bottom:6px;">Head of AI Research</p>
-        <p style="font-size:13px;color:var(--gray-400);">Johannesburg, SA</p>
-      </div>
+    <div style="background:var(--navy-deep);padding:36px 28px;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">KA</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">Kofi Asante</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">Co-Founder &amp; CTO</div>
+      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">Accra, Ghana</div>
+    </div>
+    <div style="background:var(--navy-deep);padding:36px 28px;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">FN</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">Fatima Njoroge</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">VP of Engineering</div>
+      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">Nairobi, Kenya</div>
+    </div>
+    <div style="background:var(--navy-deep);padding:36px 28px;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">TM</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">Themba Mokoena</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">Head of AI Research</div>
+      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">Johannesburg, SA</div>
     </div>
   </div>
 </section>
 
 <!-- STATS -->
-<section class="section" style="background:var(--teal-dark);color:#fff;">
-  <div class="section-inner" style="text-align:center;">
-    <h2 style="font-size:clamp(28px,3vw,40px);font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:64px;">Our Impact in Numbers</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;">
-      <div><div style="font-size:48px;font-weight:700;color:#fff;letter-spacing:-0.03em;"><span data-target="500" data-suffix="+">500+</span></div><div style="font-size:15px;color:rgba(255,255,255,0.6);margin-top:8px;">Homes Automated</div></div>
-      <div><div style="font-size:48px;font-weight:700;color:#fff;letter-spacing:-0.03em;"><span data-target="120" data-suffix="+">120+</span></div><div style="font-size:15px;color:rgba(255,255,255,0.6);margin-top:8px;">Business Clients</div></div>
-      <div><div style="font-size:48px;font-weight:700;color:#fff;letter-spacing:-0.03em;"><span data-target="12" data-suffix="">12</span><span style="color:var(--green);">+</span></div><div style="font-size:15px;color:rgba(255,255,255,0.6);margin-top:8px;">Countries</div></div>
-      <div><div style="font-size:48px;font-weight:700;color:#fff;letter-spacing:-0.03em;"><span data-target="98" data-suffix="%">98%</span></div><div style="font-size:15px;color:rgba(255,255,255,0.6);margin-top:8px;">Satisfaction Rate</div></div>
+<section class="fe-section bg-navy">
+  <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text">Our impact</span></div>
+  <h2 style="margin-bottom:60px;">7ai by<br><em>the numbers.</em></h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2px;background:var(--border-sage);border:0.5px solid var(--border-sage);border-radius:4px;overflow:hidden;">
+    <div style="background:var(--navy-mid);padding:40px 28px;">
+      <div style="font-family:'Playfair Display',serif;font-size:56px;font-weight:900;color:var(--white);line-height:1;">500<span style="color:var(--sage-light);">+</span></div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-top:12px;">Homes automated</div>
+    </div>
+    <div style="background:var(--navy-mid);padding:40px 28px;">
+      <div style="font-family:'Playfair Display',serif;font-size:56px;font-weight:900;color:var(--white);line-height:1;">120<span style="color:var(--sage-light);">+</span></div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-top:12px;">Business clients</div>
+    </div>
+    <div style="background:var(--navy-mid);padding:40px 28px;">
+      <div style="font-family:'Playfair Display',serif;font-size:56px;font-weight:900;color:var(--white);line-height:1;">12<span style="color:var(--sage-light);">+</span></div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-top:12px;">African countries</div>
+    </div>
+    <div style="background:var(--navy-mid);padding:40px 28px;">
+      <div style="font-family:'Playfair Display',serif;font-size:56px;font-weight:900;color:var(--white);line-height:1;">98<span style="color:var(--sage-light);">%</span></div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-top:12px;">Client satisfaction</div>
     </div>
   </div>
 </section>
 
-<section class="cta-section"><div class="section-inner">
-  <h2>Join the 7AI Movement</h2>
-  <p>Work with us, partner with us, or let us transform your home or business. Africa's intelligence era starts now.</p>
-  <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
-    <a href="{{ $heroCta?->button_url ?? route('contact') }}" class="btn btn-white btn-lg">{{ $heroCta?->button_label ?? 'Get in Touch' }}</a>
-    <a href="{{ route('careers') }}" class="btn btn-lg" style="border:1.5px solid rgba(255,255,255,0.4);color:rgba(255,255,255,0.9);background:transparent;">View Careers</a>
+<!-- CTA -->
+<div class="cta-strip">
+  <div>
+    <h2>Join the 7ai<br><em>movement.</em></h2>
+    <p>Work with us, partner with us, or let us transform your home or business. Africa's intelligence era starts now.</p>
   </div>
-</div></section>
+  <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;">
+    <a href="{{ route('contact') }}" class="btn-primary">Get in touch</a>
+    <a href="{{ route('careers') }}" class="btn-ghost">View careers →</a>
+  </div>
+</div>
+
+<!-- ALSO EXPLORE -->
+<div class="also-section">
+  <h3>Also explore</h3>
+  <div class="also-grid">
+    <a href="{{ route('smart-homes') }}" class="also-card">
+      <div class="also-label">7ai Build</div>
+      <div class="also-title">Smart Home</div>
+      <p class="also-desc">Intelligent automation for African homes — lighting, security, energy, and more.</p>
+      <span class="also-arrow">→</span>
+    </a>
+    <a href="{{ route('business-automation') }}" class="also-card">
+      <div class="also-label">7ai Build</div>
+      <div class="also-title">Business Automation</div>
+      <p class="also-desc">Practical AI automation that reduces manual work and gives your team time back.</p>
+      <span class="also-arrow">→</span>
+    </a>
+    <a href="{{ route('advisory') }}" class="also-card">
+      <div class="also-label">7ai Advise</div>
+      <div class="also-title">Advisory</div>
+      <p class="also-desc">Strategic guidance for organisations navigating Africa's AI transition.</p>
+      <span class="also-arrow">→</span>
+    </a>
+  </div>
+</div>
+
 </x-app-layout>
