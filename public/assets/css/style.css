@@ -1096,6 +1096,9 @@ select.form-input { cursor: pointer; }
 
   /* Case study grid */
   .case-grid { grid-template-columns: 1fr !important; }
+
+  .feature-visual { min-height: 200px; aspect-ratio: unset; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 480px) {
@@ -1147,7 +1150,7 @@ select.form-input { cursor: pointer; }
 
 @media (max-width: 480px) {
   .section { padding: 48px 16px !important; }
-  .section-inner { padding: 0 !important; }
+  .section-inner { padding: 0 16px !important; }
   [style*="padding:32px"] { padding: 20px 16px !important; }
   [style*="padding:24px"] { padding: 16px !important; }
 
@@ -1157,80 +1160,32 @@ select.form-input { cursor: pointer; }
 }
 
 /* ===================== CRITICAL MOBILE OVERFLOW FIXES ===================== */
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
+html, body { max-width: 100%; overflow-x: hidden; }
+* { box-sizing: border-box; }
+img, video, iframe, embed, object { max-width: 100%; height: auto; }
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 600px) { .grid-4 { grid-template-columns: 1fr 1fr !important; gap: 12px !important; } }
+#hero-canvas { max-width: 100%; overflow: hidden; }
+@media (max-width: 900px) { .mobile-menu-btn { display: flex !important; } .nav-links { display: none !important; } .nav-cta { display: none !important; } }
+@media (max-width: 520px) { .footer-grid { grid-template-columns: 1fr !important; } .footer-col { margin-bottom: 16px; } }
+@media (max-width: 520px) { .hero-stats { display: grid !important; grid-template-columns: 1fr 1fr; gap: 20px; } .stat-item { text-align: center; } }
+@media (max-width: 480px) { input, select, textarea { font-size: 16px !important; } }
+.cta-section .btn { min-width: 160px; }
+@media (max-width: 480px) { .cta-section > .section-inner > div:last-child { flex-direction: column; align-items: stretch; } .cta-section .btn { text-align: center; justify-content: center; } }
 
-* {
-  box-sizing: border-box;
-}
-
-img, video, iframe, embed, object {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Tables on mobile — scrollable */
-.table-responsive {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Grid 4 becomes 2-col on mobile */
-@media (max-width: 600px) {
-  .grid-4 { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
-}
-
-/* Hero canvas should not overflow */
-#hero-canvas {
-  max-width: 100%;
-  overflow: hidden;
-}
-
-/* Mobile nav button visible */
-@media (max-width: 900px) {
-  .mobile-menu-btn { display: flex !important; }
-  .nav-links { display: none !important; }
-  .nav-cta { display: none !important; }
-}
-
-/* Footer on small screens */
-@media (max-width: 520px) {
-  .footer-grid { grid-template-columns: 1fr !important; }
-  .footer-col { margin-bottom: 16px; }
-}
-
-/* Hero stats wrapping */
-@media (max-width: 520px) {
-  .hero-stats {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  .stat-item { text-align: center; }
-}
-
-/* Form inputs on mobile */
-@media (max-width: 480px) {
-  input, select, textarea {
-    font-size: 16px !important; /* prevents iOS zoom */
-  }
-}
-
-/* CTA section flex wrap */
-.cta-section .btn {
-  min-width: 160px;
-}
-
-@media (max-width: 480px) {
-  .cta-section > .section-inner > div:last-child {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .cta-section .btn {
-    text-align: center;
-    justify-content: center;
-  }
-}
-
+/* CMS Page Content */
+.cms-content { line-height: 1.8; color: var(--gray-700); font-size: 16px; }
+.cms-content h1, .cms-content h2, .cms-content h3 { color: var(--dark); margin: 32px 0 16px; letter-spacing: -0.02em; }
+.cms-content h2 { font-size: 28px; font-weight: 700; }
+.cms-content h3 { font-size: 20px; font-weight: 600; }
+.cms-content p { margin-bottom: 20px; }
+.cms-content ul, .cms-content ol { margin: 0 0 20px 24px; }
+.cms-content li { margin-bottom: 8px; }
+.cms-content strong { color: var(--dark); font-weight: 600; }
+.cms-content a { color: var(--teal); text-decoration: underline; }
+.cms-content a:hover { color: var(--teal-dark); }
+.cms-content blockquote { border-left: 3px solid var(--teal); padding: 16px 24px; background: var(--gray-50); border-radius: 0 8px 8px 0; margin: 24px 0; font-style: italic; color: var(--gray-600); }
+.cms-content img { max-width: 100%; border-radius: 12px; margin: 24px 0; }
+.cms-content table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+.cms-content th, .cms-content td { padding: 12px 16px; border: 1px solid var(--gray-200); text-align: left; }
+.cms-content th { background: var(--gray-50); font-weight: 600; }

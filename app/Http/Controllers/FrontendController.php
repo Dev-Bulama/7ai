@@ -300,4 +300,12 @@ class FrontendController extends Controller
 
         return back()->with('success', $successMsg);
     }
+
+    public function cmsPage(string $slug)
+    {
+        $page = \App\Models\Page::where('slug', $slug)
+            ->where('status', 'published')
+            ->firstOrFail();
+        return view('public.cms-page', compact('page'));
+    }
 }

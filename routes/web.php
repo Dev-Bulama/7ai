@@ -154,4 +154,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('popups/{popup}', [\App\Http\Controllers\Admin\PopupController::class, 'update'])->name('popups.update');
     Route::delete('popups/{popup}', [\App\Http\Controllers\Admin\PopupController::class, 'destroy'])->name('popups.destroy');
     Route::post('popups/{popup}/toggle', [\App\Http\Controllers\Admin\PopupController::class, 'toggle'])->name('popups.toggle');
+
+    // Admin docs/guide
+    Route::get('docs', [\App\Http\Controllers\Admin\DocsController::class, 'index'])->name('docs.index');
 });
+
+// Dynamic CMS pages (city landing pages etc.) — must be last
+Route::get('/{slug}', [FrontendController::class, 'cmsPage'])->name('cms-page')->where('slug', '[a-z0-9\-]+');

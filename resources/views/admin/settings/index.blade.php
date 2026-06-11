@@ -18,6 +18,14 @@
     <div class="form-group"><label class="form-label">Default From Name</label><input name="settings[mail_from_name]" class="form-input" value="{{ \App\Models\Setting::get('mail_from_name','7AI') }}"></div>
     <div class="form-group"><label class="form-label">Default From Email</label><input name="settings[mail_from_email]" type="email" class="form-input" value="{{ \App\Models\Setting::get('mail_from_email','hello@7ai.africa') }}"></div>
   </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="section-title" style="margin-bottom:20px;">Navigation CTA</div>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px;">Controls the button shown on the top-right of every page's navigation bar.</p>
+    <div class="form-group"><label class="form-label">Primary Button Text</label><input name="settings[nav_cta_text]" class="form-input" placeholder="Book Consultation" value="{{ \App\Models\Setting::get('nav_cta_text','Book Consultation') }}"></div>
+    <div class="form-group"><label class="form-label">Primary Button URL</label><input name="settings[nav_cta_url]" class="form-input" placeholder="/contact" value="{{ \App\Models\Setting::get('nav_cta_url','/contact') }}"></div>
+    <div class="form-group"><label class="form-label">Secondary Button Text</label><input name="settings[nav_secondary_text]" class="form-input" placeholder="Support" value="{{ \App\Models\Setting::get('nav_secondary_text','Support') }}"></div>
+    <div class="form-group"><label class="form-label">Secondary Button URL</label><input name="settings[nav_secondary_url]" class="form-input" placeholder="/support" value="{{ \App\Models\Setting::get('nav_secondary_url','/support') }}"></div>
+  </div>
   <button type="submit" class="btn btn-primary btn-lg">Save Settings</button>
 </form>
 </div>

@@ -19,6 +19,8 @@
 @php
   $siteName = \App\Models\Setting::get('site_name','7AI');
   $logoSrc  = \App\Models\Setting::get('logo');
+  $navCtaText = \App\Models\Setting::get('nav_cta_text', 'Register free');
+  $navCtaUrl  = \App\Models\Setting::get('nav_cta_url', '/contact');
 @endphp
 
 <!-- NAV -->
@@ -38,7 +40,7 @@
     <li><a href="{{ route('personal-ai') }}" class="{{ request()->routeIs('personal-ai') ? 'active' : '' }}">Personal AI</a></li>
     <li><a href="{{ route('advisory') }}" class="{{ request()->routeIs('advisory') ? 'active' : '' }}">Advisory</a></li>
     <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
-    <li><a href="{{ route('contact') }}" class="nav-cta-btn">Register free</a></li>
+    <li><a href="{{ $navCtaUrl }}" class="nav-cta-btn">{{ $navCtaText }}</a></li>
   </ul>
 
   <button class="fe-mobile-btn" id="fe-mobile-btn" aria-label="Open menu" aria-expanded="false">
@@ -59,7 +61,7 @@
     <a href="{{ route('advisory') }}">Advisory</a>
     <a href="{{ route('about') }}">About</a>
     <a href="{{ route('blog') }}">Blog</a>
-    <a href="{{ route('contact') }}" class="fe-drawer-cta">Register free →</a>
+    <a href="{{ $navCtaUrl }}" class="fe-drawer-cta">{{ $navCtaText }} →</a>
   </div>
 </div>
 
