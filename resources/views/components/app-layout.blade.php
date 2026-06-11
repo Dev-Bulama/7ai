@@ -19,8 +19,8 @@
 @php
   $siteName = \App\Models\Setting::get('site_name','7AI');
   $logoSrc  = \App\Models\Setting::get('logo');
-  $navCtaText = \App\Models\Setting::get('nav_cta_text', 'Register free');
-  $navCtaUrl  = \App\Models\Setting::get('nav_cta_url', '/contact');
+  $navCtaText = \App\Models\Setting::get('nav_cta_text', 'AI CONFERENCE');
+  $navCtaUrl  = \App\Models\Setting::get('nav_cta_url', '/abuja');
 @endphp
 
 <!-- NAV -->

@@ -840,3 +840,20 @@ h2 em { color: var(--sage-light); font-style: italic; }
   .cta-strip { padding: 60px 5vw; }
   .also-section { padding: 60px 5vw; }
 }
+
+/* ── CMS PAGE ── */
+.cms-content { line-height: 1.8; color: var(--text-muted); font-size: 15px; font-weight: 300; }
+.cms-content h2 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--white); margin: 32px 0 14px; }
+.cms-content h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--white); margin: 24px 0 10px; }
+.cms-content p { margin-bottom: 18px; }
+.cms-content ul, .cms-content ol { margin: 0 0 18px 22px; }
+.cms-content li { margin-bottom: 8px; }
+.cms-content strong { color: var(--white); font-weight: 500; }
+.cms-content a { color: var(--sage-light); text-decoration: underline; }
+.cms-content a:hover { color: var(--sage-pale); }
+.cms-content blockquote { border-left: 2px solid var(--sage); padding: 14px 20px; background: rgba(122,174,142,0.06); margin: 20px 0; font-style: italic; }
+
+@media (max-width: 900px) {
+  .cms-page-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
+  .cms-page-grid > div:last-child { position: static !important; }
+}
