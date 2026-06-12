@@ -15,6 +15,8 @@ use App\Models\Form;
 use App\Models\FormSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 
 class FrontendController extends Controller
 {
@@ -294,11 +296,59 @@ class FrontendController extends Controller
 
         $successMsg = $form->success_message ?: 'Thank you! Your message has been received.';
 
+        // Send welcome email if enabled
+        if ($form->welcome_email_enabled && $form->welcome_email_body) {
+            $toEmail = null;
+            if ($form->welcome_email_field && isset($data[$form->welcome_email_field])) {
+                $toEmail = $data[$form->welcome_email_field];
+            } else {
+                // Auto-detect first email field
+                foreach ($data as $val) {
+                    if (is_string($val) && filter_var($val, FILTER_VALIDATE_EMAIL)) {
+                        $toEmail = $val;
+                        break;
+                    }
+                }
+            }
+
+            if ($toEmail) {
+                try {
+                    $this->configureMailer();
+                    $subject = $form->welcome_email_subject ?: 'Welcome!';
+                    $fromName = $form->welcome_email_from_name ?: Setting::get('mail_from_name', config('mail.from.name'));
+                    $fromAddr = $form->welcome_email_from_address ?: Setting::get('mail_from_address', config('mail.from.address'));
+                    $htmlBody = $form->welcome_email_body;
+
+                    Mail::html($htmlBody, function ($msg) use ($toEmail, $subject, $fromName, $fromAddr) {
+                        $msg->to($toEmail)
+                            ->subject($subject)
+                            ->from($fromAddr, $fromName);
+                    });
+                } catch (\Throwable $e) {
+                    \Log::error('Welcome email failed: ' . $e->getMessage());
+                }
+            }
+        }
+
         if ($form->redirect_url) {
             return redirect($form->redirect_url)->with('success', $successMsg);
         }
 
         return back()->with('success', $successMsg);
+    }
+
+    private function configureMailer(): void
+    {
+        $host = Setting::get('mail_host');
+        if (!$host) return;
+        Config::set('mail.mailers.smtp.host', $host);
+        Config::set('mail.mailers.smtp.port', Setting::get('mail_port', 587));
+        Config::set('mail.mailers.smtp.username', Setting::get('mail_username'));
+        Config::set('mail.mailers.smtp.password', Setting::get('mail_password'));
+        Config::set('mail.mailers.smtp.encryption', Setting::get('mail_encryption', 'tls'));
+        Config::set('mail.from.name', Setting::get('mail_from_name', '7AI'));
+        Config::set('mail.from.address', Setting::get('mail_from_address', 'hello@7ai.africa'));
+        Config::set('mail.default', 'smtp');
     }
 
     public function cmsPage(string $slug)

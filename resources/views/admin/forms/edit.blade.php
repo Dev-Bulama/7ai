@@ -97,6 +97,60 @@
   </div>
 </div>
 
+{{-- Welcome Email --}}
+<div class="card" style="margin-bottom:24px;">
+  <div style="font-weight:700;color:var(--dark);margin-bottom:4px;font-size:14px;">Welcome Email</div>
+  <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">Send an automatic welcome email to each registrant. Requires SMTP to be configured in <a href="{{ route('admin.settings.index') }}" style="color:var(--teal);">Settings → Email</a>.</p>
+  <form method="POST" action="{{ route('admin.forms.update', $form) }}">
+    @csrf @method('PUT')
+    {{-- Re-send existing non-email fields so we don't blank them out --}}
+    <input type="hidden" name="name" value="{{ $form->name }}">
+    <input type="hidden" name="slug" value="{{ $form->slug }}">
+    <input type="hidden" name="public_path" value="{{ $form->public_path }}">
+    <input type="hidden" name="title" value="{{ $form->title }}">
+    <input type="hidden" name="subtitle" value="{{ $form->subtitle }}">
+    <input type="hidden" name="success_message" value="{{ $form->success_message }}">
+    <input type="hidden" name="redirect_url" value="{{ $form->redirect_url }}">
+    <input type="hidden" name="notification_email" value="{{ $form->notification_email }}">
+    @if($form->store_submissions)<input type="hidden" name="store_submissions" value="1">@endif
+    @if($form->is_active)<input type="hidden" name="is_active" value="1">@endif
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <label class="form-check" style="font-size:14px;font-weight:600;">
+        <input type="checkbox" name="welcome_email_enabled" value="1" {{ $form->welcome_email_enabled ? 'checked' : '' }}
+          id="email-toggle" onchange="document.getElementById('email-config').style.display=this.checked?'block':'none'">
+        Enable welcome email on registration
+      </label>
+    </div>
+
+    <div id="email-config" style="display:{{ $form->welcome_email_enabled ? 'block' : 'none' }};">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Email Field <span style="font-weight:400;color:var(--gray-400);">(which field contains the registrant's email)</span></label>
+          <select name="welcome_email_field" class="form-input">
+            <option value="">— Auto-detect first email field —</option>
+            @foreach($form->fields->where('is_active', true) as $f)
+            <option value="{{ $f->name }}" {{ $form->welcome_email_field === $f->name ? 'selected' : '' }}>{{ $f->label }} ({{ $f->name }})</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Email Subject</label><input type="text" name="welcome_email_subject" class="form-input" value="{{ old('welcome_email_subject', $form->welcome_email_subject) }}" placeholder="Welcome to the Abuja AI Conference!"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">From Name <span style="font-weight:400;color:var(--gray-400);">(leave blank to use global setting)</span></label><input type="text" name="welcome_email_from_name" class="form-input" value="{{ old('welcome_email_from_name', $form->welcome_email_from_name) }}" placeholder="7AI"></div>
+        <div class="form-group"><label class="form-label">From Email Address</label><input type="email" name="welcome_email_from_address" class="form-input" value="{{ old('welcome_email_from_address', $form->welcome_email_from_address) }}" placeholder="hello@7ai.africa"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Body (HTML supported — you can use inline CSS or Tailwind via CDN)</label>
+        <textarea name="welcome_email_body" class="form-input" rows="16" style="font-family:monospace;font-size:13px;" placeholder="<h1>Welcome!</h1><p>Thank you for registering...</p>">{{ old('welcome_email_body', $form->welcome_email_body) }}</textarea>
+        <p style="font-size:12px;color:var(--gray-400);margin-top:6px;">Full HTML is supported. Use inline styles for maximum email client compatibility. To use Tailwind, add <code>&lt;link href=&quot;https://cdn.tailwindcss.com&quot; rel=&quot;stylesheet&quot;&gt;</code> at the top.</p>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-sm">Save Email Settings</button>
+  </form>
+</div>
+
 <div style="background:var(--gray-100);border-radius:8px;padding:16px;font-size:13px;color:var(--gray-600);">
   <strong>Form Shortcode:</strong> Use <code style="background:var(--white);padding:2px 8px;border-radius:4px;font-size:12px;">[form:{{ $form->slug }}]</code> to embed this form in page content, or reference it via <code>/forms/{{ $form->slug }}/submit</code>
 </div>

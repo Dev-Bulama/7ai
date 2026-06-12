@@ -52,8 +52,14 @@ class FormController extends Controller
             'success_message'    => 'nullable',
             'redirect_url'       => 'nullable|max:255',
             'notification_email' => 'nullable|email|max:255',
-            'store_submissions'  => 'nullable|boolean',
-            'is_active'          => 'nullable|boolean',
+            'store_submissions'        => 'nullable|boolean',
+            'is_active'                => 'nullable|boolean',
+            'welcome_email_enabled'    => 'nullable|boolean',
+            'welcome_email_subject'    => 'nullable|max:255',
+            'welcome_email_body'       => 'nullable',
+            'welcome_email_from_name'  => 'nullable|max:255',
+            'welcome_email_from_address' => 'nullable|email|max:255',
+            'welcome_email_field'      => 'nullable|max:100',
         ]);
         if (empty($data['slug'])) $data['slug'] = Str::slug($data['name']);
         if (!empty($data['public_path']) && !str_starts_with($data['public_path'], '/')) {
@@ -61,6 +67,7 @@ class FormController extends Controller
         }
         $data['store_submissions'] = $request->boolean('store_submissions', true);
         $data['is_active'] = $request->boolean('is_active', true);
+        $data['welcome_email_enabled'] = $request->boolean('welcome_email_enabled', false);
         $form->update($data);
         return redirect()->route('admin.forms.edit', $form)->with('success', 'Form updated.');
     }

@@ -14,9 +14,27 @@
     <div class="form-group"><label class="form-label">Default Meta Description</label><textarea name="settings[meta_description]" class="form-input" style="min-height:80px;">{{ \App\Models\Setting::get('meta_description') }}</textarea></div>
   </div>
   <div class="card" style="margin-bottom:20px;">
-    <div class="section-title" style="margin-bottom:20px;">Email Settings</div>
-    <div class="form-group"><label class="form-label">Default From Name</label><input name="settings[mail_from_name]" class="form-input" value="{{ \App\Models\Setting::get('mail_from_name','7AI') }}"></div>
-    <div class="form-group"><label class="form-label">Default From Email</label><input name="settings[mail_from_email]" type="email" class="form-input" value="{{ \App\Models\Setting::get('mail_from_email','hello@7ai.africa') }}"></div>
+    <div class="section-title" style="margin-bottom:20px;">Email / SMTP Settings</div>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px;">Configure outbound email for welcome emails sent from registration forms. Leave blank to use the server's default .env mail settings.</p>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">SMTP Host</label><input name="settings[mail_host]" class="form-input" placeholder="smtp.mailgun.org" value="{{ \App\Models\Setting::get('mail_host') }}"></div>
+      <div class="form-group"><label class="form-label">SMTP Port</label><input name="settings[mail_port]" class="form-input" placeholder="587" value="{{ \App\Models\Setting::get('mail_port','587') }}"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">SMTP Username</label><input name="settings[mail_username]" class="form-input" placeholder="apikey or email" value="{{ \App\Models\Setting::get('mail_username') }}"></div>
+      <div class="form-group"><label class="form-label">SMTP Password</label><input type="password" name="settings[mail_password]" class="form-input" placeholder="leave blank to keep existing" value="{{ \App\Models\Setting::get('mail_password') }}"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Encryption</label>
+        <select name="settings[mail_encryption]" class="form-input">
+          @foreach(['tls','ssl','none'] as $enc)
+          <option value="{{ $enc }}" {{ \App\Models\Setting::get('mail_encryption','tls') === $enc ? 'selected' : '' }}>{{ strtoupper($enc) }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">From Name</label><input name="settings[mail_from_name]" class="form-input" placeholder="7AI" value="{{ \App\Models\Setting::get('mail_from_name','7AI') }}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">From Email Address</label><input name="settings[mail_from_address]" type="email" class="form-input" placeholder="hello@7ai.africa" value="{{ \App\Models\Setting::get('mail_from_address','hello@7ai.africa') }}"></div>
   </div>
   <div class="card" style="margin-bottom:20px;">
     <div class="section-title" style="margin-bottom:20px;">Navigation CTA</div>
