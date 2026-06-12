@@ -325,7 +325,14 @@ class FrontendController extends Controller
                             ->from($fromAddr, $fromName);
                     });
                 } catch (\Throwable $e) {
-                    \Log::error('Welcome email failed: ' . $e->getMessage());
+                    \Log::error('Welcome email failed', [
+                        'to'      => $toEmail,
+                        'form'    => $form->id,
+                        'error'   => $e->getMessage(),
+                        'host'    => Setting::get('mail_host'),
+                        'port'    => Setting::get('mail_port'),
+                        'user'    => Setting::get('mail_username'),
+                    ]);
                 }
             }
         }
@@ -341,14 +348,19 @@ class FrontendController extends Controller
     {
         $host = Setting::get('mail_host');
         if (!$host) return;
+
+        Config::set('mail.mailers.smtp.transport', 'smtp');
         Config::set('mail.mailers.smtp.host', $host);
-        Config::set('mail.mailers.smtp.port', Setting::get('mail_port', 587));
+        Config::set('mail.mailers.smtp.port', (int) Setting::get('mail_port', 587));
         Config::set('mail.mailers.smtp.username', Setting::get('mail_username'));
         Config::set('mail.mailers.smtp.password', Setting::get('mail_password'));
         Config::set('mail.mailers.smtp.encryption', Setting::get('mail_encryption', 'tls'));
         Config::set('mail.from.name', Setting::get('mail_from_name', '7AI'));
         Config::set('mail.from.address', Setting::get('mail_from_address', 'hello@7ai.africa'));
         Config::set('mail.default', 'smtp');
+
+        // Purge the resolved mailer so it rebuilds with the new config
+        app('mail.manager')->purge('smtp');
     }
 
     public function cmsPage(string $slug)
