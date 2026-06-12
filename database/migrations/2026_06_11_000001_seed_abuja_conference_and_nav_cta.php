@@ -25,9 +25,9 @@ return new class extends Migration
         $exists = DB::table('pages')->where('slug', 'abuja')->exists();
         if (!$exists) {
             DB::table('pages')->insert([
-                'title'            => 'Abuja AI Conference',
+                'title'            => 'Abuja AI Conference Registration',
                 'slug'             => 'abuja',
-                'meta_description' => 'Register for FREE to learn how AI can impact your work, home and organisation.',
+                'meta_description' => 'Register for FREE to learn how AI can impact your work, home and organisation',
                 'content'          => '<h2>Abuja AI Conference Registration</h2>
 <p>Register for FREE to learn how AI can impact your work, home and organisation.</p>
 
