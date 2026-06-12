@@ -1,4 +1,4 @@
-<x-app-layout :title="($form->title ?? $form->name).' — '.($settings['site_name'] ?? '7AI')" :description="$form->description ?? ''">
+<x-app-layout :title="($form->title ?: $form->name).' — '.($settings['site_name'] ?? '7AI')" :description="$form->description ?? ''">
 
 <!-- HERO -->
 <div style="min-height:40vh;padding:120px 6vw 60px;background:linear-gradient(160deg,#0b4f6c 0%,#0a1628 60%);display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;">
@@ -10,7 +10,7 @@
       <div style="width:32px;height:1px;background:#3ee07f;"></div>
     </div>
     <h1 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,56px);font-weight:900;color:#fff;line-height:1.05;margin-bottom:16px;">
-      {{ $form->title ?? $form->name }}
+      {{ $form->title ?: $form->name }}
     </h1>
     @if($form->subtitle)
     <p style="font-size:17px;font-weight:300;color:rgba(255,255,255,0.7);line-height:1.7;max-width:500px;margin:0 auto;">{{ $form->subtitle }}</p>

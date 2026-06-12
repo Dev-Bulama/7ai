@@ -157,15 +157,55 @@ installation within 7 days, and 24/7 local support.&lt;/p&gt;</pre>
   <p>Go to <strong>Admin → Subscribers</strong> to view, add, or remove email subscribers and manage lists.</p>
 </div>
 
+<!-- EMAIL / WELCOME EMAILS -->
+<div class="doc-section card" id="email">
+  <h2>7. Email &amp; Welcome Emails</h2>
+
+  <h3>Step 1 — Configure SMTP in Settings</h3>
+  <p>Go to <strong>Admin → Settings → Email / SMTP</strong> and fill in your mail provider details:</p>
+  <ul>
+    <li><strong>SMTP Host</strong> — e.g. <span class="code">smtp.mailgun.org</span> or <span class="code">smtp.gmail.com</span></li>
+    <li><strong>SMTP Port</strong> — usually <span class="code">587</span> (TLS) or <span class="code">465</span> (SSL)</li>
+    <li><strong>Username / Password</strong> — your mail provider credentials</li>
+    <li><strong>From Name &amp; Address</strong> — the sender name and email registrants will see</li>
+  </ul>
+  <p>If you leave SMTP blank, the site uses the server's own <span class="code">.env</span> mail settings.</p>
+
+  <h3>Step 2 — Enable welcome email on a form</h3>
+  <p>Go to <strong>Admin → Forms → Edit</strong> (any form) and scroll to the <strong>Welcome Email</strong> section:</p>
+  <ol>
+    <li>Tick <strong>Enable welcome email on registration</strong></li>
+    <li>Select which form field holds the registrant's email address (or leave on Auto-detect)</li>
+    <li>Enter a <strong>Subject</strong> line</li>
+    <li>Optionally override the From Name / Address for this specific form</li>
+    <li>Paste your <strong>HTML email body</strong> — full HTML with inline CSS is supported</li>
+    <li>Click <strong>Save Email Settings</strong></li>
+  </ol>
+
+  <h3>HTML email body tips</h3>
+  <p>Use standard HTML with inline styles for best email-client compatibility. Example starter:</p>
+  <pre style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;">&lt;div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#0a1628;color:#ffffff;"&gt;
+  &lt;h1 style="font-size:28px;color:#3ee07f;margin-bottom:8px;"&gt;You're registered!&lt;/h1&gt;
+  &lt;p style="font-size:16px;color:rgba(255,255,255,0.8);line-height:1.7;"&gt;
+    Thank you for registering for the Abuja AI Conference.
+    We'll send you the venue and full schedule closer to the date.
+  &lt;/p&gt;
+  &lt;p style="margin-top:32px;font-size:13px;color:rgba(255,255,255,0.4);"&gt;
+    The 7AI Team · &lt;a href="https://7ai.africa" style="color:#3ee07f;"&gt;7ai.africa&lt;/a&gt;
+  &lt;/p&gt;
+&lt;/div&gt;</pre>
+  <p>To use Tailwind utility classes, add this at the very top of your HTML body: <span class="code">&lt;link href="https://cdn.tailwindcss.com" rel="stylesheet"&gt;</span></p>
+</div>
+
 <!-- SETTINGS -->
 <div class="doc-section card" id="settings">
-  <h2>7. Site Settings</h2>
+  <h2>8. Site Settings</h2>
   <p>Found under <strong>Admin → Settings</strong>. Controls global site values:</p>
   <ul>
     <li><strong>Site Name / Tagline</strong> — used in browser titles and emails</li>
     <li><strong>Contact Email / Phone</strong> — displayed in footer and contact sections</li>
     <li><strong>SEO Meta Title / Description</strong> — default values for pages without their own SEO fields</li>
-    <li><strong>Email From Name / Address</strong> — the "From" field in all system emails</li>
+    <li><strong>Email / SMTP</strong> — outbound mail configuration for welcome emails (see section 7)</li>
     <li><strong>Navigation CTA</strong> — the top-right button text and link on all pages (see section 2)</li>
   </ul>
 </div>
