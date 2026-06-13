@@ -10,11 +10,13 @@
     @include('admin.team._form', ['team' => $team])
     <div style="display:flex;gap:12px;align-items:center;">
       <button type="submit" class="btn btn-primary">Save Changes</button>
-      <form method="POST" action="{{ route('admin.team.destroy', $team) }}" onsubmit="return confirm('Delete this team member?')" style="margin:0;">
-        @csrf @method('DELETE')
-        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-      </form>
+      <button type="button" class="btn btn-danger btn-sm" onclick="document.getElementById('delete-team-form').submit()">Delete</button>
     </div>
   </form>
 </div>
+
+<form id="delete-team-form" method="POST" action="{{ route('admin.team.destroy', $team) }}"
+      onsubmit="return confirm('Delete this team member?')" style="display:none;">
+  @csrf @method('DELETE')
+</form>
 </x-admin-layout>
