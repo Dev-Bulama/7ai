@@ -23,12 +23,17 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
+        // Normalize email before validation to catch case/whitespace duplicates
+        $request->merge(['email' => strtolower(trim($request->input('email', '')))]);
+
         $data = $request->validate([
             'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users',
+            'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => 'required|min:8|confirmed',
-            'phone'    => 'nullable|string',
+            'phone'    => 'nullable|string|max:30',
             'country'  => 'nullable|string',
+        ], [
+            'email.unique' => 'This email address is already registered. Please log in instead.',
         ]);
 
         $user = User::create([
@@ -67,8 +72,17 @@ class RegisterController extends Controller
         $fromAddr = Setting::get('mail_from_address', 'hello@7ai.africa');
 
         // Welcome email to user
+        Log::info('Registration welcome email: attempting', ['user' => $user->id, 'email' => $user->email]);
         try {
-            $tpl = EmailTemplate::getByKey('user_welcome');
+            // Isolate template lookup — DB error (e.g. table not migrated yet) must not
+            // prevent the fallback mailable from sending.
+            $tpl = null;
+            try {
+                $tpl = EmailTemplate::getByKey('user_welcome');
+            } catch (\Throwable $e) {
+                Log::warning('Could not load user_welcome template, using fallback', ['error' => $e->getMessage()]);
+            }
+
             if ($tpl) {
                 $subject = $tpl->renderSubject($vars);
                 $body    = $tpl->render($vars);
@@ -78,11 +92,12 @@ class RegisterController extends Controller
                         ->subject($subject);
                 });
             } else {
-                // Fallback to mailable if no template found
                 Mail::to($user->email, $user->name)->send(new WelcomeEmail($user));
             }
+
+            Log::info('Registration welcome email: sent', ['user' => $user->id, 'email' => $user->email]);
         } catch (\Throwable $e) {
-            Log::error('Registration welcome email failed', [
+            Log::error('Registration welcome email: failed', [
                 'user'  => $user->id,
                 'email' => $user->email,
                 'error' => $e->getMessage(),
@@ -94,13 +109,19 @@ class RegisterController extends Controller
             $adminEmail = Setting::get('contact_email') ?: Setting::get('mail_from_address');
             if ($adminEmail) {
                 $adminVars = array_merge($vars, ['login_url' => url('/admin/users')]);
-                $tpl = EmailTemplate::getByKey('admin_new_user');
-                if ($tpl) {
-                    $subject = $tpl->renderSubject($adminVars);
-                    $body    = $tpl->render($adminVars);
+                $adminTpl  = null;
+                try {
+                    $adminTpl = EmailTemplate::getByKey('admin_new_user');
+                } catch (\Throwable $e) {
+                    Log::warning('Could not load admin_new_user template', ['error' => $e->getMessage()]);
+                }
+                if ($adminTpl) {
+                    $subject = $adminTpl->renderSubject($adminVars);
+                    $body    = $adminTpl->render($adminVars);
                     Mail::html($body, function ($msg) use ($adminEmail, $fromName, $fromAddr, $subject) {
                         $msg->to($adminEmail)->from($fromAddr, $fromName)->subject($subject);
                     });
+                    Log::info('Admin new user notification sent', ['to' => $adminEmail]);
                 }
             }
         } catch (\Throwable $e) {
