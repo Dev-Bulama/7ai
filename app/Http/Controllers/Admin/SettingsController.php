@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\SmtpMailService;
 use App\Models\Setting;
 use App\Models\SocialLink;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class SettingsController extends Controller
 {
@@ -56,46 +54,30 @@ class SettingsController extends Controller
     public function sendTestEmail(Request $request)
     {
         $request->validate(['test_email' => 'required|email']);
-        $to = $request->test_email;
+        $result = SmtpMailService::sendTestEmail($request->test_email);
 
-        try {
-            $host = Setting::get('mail_host');
-            if ($host) {
-                Config::set('mail.mailers.smtp.transport', 'smtp');
-                Config::set('mail.mailers.smtp.host', $host);
-                Config::set('mail.mailers.smtp.port', (int) Setting::get('mail_port', 587));
-                Config::set('mail.mailers.smtp.username', Setting::get('mail_username'));
-                Config::set('mail.mailers.smtp.password', Setting::get('mail_password'));
-                Config::set('mail.mailers.smtp.encryption', Setting::get('mail_encryption', 'tls'));
-                Config::set('mail.from.name', Setting::get('mail_from_name', '7AI'));
-                Config::set('mail.from.address', Setting::get('mail_from_address', 'hello@7ai.africa'));
-                Config::set('mail.default', 'smtp');
-                app('mail.manager')->purge('smtp');
-            }
-
-            $fromName = Setting::get('mail_from_name', '7AI');
-            $fromAddr = Setting::get('mail_from_address', 'hello@7ai.africa');
-            $siteName = Setting::get('site_name', '7AI');
-
-            Mail::html(
-                '<div style="font-family:sans-serif;max-width:500px;margin:40px auto;padding:32px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;">'
-                . '<h2 style="color:#0b4f6c;margin-bottom:12px;">✓ SMTP Test Email</h2>'
-                . '<p style="color:#374151;line-height:1.6;">This is a test email from <strong>' . e($siteName) . '</strong>.</p>'
-                . '<p style="color:#374151;line-height:1.6;">If you received this, your SMTP settings are working correctly.</p>'
-                . '<p style="font-size:12px;color:#9ca3af;margin-top:24px;">Sent from: ' . e($fromAddr) . '</p>'
-                . '</div>',
-                function ($msg) use ($to, $fromAddr, $fromName) {
-                    $msg->to($to)->from($fromAddr, $fromName)->subject('7AI — SMTP Test Email');
-                }
-            );
-
+        if ($result['ok']) {
             return redirect()->route('admin.settings.index', ['tab' => 'smtp'])
-                ->with('success', "Test email sent successfully to {$to}.");
-        } catch (\Throwable $e) {
-            Log::error('SMTP test email failed', ['error' => $e->getMessage(), 'to' => $to]);
-            return redirect()->route('admin.settings.index', ['tab' => 'smtp'])
-                ->with('error', 'Test email failed: ' . $e->getMessage());
+                ->with('success', $result['message'])
+                ->with('smtp_test_ok', true);
         }
+
+        return redirect()->route('admin.settings.index', ['tab' => 'smtp'])
+            ->with('error', 'Test email failed: ' . $result['message'])
+            ->with('smtp_error', $result['message']);
+    }
+
+    public function smtpDiagnostics(Request $request)
+    {
+        $diag   = SmtpMailService::diagnostics();
+        $testTo = $request->input('send_to');
+        $result = null;
+
+        if ($testTo && filter_var($testTo, FILTER_VALIDATE_EMAIL)) {
+            $result = SmtpMailService::sendTestEmail($testTo);
+        }
+
+        return view('admin.settings.smtp-diagnostics', compact('diag', 'result', 'testTo'));
     }
 
     public function storeSocial(Request $request)

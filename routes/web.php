@@ -148,6 +148,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::post('settings/test-email', [SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
+    Route::get('settings/smtp-diagnostics', [SettingsController::class, 'smtpDiagnostics'])->name('settings.smtp-diagnostics');
     Route::post('settings/social', [SettingsController::class, 'storeSocial'])->name('settings.social.store');
     Route::delete('settings/social/{socialLink}', [SettingsController::class, 'destroySocial'])->name('settings.social.destroy');
 

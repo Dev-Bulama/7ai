@@ -52,7 +52,7 @@
     Edit it above to change what new users receive when they register.<br>
     <strong>Admin new user notification</strong> — uses key <code style="background:#dbeafe;padding:1px 6px;border-radius:3px;">admin_new_user</code>.<br><br>
     <strong>Supported variables:</strong>
-    <code>{{name}}</code> &nbsp; <code>{{email}}</code> &nbsp; <code>{{login_url}}</code> &nbsp; <code>{{site_name}}</code> &nbsp; <code>{{support_email}}</code> &nbsp; <code>{{current_year}}</code>
+    <code>@{{name}}</code> &nbsp; <code>@{{email}}</code> &nbsp; <code>@{{login_url}}</code> &nbsp; <code>@{{site_name}}</code> &nbsp; <code>@{{support_email}}</code> &nbsp; <code>@{{current_year}}</code>
   </div>
 </div>
 </x-admin-layout>

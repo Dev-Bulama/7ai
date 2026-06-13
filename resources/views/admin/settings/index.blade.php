@@ -158,7 +158,14 @@
       <input type="email" name="test_email" class="form-input" placeholder="you@example.com" required>
     </div>
     <button type="submit" class="btn btn-primary" style="white-space:nowrap;">Send Test →</button>
+    <a href="{{ route('admin.settings.smtp-diagnostics') }}" class="btn btn-outline" style="white-space:nowrap;">SMTP Diagnostics</a>
   </div>
+  @if(session('smtp_error'))
+  <div style="margin-top:14px;padding:12px 16px;background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;font-size:13px;color:#991b1b;">
+    <strong>SMTP Error:</strong> {{ session('smtp_error') }}
+  </div>
+  <script>console.error("SMTP Test Email Failed:", {{ Js::from(session('smtp_error')) }});</script>
+  @endif
 </div>
 </form>
 
