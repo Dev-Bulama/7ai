@@ -13,10 +13,12 @@ return new class extends Migration
         // 1. Ensure users.email has a unique index (safe — original migration already adds it,
         //    but this guards against any environment where it was dropped).
         if (Schema::hasTable('users')) {
-            $indexes = collect(DB::select("SHOW INDEX FROM users WHERE Column_name = 'email'"))
-                ->pluck('Key_name')->toArray();
+            // Platform-agnostic index check
+            $hasUniqueIndex = collect(Schema::getIndexes('users'))
+                ->filter(fn($idx) => $idx['unique'] && in_array('email', $idx['columns']))
+                ->isNotEmpty();
 
-            if (empty($indexes)) {
+            if (!$hasUniqueIndex) {
                 // Check for duplicates before adding unique index
                 $dupes = DB::table('users')
                     ->select('email', DB::raw('COUNT(*) as cnt'))

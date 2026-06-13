@@ -42,23 +42,99 @@
 {{-- Form Fields --}}
 <div class="card" style="margin-bottom:24px;">
   <div style="font-weight:700;color:var(--dark);margin-bottom:16px;font-size:14px;">Form Fields ({{ $form->fields->count() }})</div>
+
+  @if(session('success'))
+  <div class="alert alert-success" style="margin-bottom:16px;padding:10px 16px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:6px;font-size:13px;color:#065f46;">
+    ✓ {{ session('success') }}
+  </div>
+  @endif
+
   @if($form->fields->isNotEmpty())
   <div class="table-wrap" style="margin-bottom:20px;">
     <table>
-      <thead><tr><th>Label</th><th>Name</th><th>Type</th><th>Required</th><th>Sort</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody>
-        @foreach($form->fields as $field)
+      <thead>
         <tr>
-          <td>{{ $field->label }}</td>
-          <td style="font-size:12px;color:var(--gray-400);">{{ $field->name }}</td>
+          <th>Label</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Required</th>
+          <th>Sort</th>
+          <th>Status</th>
+          <th style="width:160px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach($form->fields->sortBy('sort_order') as $field)
+        {{-- View row --}}
+        <tr id="field-row-{{ $field->id }}">
+          <td style="font-weight:500;">{{ $field->label }}</td>
+          <td style="font-size:12px;color:var(--gray-400);font-family:monospace;">{{ $field->name }}</td>
           <td><span class="badge badge-teal">{{ $field->field_type }}</span></td>
           <td>{{ $field->is_required ? '✓' : '—' }}</td>
           <td>{{ $field->sort_order }}</td>
-          <td><span class="badge {{ $field->is_active ? 'badge-green' : 'badge-gray' }}">{{ $field->is_active ? 'On' : 'Off' }}</span></td>
-          <td>
-            <form method="POST" action="{{ route('admin.forms.fields.destroy', [$form, $field]) }}" style="display:inline;" onsubmit="return confirm('Delete field?')">
-              @csrf @method('DELETE')<button class="btn btn-danger btn-sm">Remove</button>
+          <td><span class="badge {{ $field->is_active ? 'badge-green' : 'badge-gray' }}">{{ $field->is_active ? 'Active' : 'Off' }}</span></td>
+          <td style="white-space:nowrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="openFieldEdit({{ $field->id }})">Edit</button>
+            <form method="POST" action="{{ route('admin.forms.fields.destroy', [$form, $field]) }}" style="display:inline;" onsubmit="return confirm('Delete this field permanently?')">
+              @csrf @method('DELETE')
+              <button class="btn btn-danger btn-sm">Delete</button>
             </form>
+          </td>
+        </tr>
+
+        {{-- Inline edit panel (hidden by default) --}}
+        <tr id="field-edit-{{ $field->id }}" style="display:none;">
+          <td colspan="7" style="padding:0;">
+            <div style="background:#f0fdf4;border-left:3px solid var(--teal);padding:20px 20px 16px;">
+              <div style="font-weight:600;font-size:13px;color:var(--teal);margin-bottom:14px;">✏ Editing: {{ $field->label }}</div>
+              <form method="POST" action="{{ route('admin.forms.fields.update', [$form, $field]) }}">
+                @csrf @method('PUT')
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;">
+                  <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:11px;">Label *</label>
+                    <input type="text" name="label" class="form-input" value="{{ old('label', $field->label) }}" required>
+                  </div>
+                  <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:11px;">Field Name * <span style="font-weight:300;color:var(--gray-400);">(snake_case)</span></label>
+                    <input type="text" name="name" class="form-input" value="{{ old('name', $field->name) }}" required pattern="[a-z_][a-z0-9_]*">
+                  </div>
+                  <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:11px;">Field Type *</label>
+                    <select name="field_type" class="form-input field-type-sel" data-target="opts-{{ $field->id }}">
+                      @foreach(['text' => 'Text', 'email' => 'Email', 'phone' => 'Phone / Tel', 'number' => 'Number', 'textarea' => 'Textarea', 'select' => 'Dropdown / Select', 'radio' => 'Radio Buttons', 'checkbox' => 'Checkboxes', 'file' => 'File Upload', 'date' => 'Date', 'hidden' => 'Hidden'] as $ft => $ftLabel)
+                      <option value="{{ $ft }}" {{ $field->field_type === $ft ? 'selected' : '' }}>{{ $ftLabel }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                  <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:11px;">Placeholder text</label>
+                    <input type="text" name="placeholder" class="form-input" value="{{ old('placeholder', $field->placeholder) }}">
+                  </div>
+                  <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:11px;">Help Text</label>
+                    <input type="text" name="help_text" class="form-input" value="{{ old('help_text', $field->help_text) }}">
+                  </div>
+                </div>
+                <div id="opts-{{ $field->id }}" class="form-group" style="margin-bottom:12px;{{ in_array($field->field_type, ['select','radio','checkbox']) ? '' : 'display:none;' }}">
+                  <label class="form-label" style="font-size:11px;">Options <span style="font-weight:300;color:var(--gray-400);">(one per line)</span></label>
+                  <textarea name="options" class="form-input" rows="6" placeholder="Option One&#10;Option Two&#10;Option Three">{{ old('options', $field->options) }}</textarea>
+                </div>
+                <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">
+                  <div class="form-group" style="margin:0;">
+                    <label class="form-label" style="font-size:11px;">Sort Order</label>
+                    <input type="number" name="sort_order" class="form-input" style="width:80px;" value="{{ old('sort_order', $field->sort_order) }}">
+                  </div>
+                  <label class="form-check" style="margin-top:18px;"><input type="checkbox" name="is_required" value="1" {{ $field->is_required ? 'checked' : '' }}> Required field</label>
+                  <label class="form-check" style="margin-top:18px;"><input type="checkbox" name="is_active" value="1" {{ $field->is_active ? 'checked' : '' }}> Active</label>
+                </div>
+                <div style="display:flex;gap:10px;">
+                  <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="closeFieldEdit({{ $field->id }})">Cancel</button>
+                </div>
+              </form>
+            </div>
           </td>
         </tr>
         @endforeach
@@ -67,9 +143,9 @@
   </div>
   @endif
 
-  {{-- Add Field Form --}}
+  {{-- Add New Field --}}
   <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:20px;">
-    <div style="font-weight:600;margin-bottom:14px;font-size:13px;color:var(--gray-700);">Add New Field</div>
+    <div style="font-weight:600;margin-bottom:14px;font-size:13px;color:var(--gray-700);">+ Add New Field</div>
     <form method="POST" action="{{ route('admin.forms.fields.store', $form) }}" id="add-field-form">
       @csrf
       <div class="form-grid">
@@ -78,7 +154,7 @@
       </div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Field Type *</label>
-          <select name="field_type" class="form-input" id="field-type-select">
+          <select name="field_type" class="form-input" id="new-field-type-select">
             <option value="text">Text</option>
             <option value="email">Email</option>
             <option value="phone">Phone / Tel</option>
@@ -94,8 +170,8 @@
         </div>
         <div class="form-group"><label class="form-label">Placeholder text</label><input type="text" name="placeholder" class="form-input" placeholder="e.g. Enter your full name"></div>
       </div>
-      <div class="form-group" id="options-group" style="display:none;">
-        <label class="form-label">Options <span style="font-weight:300;color:var(--gray-400);">(one per line — for dropdown, radio, checkboxes)</span></label>
+      <div class="form-group" id="new-options-group" style="display:none;">
+        <label class="form-label">Options <span style="font-weight:300;color:var(--gray-400);">(one per line)</span></label>
         <textarea name="options" class="form-input" rows="5" placeholder="Consultation&#10;Training&#10;Partnership&#10;Support&#10;Other"></textarea>
       </div>
       <div class="form-group"><label class="form-label">Help Text <span style="font-weight:300;color:var(--gray-400);">(optional hint shown under field)</span></label><input type="text" name="help_text" class="form-input"></div>
@@ -114,7 +190,6 @@
   <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">Send an automatic welcome email to each registrant. Requires SMTP to be configured in <a href="{{ route('admin.settings.index') }}" style="color:var(--teal);">Settings → Email</a>.</p>
   <form method="POST" action="{{ route('admin.forms.update', $form) }}">
     @csrf @method('PUT')
-    {{-- Re-send existing non-email fields so we don't blank them out --}}
     <input type="hidden" name="name" value="{{ $form->name }}">
     <input type="hidden" name="slug" value="{{ $form->slug }}">
     <input type="hidden" name="public_path" value="{{ $form->public_path }}">
@@ -148,13 +223,12 @@
         <div class="form-group"><label class="form-label">Email Subject</label><input type="text" name="welcome_email_subject" class="form-input" value="{{ old('welcome_email_subject', $form->welcome_email_subject) }}" placeholder="Welcome to the Abuja AI Conference!"></div>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">From Name <span style="font-weight:400;color:var(--gray-400);">(leave blank to use global setting)</span></label><input type="text" name="welcome_email_from_name" class="form-input" value="{{ old('welcome_email_from_name', $form->welcome_email_from_name) }}" placeholder="7AI"></div>
+        <div class="form-group"><label class="form-label">From Name</label><input type="text" name="welcome_email_from_name" class="form-input" value="{{ old('welcome_email_from_name', $form->welcome_email_from_name) }}" placeholder="7AI"></div>
         <div class="form-group"><label class="form-label">From Email Address</label><input type="email" name="welcome_email_from_address" class="form-input" value="{{ old('welcome_email_from_address', $form->welcome_email_from_address) }}" placeholder="hello@7ai.africa"></div>
       </div>
       <div class="form-group">
-        <label class="form-label">Email Body (HTML supported — you can use inline CSS or Tailwind via CDN)</label>
+        <label class="form-label">Email Body (HTML supported)</label>
         <textarea name="welcome_email_body" class="form-input" rows="16" style="font-family:monospace;font-size:13px;" placeholder="<h1>Welcome!</h1><p>Thank you for registering...</p>">{{ old('welcome_email_body', $form->welcome_email_body) }}</textarea>
-        <p style="font-size:12px;color:var(--gray-400);margin-top:6px;">Full HTML is supported. Use inline styles for maximum email client compatibility. To use Tailwind, add <code>&lt;link href=&quot;https://cdn.tailwindcss.com&quot; rel=&quot;stylesheet&quot;&gt;</code> at the top.</p>
       </div>
     </div>
 
@@ -168,15 +242,24 @@
 
 <script>
 (function () {
-  var sel = document.getElementById('field-type-select');
-  var og  = document.getElementById('options-group');
-  function toggleOptions() {
-    og.style.display = ['select','radio','checkbox'].includes(sel.value) ? 'block' : 'none';
+  // New field — show/hide options
+  var newSel = document.getElementById('new-field-type-select');
+  var newOg  = document.getElementById('new-options-group');
+  function toggleNewOpts() {
+    newOg.style.display = ['select','radio','checkbox'].includes(newSel.value) ? 'block' : 'none';
   }
-  sel.addEventListener('change', toggleOptions);
-  toggleOptions(); // run on page load in case browser restores a previous value
+  newSel.addEventListener('change', toggleNewOpts);
+  toggleNewOpts();
 
-  // Auto-fill field name from label (snake_case)
+  // Edit field type selects — show/hide options
+  document.querySelectorAll('.field-type-sel').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+      var tgt = document.getElementById(this.dataset.target);
+      if (tgt) tgt.style.display = ['select','radio','checkbox'].includes(this.value) ? '' : 'none';
+    });
+  });
+
+  // Auto-fill snake_case field name from label (new field only)
   var labelInput = document.querySelector('#add-field-form input[name="label"]');
   var nameInput  = document.querySelector('#add-field-form input[name="name"]');
   if (labelInput && nameInput) {
@@ -190,5 +273,24 @@
     nameInput.addEventListener('input', function () { nameInput._dirty = true; });
   }
 })();
+
+function openFieldEdit(id) {
+  // Close any other open edit panels first
+  document.querySelectorAll('[id^="field-edit-"]').forEach(function(r) { r.style.display = 'none'; });
+  document.querySelectorAll('[id^="field-row-"]').forEach(function(r) { r.style.opacity = '1'; });
+  var editRow = document.getElementById('field-edit-' + id);
+  var viewRow = document.getElementById('field-row-' + id);
+  if (editRow) editRow.style.display = '';
+  if (viewRow) viewRow.style.opacity = '0.4';
+  // Scroll into view
+  if (editRow) editRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeFieldEdit(id) {
+  var editRow = document.getElementById('field-edit-' + id);
+  var viewRow = document.getElementById('field-row-' + id);
+  if (editRow) editRow.style.display = 'none';
+  if (viewRow) viewRow.style.opacity = '1';
+}
 </script>
 </x-admin-layout>

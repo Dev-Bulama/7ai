@@ -23,7 +23,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        // Normalize email before validation to catch case/whitespace duplicates
+        // Normalize email before validation — prevents User@Email.com and user@email.com as separate accounts
         $request->merge(['email' => strtolower(trim($request->input('email', '')))]);
 
         $data = $request->validate([
@@ -54,11 +54,51 @@ class RegisterController extends Controller
 
     private function sendWelcomeEmail(User $user): void
     {
-        // Skip if email notifications disabled
-        if (Setting::get('email_notifications', '1') === '0') return;
+        Log::info('[7AI Register] Welcome email triggered', ['user_id' => $user->id, 'email' => $user->email]);
 
-        $this->configureMailer();
+        // Step 1 — check email notifications setting
+        $notifEnabled = Setting::get('email_notifications', '1');
+        Log::info('[7AI Register] email_notifications setting: ' . $notifEnabled);
+        if ($notifEnabled === '0') {
+            Log::info('[7AI Register] Skipped — email notifications disabled in settings.');
+            return;
+        }
 
+        // Step 2 — load SMTP settings from DB and configure mailer
+        $host       = Setting::get('mail_host');
+        $port       = (int) Setting::get('mail_port', 587);
+        $username   = Setting::get('mail_username');
+        $password   = Setting::get('mail_password');
+        $encryption = Setting::get('mail_encryption', 'tls');
+        $fromName   = Setting::get('mail_from_name', '7AI');
+        $fromAddr   = Setting::get('mail_from_address', 'hello@7ai.africa');
+
+        Log::info('[7AI Register] SMTP config from DB', [
+            'host'       => $host ?: '(not set)',
+            'port'       => $port,
+            'username'   => $username ?: '(not set)',
+            'encryption' => $encryption,
+            'from'       => "$fromName <$fromAddr>",
+        ]);
+
+        if ($host) {
+            Config::set('mail.mailers.smtp.transport', 'smtp');
+            Config::set('mail.mailers.smtp.host',       $host);
+            Config::set('mail.mailers.smtp.port',       $port);
+            Config::set('mail.mailers.smtp.username',   $username);
+            Config::set('mail.mailers.smtp.password',   $password);
+            Config::set('mail.mailers.smtp.encryption', $encryption);
+            Config::set('mail.from.name',               $fromName);
+            Config::set('mail.from.address',            $fromAddr);
+            Config::set('mail.default',                 'smtp');
+            // Purge cached mailer so next send picks up fresh config values
+            app('mail.manager')->purge('smtp');
+            Log::info('[7AI Register] SMTP configured and mailer purged — will use smtp driver');
+        } else {
+            Log::warning('[7AI Register] mail_host not set in DB — falling back to .env mail driver (may be log)');
+        }
+
+        // Step 3 — build vars for template substitution
         $vars = [
             'name'          => $user->name,
             'email'         => $user->email,
@@ -68,19 +108,14 @@ class RegisterController extends Controller
             'current_year'  => date('Y'),
         ];
 
-        $fromName = Setting::get('mail_from_name', '7AI');
-        $fromAddr = Setting::get('mail_from_address', 'hello@7ai.africa');
-
-        // Welcome email to user
-        Log::info('Registration welcome email: attempting', ['user' => $user->id, 'email' => $user->email]);
+        // Step 4 — send welcome email to user
         try {
-            // Isolate template lookup — DB error (e.g. table not migrated yet) must not
-            // prevent the fallback mailable from sending.
             $tpl = null;
             try {
                 $tpl = EmailTemplate::getByKey('user_welcome');
+                Log::info('[7AI Register] user_welcome template ' . ($tpl ? 'found (id=' . $tpl->id . ')' : 'not found — using fallback mailable'));
             } catch (\Throwable $e) {
-                Log::warning('Could not load user_welcome template, using fallback', ['error' => $e->getMessage()]);
+                Log::warning('[7AI Register] Could not query email_templates table — using fallback mailable', ['error' => $e->getMessage()]);
             }
 
             if ($tpl) {
@@ -92,19 +127,21 @@ class RegisterController extends Controller
                         ->subject($subject);
                 });
             } else {
+                // Fallback: use WelcomeEmail mailable (sends synchronously via send())
                 Mail::to($user->email, $user->name)->send(new WelcomeEmail($user));
             }
 
-            Log::info('Registration welcome email: sent', ['user' => $user->id, 'email' => $user->email]);
+            Log::info('[7AI Register] Welcome email sent successfully', ['to' => $user->email]);
         } catch (\Throwable $e) {
-            Log::error('Registration welcome email: failed', [
-                'user'  => $user->id,
-                'email' => $user->email,
-                'error' => $e->getMessage(),
+            Log::error('[7AI Register] Welcome email FAILED — registration still succeeded', [
+                'user_id' => $user->id,
+                'email'   => $user->email,
+                'error'   => $e->getMessage(),
+                'file'    => $e->getFile() . ':' . $e->getLine(),
             ]);
         }
 
-        // Admin notification
+        // Step 5 — admin notification (best-effort, never breaks registration)
         try {
             $adminEmail = Setting::get('contact_email') ?: Setting::get('mail_from_address');
             if ($adminEmail) {
@@ -113,37 +150,17 @@ class RegisterController extends Controller
                 try {
                     $adminTpl = EmailTemplate::getByKey('admin_new_user');
                 } catch (\Throwable $e) {
-                    Log::warning('Could not load admin_new_user template', ['error' => $e->getMessage()]);
+                    // template table missing — skip silently
                 }
                 if ($adminTpl) {
-                    $subject = $adminTpl->renderSubject($adminVars);
-                    $body    = $adminTpl->render($adminVars);
-                    Mail::html($body, function ($msg) use ($adminEmail, $fromName, $fromAddr, $subject) {
-                        $msg->to($adminEmail)->from($fromAddr, $fromName)->subject($subject);
+                    Mail::html($adminTpl->render($adminVars), function ($msg) use ($adminEmail, $fromName, $fromAddr, $adminTpl, $adminVars) {
+                        $msg->to($adminEmail)->from($fromAddr, $fromName)->subject($adminTpl->renderSubject($adminVars));
                     });
-                    Log::info('Admin new user notification sent', ['to' => $adminEmail]);
+                    Log::info('[7AI Register] Admin notification sent', ['to' => $adminEmail]);
                 }
             }
         } catch (\Throwable $e) {
-            Log::error('Admin new user notification failed', ['error' => $e->getMessage()]);
+            Log::error('[7AI Register] Admin notification failed', ['error' => $e->getMessage()]);
         }
-    }
-
-    private function configureMailer(): void
-    {
-        $host = Setting::get('mail_host');
-        if (!$host) return;
-
-        Config::set('mail.mailers.smtp.transport', 'smtp');
-        Config::set('mail.mailers.smtp.host', $host);
-        Config::set('mail.mailers.smtp.port', (int) Setting::get('mail_port', 587));
-        Config::set('mail.mailers.smtp.username', Setting::get('mail_username'));
-        Config::set('mail.mailers.smtp.password', Setting::get('mail_password'));
-        Config::set('mail.mailers.smtp.encryption', Setting::get('mail_encryption', 'tls'));
-        Config::set('mail.from.name', Setting::get('mail_from_name', '7AI'));
-        Config::set('mail.from.address', Setting::get('mail_from_address', 'hello@7ai.africa'));
-        Config::set('mail.default', 'smtp');
-
-        app('mail.manager')->purge('smtp');
     }
 }

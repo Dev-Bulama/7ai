@@ -96,16 +96,21 @@ class FormController extends Controller
     }
     public function updateField(Request $request, Form $form, FormField $field) {
         $data = $request->validate([
-            'label' => 'required|max:255',
-            'placeholder' => 'nullable|max:255',
-            'help_text' => 'nullable',
-            'is_required' => 'nullable|boolean',
-            'options' => 'nullable',
+            'label'      => 'required|max:255',
+            'name'       => ['required', 'max:100', 'regex:/^[a-z_][a-z0-9_]*$/',
+                             \Illuminate\Validation\Rule::unique('form_fields', 'name')
+                                 ->where('form_id', $form->id)
+                                 ->ignore($field->id)],
+            'field_type' => 'required|in:text,email,phone,number,textarea,select,radio,checkbox,file,date,hidden',
+            'placeholder'=> 'nullable|max:255',
+            'help_text'  => 'nullable',
+            'is_required'=> 'nullable|boolean',
+            'options'    => 'nullable',
             'sort_order' => 'nullable|integer',
-            'is_active' => 'nullable|boolean',
+            'is_active'  => 'nullable|boolean',
         ]);
         $data['is_required'] = $request->boolean('is_required');
-        $data['is_active'] = $request->boolean('is_active', true);
+        $data['is_active']   = $request->boolean('is_active', true);
         $field->update($data);
         return redirect()->route('admin.forms.edit', $form)->with('success', 'Field updated.');
     }

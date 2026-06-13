@@ -61,7 +61,7 @@
               @if($field->is_required) required @endif
               style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(122,174,142,0.3);border-radius:2px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;outline:none;transition:border-color 0.2s;appearance:none;"
               onfocus="this.style.borderColor='#a8cdb8'" onblur="this.style.borderColor='rgba(122,174,142,0.3)'">
-              <option value="" style="background:#0a1628;">Select {{ $field->label }}</option>
+              <option value="" style="background:#0a1628;">{{ $field->placeholder ?: 'Select '.$field->label }}</option>
               @foreach($field->getOptionsArrayAttribute() as $opt)
               <option value="{{ $opt }}" style="background:#0a1628;" @if(old($field->name) === $opt) selected @endif>{{ $opt }}</option>
               @endforeach
