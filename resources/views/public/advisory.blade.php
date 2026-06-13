@@ -12,7 +12,7 @@
     <h1>{!! $page?->hero_title ? nl2br(e($page->hero_title)) : 'Strategic clarity<br><em>for the AI era.</em>' !!}</h1>
     <p class="hero-sub-text">{{ $page?->hero_description ?? 'Expert advisory for organisations ready to move beyond the noise — and make clear, confident decisions about AI strategy, governance, and transformation.' }}</p>
     <div class="hero-actions">
-      <a href="{{ route('contact') }}" class="btn-primary">Start a conversation</a>
+      <a href="{{ $page?->cta_link ?: route('contact') }}" class="btn-primary">{{ $page?->cta_text ?? 'Start a conversation' }}</a>
       <a href="#services" class="btn-ghost">Our services</a>
     </div>
   </div>

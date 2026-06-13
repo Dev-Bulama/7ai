@@ -185,12 +185,18 @@
 <!-- CTA -->
 <div class="cta-strip">
   <div>
-    <h2>Join the 7ai<br><em>movement.</em></h2>
+    <h2>{{ $heroCta?->title ?? 'Join the 7ai' }}<br><em>{{ $heroCta?->text ? '' : 'movement.' }}</em></h2>
+    @if($heroCta?->text)
+    <p>{{ $heroCta->text }}</p>
+    @else
     <p>Work with us, partner with us, or let us transform your home or business. Africa's intelligence era starts now.</p>
+    @endif
   </div>
   <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;">
-    <a href="{{ route('contact') }}" class="btn-primary">Get in touch</a>
-    <a href="{{ route('careers') }}" class="btn-ghost">View careers →</a>
+    <a href="{{ $heroCta?->button_url ?: route('contact') }}" class="btn-primary">{{ $heroCta?->button_label ?? 'Get in touch' }}</a>
+    @if($heroCta?->button2_url || true)
+    <a href="{{ $heroCta?->button2_url ?: route('careers') }}" class="btn-ghost">{{ $heroCta?->button2_label ?? 'View careers →' }}</a>
+    @endif
   </div>
 </div>
 

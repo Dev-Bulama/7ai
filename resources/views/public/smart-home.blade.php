@@ -15,7 +15,7 @@
     <h1>{!! $page?->hero_title ? nl2br(e($page->hero_title)) : 'Your home,<br><em>intelligently yours.</em>' !!}</h1>
     <p class="hero-sub-text">{{ $page?->hero_description ?? 'AI-powered smart home solutions designed for African households — affordable, practical, and built for our climate, our power realities, and our way of living.' }}</p>
     <div class="hero-actions">
-      <a href="{{ route('contact') }}" class="btn-primary">Get a consultation</a>
+      <a href="{{ $page?->cta_link ?: route('contact') }}" class="btn-primary">{{ $page?->cta_text ?? 'Get a consultation' }}</a>
       <a href="#features" class="btn-ghost">See what's possible</a>
     </div>
   </div>

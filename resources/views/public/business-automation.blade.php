@@ -12,7 +12,7 @@
     <h1>{!! $page?->hero_title ? nl2br(e($page->hero_title)) : 'Let AI do the<br><em>heavy lifting.</em>' !!}</h1>
     <p class="hero-sub-text">{{ $page?->hero_description ?? 'Practical AI automation for African businesses — reducing manual work, cutting costs, and giving your team the time to focus on what truly matters.' }}</p>
     <div class="hero-actions">
-      <a href="{{ route('contact') }}" class="btn-primary">Talk to us</a>
+      <a href="{{ $page?->cta_link ?: route('contact') }}" class="btn-primary">{{ $page?->cta_text ?? 'Talk to us' }}</a>
       <a href="#features" class="btn-ghost">See what's possible</a>
     </div>
   </div>

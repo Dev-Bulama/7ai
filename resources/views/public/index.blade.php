@@ -13,8 +13,8 @@
     </h1>
     <p class="hero-sub">{{ $page?->hero_description ?? 'From the smart home to the boardroom to the policy table — 7ai places the tools, knowledge, and strategy of the AI era in African hands.' }}</p>
     <div class="hero-actions">
-      <a href="#training" class="btn-primary">{{ $page?->cta_text ?? 'Start learning free' }}</a>
-      <a href="#pillars" class="btn-ghost">What we do</a>
+      <a href="{{ $page?->cta_link ?: ($heroCta?->button_url ?: route('contact')) }}" class="btn-primary">{{ $page?->cta_text ?? $heroCta?->button_label ?? 'Start learning free' }}</a>
+      <a href="{{ $heroCta?->button2_url ?: '#pillars' }}" class="btn-ghost">{{ $heroCta?->button2_label ?? 'What we do' }}</a>
     </div>
     <div class="hero-stats">
       <div>
