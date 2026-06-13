@@ -187,4 +187,32 @@
   </div>
 </section>
 
+@if($teamMembers->isNotEmpty())
+<!-- TEAM -->
+<section class="fe-section bg-navy-deep" style="padding:80px 6vw;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="eyebrow-row" style="margin-bottom:16px;"><div class="eyebrow-line"></div><span class="eyebrow-text">Our team</span></div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);font-weight:900;color:var(--white);margin-bottom:48px;line-height:1.1;">The people<br><em>building 7ai.</em></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px;">
+      @foreach($teamMembers as $member)
+      <div style="text-align:center;">
+        @if($member->photo_url)
+        <img src="{{ $member->photo_url }}" alt="{{ $member->name }}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid rgba(122,174,142,0.3);margin:0 auto 16px;display:block;">
+        @else
+        <div style="width:80px;height:80px;border-radius:50%;background:rgba(122,174,142,0.1);border:1px solid rgba(122,174,142,0.3);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:var(--sage-light);margin:0 auto 16px;">{{ $member->initials }}</div>
+        @endif
+        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:4px;">{{ $member->name }}</div>
+        @if($member->job_title)
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sage);">{{ $member->job_title }}</div>
+        @endif
+      </div>
+      @endforeach
+    </div>
+    <div style="text-align:center;margin-top:48px;">
+      <a href="{{ route('about') }}" style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sage-light);text-decoration:none;">Meet the full team →</a>
+    </div>
+  </div>
+</section>
+@endif
+
 </x-app-layout>

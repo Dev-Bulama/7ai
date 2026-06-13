@@ -55,7 +55,8 @@ class FrontendController extends Controller
         $bottomCta    = Cta::where('is_active', true)->where('name', 'home_cta')->first();
         $latestPosts  = Post::with('category')->where('status', 'published')->orderByDesc('published_at')->limit(3)->get();
         $settings     = $this->siteSettings();
-        return view('public.index', compact('page', 'testimonials', 'homeCards', 'aiCards', 'processCards', 'heroCta', 'bottomCta', 'latestPosts', 'settings'));
+        $teamMembers  = \App\Models\TeamMember::active()->featured()->orderBy('sort_order')->limit(6)->get();
+        return view('public.index', compact('page', 'testimonials', 'homeCards', 'aiCards', 'processCards', 'heroCta', 'bottomCta', 'latestPosts', 'settings', 'teamMembers'));
     }
 
     public function solutions()
@@ -129,7 +130,8 @@ class FrontendController extends Controller
         $testimonials = Testimonial::where('is_active', true)->where('is_featured', true)->orderBy('sort_order')->limit(3)->get();
         $heroCta      = Cta::where('is_active', true)->where('name', 'about_cta')->first();
         $settings     = $this->siteSettings();
-        return view('public.about', compact('page', 'testimonials', 'heroCta', 'settings'));
+        $teamMembers  = \App\Models\TeamMember::active()->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('name')->get();
+        return view('public.about', compact('page', 'testimonials', 'heroCta', 'settings', 'teamMembers'));
     }
 
     public function careers()

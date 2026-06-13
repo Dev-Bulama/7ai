@@ -22,7 +22,7 @@ use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\CtaController;
 use App\Http\Controllers\Admin\CardController;
 use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\SiteSettingsController;
+use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Customer\TicketController as CustomerTicketController;
 use App\Http\Controllers\LeadCaptureController;
@@ -49,7 +49,7 @@ Route::post('/contact', [LeadCaptureController::class, 'store'])->name('contact.
 Route::get('/investors', [FrontendController::class, 'investors'])->name('investors');
 Route::post('/investors/register', [InvestorController::class, 'store'])->name('investors.register');
 
-// New pillar pages
+// Pillar pages
 Route::get('/smart-home', [FrontendController::class, 'smartHome'])->name('smart-home');
 Route::get('/business-automation', [FrontendController::class, 'businessAutomation'])->name('business-automation');
 Route::get('/personal-ai', [FrontendController::class, 'personalAi'])->name('personal-ai');
@@ -59,7 +59,7 @@ Route::get('/advisory', [FrontendController::class, 'advisory'])->name('advisory
 Route::get('/forms/{form:slug}', [FrontendController::class, 'showForm'])->name('forms.show');
 Route::post('/forms/{form}/submit', [FrontendController::class, 'submitForm'])->name('forms.submit');
 
-// Dynamic public form paths (e.g. /abuja) — excluded known routes via regex
+// Dynamic public form paths (e.g. /abuja)
 Route::get('/{formPath}', [FrontendController::class, 'dynamicFormPage'])
     ->where('formPath', '^(?!login|register|logout|admin|dashboard|forms|solutions|smart-homes?|ai-solutions|pricing|case-studies|industries|about|careers|blog|contact|support|docs|privacy|terms|investors|business-automation|personal-ai|advisory)[a-z0-9][a-z0-9\-]*$')
     ->name('form.dynamic');
@@ -104,12 +104,17 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('ctas', CtaController::class)->except(['show']);
     Route::resource('banners', BannerController::class)->except(['show']);
 
+    // Team Management
+    Route::resource('team', TeamController::class)->except(['show']);
+
     // Form Builder
     Route::resource('forms', FormController::class)->except(['show']);
     Route::post('forms/{form}/fields', [FormController::class, 'storeField'])->name('forms.fields.store');
     Route::put('forms/{form}/fields/{field}', [FormController::class, 'updateField'])->name('forms.fields.update');
     Route::delete('forms/{form}/fields/{field}', [FormController::class, 'destroyField'])->name('forms.fields.destroy');
     Route::get('forms/{form}/submissions', [FormController::class, 'submissions'])->name('forms.submissions');
+    Route::get('forms/{form}/submissions/export', [FormController::class, 'exportSubmissions'])->name('forms.submissions.export');
+    Route::delete('forms/{form}/submissions/{submission}', [FormController::class, 'destroySubmission'])->name('form-submissions.destroy');
     Route::post('form-submissions/{submission}/read', [FormController::class, 'markRead'])->name('form-submissions.read');
 
     // Menu Builder
@@ -138,15 +143,18 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('media', [MediaController::class, 'store'])->name('media.store');
     Route::delete('media/{medium}', [MediaController::class, 'destroy'])->name('media.destroy');
 
-    // Settings
+    // Unified Settings (canonical: /admin/settings)
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('settings/test-email', [SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
+    Route::post('settings/social', [SettingsController::class, 'storeSocial'])->name('settings.social.store');
+    Route::delete('settings/social/{socialLink}', [SettingsController::class, 'destroySocial'])->name('settings.social.destroy');
 
-    // Site Settings (new - with social links)
-    Route::get('site-settings', [SiteSettingsController::class, 'index'])->name('site-settings.index');
-    Route::put('site-settings', [SiteSettingsController::class, 'update'])->name('site-settings.update');
-    Route::post('site-settings/social', [SiteSettingsController::class, 'storeSocial'])->name('site-settings.social.store');
-    Route::delete('site-settings/social/{socialLink}', [SiteSettingsController::class, 'destroySocial'])->name('site-settings.social.destroy');
+    // Redirect old site-settings URL to unified settings
+    Route::get('site-settings', fn() => redirect()->route('admin.settings.index'))->name('site-settings.index');
+    Route::put('site-settings', fn() => redirect()->route('admin.settings.index'))->name('site-settings.update');
+    Route::post('site-settings/social', fn() => redirect()->route('admin.settings.index'))->name('site-settings.social.store');
+    Route::delete('site-settings/social/{socialLink}', fn() => redirect()->route('admin.settings.index'))->name('site-settings.social.destroy');
 
     // Popup Flyer Manager
     Route::get('popups', [\App\Http\Controllers\Admin\PopupController::class, 'index'])->name('popups.index');

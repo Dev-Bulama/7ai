@@ -82,39 +82,40 @@
 </section>
 
 <!-- TEAM -->
+@if($teamMembers->isNotEmpty())
 <section class="fe-section bg-navy-mid">
   <div class="section-header">
     <div class="eyebrow-row"><div class="eyebrow-line"></div><span class="eyebrow-text">The team</span></div>
     <h2>The minds<br><em>behind 7ai.</em></h2>
     <p class="section-sub">A diverse team of engineers, strategists, and innovators united by one vision for Africa.</p>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;background:var(--border-sage);border:0.5px solid var(--border-sage);border-radius:4px;overflow:hidden;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:2px;background:var(--border-sage);border:0.5px solid var(--border-sage);border-radius:4px;overflow:hidden;">
+    @foreach($teamMembers as $member)
     <div style="background:var(--navy-deep);padding:36px 28px;text-align:center;">
-      <div style="width:64px;height:64px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">AO</div>
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">Adaeze Obi</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">Co-Founder &amp; CEO</div>
-      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">Lagos, Nigeria</div>
+      @if($member->photo_url)
+      <img src="{{ $member->photo_url }}" alt="{{ $member->name }}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--border-sage);margin:0 auto 20px;display:block;">
+      @else
+      <div style="width:72px;height:72px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">{{ $member->initials }}</div>
+      @endif
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">{{ $member->name }}</div>
+      @if($member->job_title)
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">{{ $member->job_title }}</div>
+      @endif
+      @if($member->subtitle)
+      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">{{ $member->subtitle }}</div>
+      @endif
+      @if($member->linkedin || $member->twitter || $member->instagram)
+      <div style="display:flex;justify-content:center;gap:12px;margin-top:14px;">
+        @if($member->linkedin)<a href="{{ $member->linkedin }}" target="_blank" rel="noopener" style="color:var(--sage);text-decoration:none;font-size:12px;">in</a>@endif
+        @if($member->twitter)<a href="{{ $member->twitter }}" target="_blank" rel="noopener" style="color:var(--sage);text-decoration:none;font-size:12px;">𝕏</a>@endif
+        @if($member->instagram)<a href="{{ $member->instagram }}" target="_blank" rel="noopener" style="color:var(--sage);text-decoration:none;font-size:12px;">ig</a>@endif
+      </div>
+      @endif
     </div>
-    <div style="background:var(--navy-deep);padding:36px 28px;text-align:center;">
-      <div style="width:64px;height:64px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">KA</div>
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">Kofi Asante</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">Co-Founder &amp; CTO</div>
-      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">Accra, Ghana</div>
-    </div>
-    <div style="background:var(--navy-deep);padding:36px 28px;text-align:center;">
-      <div style="width:64px;height:64px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">FN</div>
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">Fatima Njoroge</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">VP of Engineering</div>
-      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">Nairobi, Kenya</div>
-    </div>
-    <div style="background:var(--navy-deep);padding:36px 28px;text-align:center;">
-      <div style="width:64px;height:64px;border-radius:50%;background:rgba(122,174,142,0.15);border:1px solid var(--border-sage);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--sage-light);margin:0 auto 20px;">TM</div>
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px;">Themba Mokoena</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:4px;">Head of AI Research</div>
-      <div style="font-size:12px;font-weight:300;color:var(--text-muted);">Johannesburg, SA</div>
-    </div>
+    @endforeach
   </div>
 </section>
+@endif
 
 <!-- STATS -->
 <section class="fe-section bg-navy">

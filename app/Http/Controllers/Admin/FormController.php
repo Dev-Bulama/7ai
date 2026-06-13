@@ -124,4 +124,48 @@ class FormController extends Controller
         $submission->update(['is_read' => true]);
         return back()->with('success', 'Marked as read.');
     }
-}
+
+    public function exportSubmissions(Form $form)
+    {
+        $submissions = FormSubmission::where('form_id', $form->id)->orderByDesc('created_at')->get();
+        $fields = $form->fields()->orderBy('sort_order')->get();
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $form->slug . '-submissions-' . now()->format('Ymd') . '.csv"',
+        ];
+
+        $callback = function () use ($submissions, $fields, $form) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM for Excel
+
+            // Header row
+            $cols = ['ID', 'Form', 'Date'];
+            foreach ($fields as $f) $cols[] = $f->label;
+            $cols[] = 'IP Address';
+            $cols[] = 'User Agent';
+            fputcsv($handle, $cols);
+
+            // Data rows
+            foreach ($submissions as $sub) {
+                $row = [$sub->id, $form->name, $sub->created_at->format('Y-m-d H:i:s')];
+                foreach ($fields as $f) {
+                    $val = $sub->data[$f->name] ?? '';
+                    $row[] = is_array($val) ? implode(', ', $val) : $val;
+                }
+                $row[] = $sub->ip_address;
+                $row[] = $sub->user_agent;
+                fputcsv($handle, $row);
+            }
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function destroySubmission(Form $form, FormSubmission $submission)
+    {
+        abort_if($submission->form_id !== $form->id, 404);
+        $submission->delete();
+        return redirect()->route('admin.forms.submissions', $form)->with('success', 'Submission deleted.');
+    }
