@@ -1,6 +1,13 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Allow Apache to follow symlinks (required for storage:link to work)
+    Options +FollowSymLinks
+
+    # Directly rewrite /storage/... to public/storage/... (bypasses symlink -f check)
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^storage/(.*)$ public/storage/$1 [L]
+
     # Serve files directly if they exist in public/
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
