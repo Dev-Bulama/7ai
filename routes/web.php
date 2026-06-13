@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\CtaController;
 use App\Http\Controllers\Admin\CardController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Customer\TicketController as CustomerTicketController;
 use App\Http\Controllers\LeadCaptureController;
@@ -162,6 +163,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('popups/{popup}', [\App\Http\Controllers\Admin\PopupController::class, 'update'])->name('popups.update');
     Route::delete('popups/{popup}', [\App\Http\Controllers\Admin\PopupController::class, 'destroy'])->name('popups.destroy');
     Route::post('popups/{popup}/toggle', [\App\Http\Controllers\Admin\PopupController::class, 'toggle'])->name('popups.toggle');
+
+    // Email Templates
+    Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
+    Route::get('email-templates/{emailTemplate}/edit', [EmailTemplateController::class, 'edit'])->name('email-templates.edit');
+    Route::put('email-templates/{emailTemplate}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
+    Route::patch('email-templates/{emailTemplate}/reset', [EmailTemplateController::class, 'reset'])->name('email-templates.reset');
 
     // Admin docs/guide
     Route::get('docs', [\App\Http\Controllers\Admin\DocsController::class, 'index'])->name('docs.index');

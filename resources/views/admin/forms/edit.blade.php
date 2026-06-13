@@ -70,27 +70,38 @@
   {{-- Add Field Form --}}
   <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:20px;">
     <div style="font-weight:600;margin-bottom:14px;font-size:13px;color:var(--gray-700);">Add New Field</div>
-    <form method="POST" action="{{ route('admin.forms.fields.store', $form) }}">
+    <form method="POST" action="{{ route('admin.forms.fields.store', $form) }}" id="add-field-form">
       @csrf
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Label *</label><input type="text" name="label" class="form-input" required placeholder="Your Name"></div>
-        <div class="form-group"><label class="form-label">Field Name *</label><input type="text" name="name" class="form-input" required placeholder="your_name" pattern="[a-z_][a-z0-9_]*"></div>
+        <div class="form-group"><label class="form-label">Label *</label><input type="text" name="label" class="form-input" required placeholder="Full Name"></div>
+        <div class="form-group"><label class="form-label">Field Name * <span style="font-weight:300;color:var(--gray-400);">(lowercase, no spaces)</span></label><input type="text" name="name" class="form-input" required placeholder="full_name" pattern="[a-z_][a-z0-9_]*"></div>
       </div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Field Type *</label>
           <select name="field_type" class="form-input" id="field-type-select">
-            @foreach(['text','email','phone','number','textarea','select','radio','checkbox','file','date','hidden'] as $ft)
-            <option value="{{ $ft }}">{{ ucfirst($ft) }}</option>
-            @endforeach
+            <option value="text">Text</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone / Tel</option>
+            <option value="number">Number</option>
+            <option value="textarea">Textarea (multi-line)</option>
+            <option value="select">Dropdown / Select</option>
+            <option value="radio">Radio Buttons</option>
+            <option value="checkbox">Checkboxes (multi-select)</option>
+            <option value="file">File Upload</option>
+            <option value="date">Date</option>
+            <option value="hidden">Hidden</option>
           </select>
         </div>
-        <div class="form-group"><label class="form-label">Placeholder</label><input type="text" name="placeholder" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Placeholder text</label><input type="text" name="placeholder" class="form-input" placeholder="e.g. Enter your full name"></div>
       </div>
-      <div class="form-group" id="options-group" style="display:none;"><label class="form-label">Options (one per line)</label><textarea name="options" class="form-input" rows="4" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea></div>
-      <div class="form-group"><label class="form-label">Help Text</label><input type="text" name="help_text" class="form-input"></div>
+      <div class="form-group" id="options-group" style="display:none;">
+        <label class="form-label">Options <span style="font-weight:300;color:var(--gray-400);">(one per line — for dropdown, radio, checkboxes)</span></label>
+        <textarea name="options" class="form-input" rows="5" placeholder="Consultation&#10;Training&#10;Partnership&#10;Support&#10;Other"></textarea>
+      </div>
+      <div class="form-group"><label class="form-label">Help Text <span style="font-weight:300;color:var(--gray-400);">(optional hint shown under field)</span></label><input type="text" name="help_text" class="form-input"></div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Sort Order</label><input type="number" name="sort_order" class="form-input" value="{{ $form->fields->count() * 10 }}"></div>
-        <div class="form-group" style="display:flex;align-items:flex-end;"><label class="form-check"><input type="checkbox" name="is_required" value="1"> Required</label></div>
+        <div class="form-group"><label class="form-label">Sort Order</label><input type="number" name="sort_order" class="form-input" value="{{ ($form->fields->max('sort_order') ?? 0) + 10 }}"></div>
+        <div class="form-group" style="display:flex;align-items:flex-end;"><label class="form-check"><input type="checkbox" name="is_required" value="1"> Required field</label></div>
       </div>
       <button type="submit" class="btn btn-primary btn-sm">Add Field</button>
     </form>
@@ -156,9 +167,28 @@
 </div>
 
 <script>
-document.getElementById('field-type-select').addEventListener('change', function(){
-  var g = document.getElementById('options-group');
-  g.style.display = ['select','radio','checkbox'].includes(this.value) ? 'block' : 'none';
-});
+(function () {
+  var sel = document.getElementById('field-type-select');
+  var og  = document.getElementById('options-group');
+  function toggleOptions() {
+    og.style.display = ['select','radio','checkbox'].includes(sel.value) ? 'block' : 'none';
+  }
+  sel.addEventListener('change', toggleOptions);
+  toggleOptions(); // run on page load in case browser restores a previous value
+
+  // Auto-fill field name from label (snake_case)
+  var labelInput = document.querySelector('#add-field-form input[name="label"]');
+  var nameInput  = document.querySelector('#add-field-form input[name="name"]');
+  if (labelInput && nameInput) {
+    labelInput.addEventListener('input', function () {
+      if (!nameInput._dirty) {
+        nameInput.value = labelInput.value.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '_')
+          .replace(/^_+|_+$/g, '');
+      }
+    });
+    nameInput.addEventListener('input', function () { nameInput._dirty = true; });
+  }
+})();
 </script>
 </x-admin-layout>

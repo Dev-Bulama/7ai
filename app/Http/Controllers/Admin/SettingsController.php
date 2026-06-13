@@ -49,7 +49,8 @@ class SettingsController extends Controller
             Setting::set($key, $value);
         }
 
-        return redirect()->route('admin.settings.index')->with('success', 'Settings saved.');
+        $tab = $request->input('_tab', 'general');
+        return redirect()->route('admin.settings.index', ['tab' => $tab])->with('success', 'Settings saved.');
     }
 
     public function sendTestEmail(Request $request)

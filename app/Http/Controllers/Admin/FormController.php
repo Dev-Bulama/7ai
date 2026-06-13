@@ -169,3 +169,5 @@ class FormController extends Controller
         $submission->delete();
         return redirect()->route('admin.forms.submissions', $form)->with('success', 'Submission deleted.');
     }
+}
+

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\WelcomeEmail;
+use App\Models\EmailTemplate;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -48,9 +49,38 @@ class RegisterController extends Controller
 
     private function sendWelcomeEmail(User $user): void
     {
+        // Skip if email notifications disabled
+        if (Setting::get('email_notifications', '1') === '0') return;
+
+        $this->configureMailer();
+
+        $vars = [
+            'name'          => $user->name,
+            'email'         => $user->email,
+            'login_url'     => url('/dashboard'),
+            'site_name'     => Setting::get('site_name', '7AI'),
+            'support_email' => Setting::get('support_email') ?: Setting::get('contact_email', 'hello@7ai.africa'),
+            'current_year'  => date('Y'),
+        ];
+
+        $fromName = Setting::get('mail_from_name', '7AI');
+        $fromAddr = Setting::get('mail_from_address', 'hello@7ai.africa');
+
+        // Welcome email to user
         try {
-            $this->configureMailer();
-            Mail::to($user->email, $user->name)->send(new WelcomeEmail($user));
+            $tpl = EmailTemplate::getByKey('user_welcome');
+            if ($tpl) {
+                $subject = $tpl->renderSubject($vars);
+                $body    = $tpl->render($vars);
+                Mail::html($body, function ($msg) use ($user, $subject, $fromName, $fromAddr) {
+                    $msg->to($user->email, $user->name)
+                        ->from($fromAddr, $fromName)
+                        ->subject($subject);
+                });
+            } else {
+                // Fallback to mailable if no template found
+                Mail::to($user->email, $user->name)->send(new WelcomeEmail($user));
+            }
         } catch (\Throwable $e) {
             Log::error('Registration welcome email failed', [
                 'user'  => $user->id,
@@ -63,13 +93,15 @@ class RegisterController extends Controller
         try {
             $adminEmail = Setting::get('contact_email') ?: Setting::get('mail_from_address');
             if ($adminEmail) {
-                $fromName = Setting::get('mail_from_name', '7AI');
-                $fromAddr = Setting::get('mail_from_address', 'hello@7ai.africa');
-                Mail::send('emails.admin-new-user', ['user' => $user], function ($msg) use ($adminEmail, $fromName, $fromAddr, $user) {
-                    $msg->to($adminEmail)
-                        ->from($fromAddr, $fromName)
-                        ->subject('New user registered: ' . $user->name);
-                });
+                $adminVars = array_merge($vars, ['login_url' => url('/admin/users')]);
+                $tpl = EmailTemplate::getByKey('admin_new_user');
+                if ($tpl) {
+                    $subject = $tpl->renderSubject($adminVars);
+                    $body    = $tpl->render($adminVars);
+                    Mail::html($body, function ($msg) use ($adminEmail, $fromName, $fromAddr, $subject) {
+                        $msg->to($adminEmail)->from($fromAddr, $fromName)->subject($subject);
+                    });
+                }
             }
         } catch (\Throwable $e) {
             Log::error('Admin new user notification failed', ['error' => $e->getMessage()]);
