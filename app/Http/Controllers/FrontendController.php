@@ -15,8 +15,8 @@ use App\Models\Form;
 use App\Models\FormSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Services\SmtpMailService;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Config;
 
 class FrontendController extends Controller
 {
@@ -298,13 +298,12 @@ class FrontendController extends Controller
 
         $successMsg = $form->success_message ?: 'Thank you! Your message has been received.';
 
-        // Send welcome email if enabled
+        // Send form welcome/autoresponder email if enabled
         if ($form->welcome_email_enabled && $form->welcome_email_body) {
             $toEmail = null;
             if ($form->welcome_email_field && isset($data[$form->welcome_email_field])) {
                 $toEmail = $data[$form->welcome_email_field];
             } else {
-                // Auto-detect first email field
                 foreach ($data as $val) {
                     if (is_string($val) && filter_var($val, FILTER_VALIDATE_EMAIL)) {
                         $toEmail = $val;
@@ -315,25 +314,35 @@ class FrontendController extends Controller
 
             if ($toEmail) {
                 try {
-                    $this->configureMailer();
-                    $subject = $form->welcome_email_subject ?: 'Welcome!';
-                    $fromName = $form->welcome_email_from_name ?: Setting::get('mail_from_name', config('mail.from.name'));
+                    SmtpMailService::configure();
+
+                    $subject  = $form->welcome_email_subject ?: 'Welcome!';
+                    $fromName = $form->welcome_email_from_name    ?: Setting::get('mail_from_name', config('mail.from.name'));
                     $fromAddr = $form->welcome_email_from_address ?: Setting::get('mail_from_address', config('mail.from.address'));
-                    $htmlBody = $form->welcome_email_body;
+
+                    // Replace {{field_name}} placeholders with submitted values
+                    $vars = array_merge($data, [
+                        'site_name'     => Setting::get('site_name', '7AI'),
+                        'support_email' => Setting::get('support_email') ?: Setting::get('contact_email', ''),
+                        'current_year'  => date('Y'),
+                    ]);
+                    $htmlBody = preg_replace_callback('/\{\{(\w+)\}\}/', function ($m) use ($vars) {
+                        return $vars[$m[1]] ?? '';
+                    }, $form->welcome_email_body);
+                    $subject = preg_replace_callback('/\{\{(\w+)\}\}/', function ($m) use ($vars) {
+                        return $vars[$m[1]] ?? '';
+                    }, $subject);
 
                     Mail::html($htmlBody, function ($msg) use ($toEmail, $subject, $fromName, $fromAddr) {
-                        $msg->to($toEmail)
-                            ->subject($subject)
-                            ->from($fromAddr, $fromName);
+                        $msg->to($toEmail)->subject($subject)->from($fromAddr, $fromName);
                     });
+
+                    \Log::info('[MAIL] Form welcome email sent', ['to' => $toEmail, 'form' => $form->id]);
                 } catch (\Throwable $e) {
-                    \Log::error('Welcome email failed', [
-                        'to'      => $toEmail,
-                        'form'    => $form->id,
-                        'error'   => $e->getMessage(),
-                        'host'    => Setting::get('mail_host'),
-                        'port'    => Setting::get('mail_port'),
-                        'user'    => Setting::get('mail_username'),
+                    \Log::error('[MAIL] Form welcome email failed', [
+                        'to'    => $toEmail,
+                        'form'  => $form->id,
+                        'error' => $e->getMessage(),
                     ]);
                 }
             }
@@ -346,26 +355,8 @@ class FrontendController extends Controller
         return back()->with('success', $successMsg);
     }
 
-    private function configureMailer(): void
-    {
-        $host = Setting::get('mail_host');
-        if (!$host) return;
 
-        Config::set('mail.mailers.smtp.transport', 'smtp');
-        Config::set('mail.mailers.smtp.host', $host);
-        Config::set('mail.mailers.smtp.port', (int) Setting::get('mail_port', 587));
-        Config::set('mail.mailers.smtp.username', Setting::get('mail_username'));
-        Config::set('mail.mailers.smtp.password', Setting::get('mail_password'));
-        Config::set('mail.mailers.smtp.encryption', Setting::get('mail_encryption', 'tls'));
-        Config::set('mail.from.name', Setting::get('mail_from_name', '7AI'));
-        Config::set('mail.from.address', Setting::get('mail_from_address', 'hello@7ai.africa'));
-        Config::set('mail.default', 'smtp');
-
-        // Purge the resolved mailer so it rebuilds with the new config
-        app('mail.manager')->purge('smtp');
-    }
-
-    public function cmsPage(string $slug)
+public function cmsPage(string $slug)
     {
         $page = \App\Models\Page::where('slug', $slug)
             ->where('status', 'published')
