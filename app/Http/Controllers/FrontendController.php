@@ -55,7 +55,7 @@ class FrontendController extends Controller
         $bottomCta    = Cta::where('is_active', true)->where('name', 'home_cta')->first();
         $latestPosts  = Post::with('category')->where('status', 'published')->orderByDesc('published_at')->limit(3)->get();
         $settings     = $this->siteSettings();
-        $teamMembers  = \App\Models\TeamMember::active()->featured()->orderBy('sort_order')->limit(6)->get();
+        $teamMembers  = \App\Models\TeamMember::active()->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('name')->limit(8)->get();
         return view('public.index', compact('page', 'testimonials', 'homeCards', 'aiCards', 'processCards', 'heroCta', 'bottomCta', 'latestPosts', 'settings', 'teamMembers'));
     }
 
