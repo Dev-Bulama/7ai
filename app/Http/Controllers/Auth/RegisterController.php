@@ -26,14 +26,25 @@ class RegisterController extends Controller
         // Normalize email before validation — prevents User@Email.com and user@email.com as separate accounts
         $request->merge(['email' => strtolower(trim($request->input('email', '')))]);
 
+        // Support both a single 'name' field AND the split first_name/last_name the register form uses
+        if (!$request->filled('name') && $request->filled('first_name')) {
+            $request->merge([
+                'name' => trim($request->input('first_name') . ' ' . $request->input('last_name')),
+            ]);
+        }
+
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => 'required|min:8|confirmed',
-            'phone'    => 'nullable|string|max:30',
-            'country'  => 'nullable|string',
+            'first_name' => 'nullable|string|max:255',
+            'last_name'  => 'nullable|string|max:255',
+            'name'       => 'required|string|max:255',
+            'email'      => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password'   => 'required|min:8|confirmed',
+            'phone'      => 'nullable|string|max:30',
+            'company'    => 'nullable|string|max:255',
+            'country'    => 'nullable|string',
         ], [
-            'email.unique' => 'This email address is already registered. Please log in instead.',
+            'name.required'  => 'Please enter your name.',
+            'email.unique'   => 'This email address is already registered. Please log in instead.',
         ]);
 
         $user = User::create([
@@ -41,6 +52,7 @@ class RegisterController extends Controller
             'email'    => $data['email'],
             'password' => Hash::make($data['password']),
             'phone'    => $data['phone'] ?? null,
+            'company'  => $data['company'] ?? null,
             'country'  => $data['country'] ?? null,
         ]);
 
