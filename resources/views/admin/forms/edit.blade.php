@@ -261,7 +261,7 @@
           <label class="form-label">From Name</label>
           <input type="text" name="welcome_email_from_name" class="form-input"
             value="{{ old('welcome_email_from_name', $form->welcome_email_from_name) }}"
-            placeholder="{{ Setting::get('mail_from_name', '7AI') }}">
+            placeholder="{{ \App\Models\Setting::get('mail_from_name', '7AI') }}">
           <span style="font-size:11px;color:var(--gray-400);">Defaults to your global mail From Name in Settings.</span>
         </div>
       </div>
@@ -270,7 +270,7 @@
           <label class="form-label">From Email Address</label>
           <input type="email" name="welcome_email_from_address" class="form-input"
             value="{{ old('welcome_email_from_address', $form->welcome_email_from_address) }}"
-            placeholder="{{ Setting::get('mail_from_address', 'hello@7ai.africa') }}">
+            placeholder="{{ \App\Models\Setting::get('mail_from_address', 'hello@7ai.africa') }}">
           <span style="font-size:11px;color:var(--gray-400);">Defaults to your global From Address in Settings.</span>
         </div>
       </div>
