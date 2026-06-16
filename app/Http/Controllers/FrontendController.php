@@ -322,7 +322,8 @@ private function sendFormWelcomeEmail(\App\Models\Form $form, array $data): void
         $toEmail = null;
 
         // Priority 1: explicit field set in form settings
-        if ($form->welcome_email_field && isset($data[$form->welcome_email_field])) {
+        if ($form->welcome_email_field && !empty($data[$form->welcome_email_field])
+            && filter_var($data[$form->welcome_email_field], FILTER_VALIDATE_EMAIL)) {
             $toEmail = $data[$form->welcome_email_field];
         }
 

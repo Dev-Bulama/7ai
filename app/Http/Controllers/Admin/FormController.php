@@ -190,7 +190,8 @@ class FormController extends Controller
 
         // Resolve recipient using same priority logic as FrontendController
         $toEmail = null;
-        if ($form->welcome_email_field && !empty($data[$form->welcome_email_field])) {
+        if ($form->welcome_email_field && !empty($data[$form->welcome_email_field])
+            && filter_var($data[$form->welcome_email_field], FILTER_VALIDATE_EMAIL)) {
             $toEmail = $data[$form->welcome_email_field];
         }
         if (!$toEmail) {

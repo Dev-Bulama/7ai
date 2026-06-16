@@ -227,6 +227,8 @@
           @php
             $emailFields = $form->fields->where('is_active', true)->where('field_type', 'email');
             $otherFields = $form->fields->where('is_active', true)->where('field_type', '!=', 'email');
+            $currentField = $form->fields->where('is_active', true)->firstWhere('name', $form->welcome_email_field);
+            $currentIsNonEmail = $currentField && $currentField->field_type !== 'email';
           @endphp
           @if($emailFields->count())
           <optgroup label="Email fields (recommended)">
@@ -247,6 +249,12 @@
           </optgroup>
           @endif
         </select>
+        @if($currentIsNonEmail)
+        <div style="margin-top:8px;padding:10px 14px;background:#fef3c7;border:1px solid #fbbf24;border-radius:6px;font-size:12px;color:#92400e;">
+          ⚠ <strong>Warning:</strong> The selected field "<strong>{{ $currentField->label }}</strong>" is not an email field — it will not contain a valid email address.
+          Please change this to your <strong>Email Address</strong> field, or leave it on Auto-detect.
+        </div>
+        @endif
       </div>
 
       <div class="form-grid">
