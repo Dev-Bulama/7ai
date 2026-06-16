@@ -117,6 +117,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('forms/{form}/submissions/export', [FormController::class, 'exportSubmissions'])->name('forms.submissions.export');
     Route::delete('forms/{form}/submissions/{submission}', [FormController::class, 'destroySubmission'])->name('form-submissions.destroy');
     Route::post('form-submissions/{submission}/read', [FormController::class, 'markRead'])->name('form-submissions.read');
+    Route::post('forms/{form}/submissions/{submission}/resend-email', [FormController::class, 'resendEmail'])->name('form-submissions.resend-email');
 
     // Menu Builder
     Route::resource('menus', MenuController::class)->except(['show']);

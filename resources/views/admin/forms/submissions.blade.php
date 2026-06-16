@@ -7,6 +7,13 @@
   </div>
 </div>
 
+@if(session('success'))
+<div style="margin-bottom:16px;padding:12px 16px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;color:#065f46;font-size:13px;">✓ {{ session('success') }}</div>
+@endif
+@if(session('error'))
+<div style="margin-bottom:16px;padding:12px 16px;background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;color:#991b1b;font-size:13px;">✗ {{ session('error') }}</div>
+@endif
+
 @if($submissions->isEmpty())
 <div class="card" style="text-align:center;padding:60px;color:var(--gray-400);">No submissions yet.</div>
 @else
@@ -47,6 +54,11 @@
             @if(!$sub->is_read)
             <form method="POST" action="{{ route('admin.form-submissions.read', $sub) }}" style="display:inline;">
               @csrf<button class="btn btn-outline btn-sm">Mark Read</button>
+            </form>
+            @endif
+            @if($form->welcome_email_enabled)
+            <form method="POST" action="{{ route('admin.form-submissions.resend-email', [$form, $sub]) }}" style="display:inline;" onsubmit="return confirm('Resend welcome email to this person?')">
+              @csrf<button class="btn btn-outline btn-sm" style="color:#0b9e6e;border-color:#0b9e6e;">✉ Resend Email</button>
             </form>
             @endif
             <form method="POST" action="{{ route('admin.form-submissions.destroy', [$form, $sub]) }}" style="display:inline;" onsubmit="return confirm('Delete this submission?')">

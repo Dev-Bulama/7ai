@@ -4,7 +4,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Form;
 use App\Models\FormField;
 use App\Models\FormSubmission;
+use App\Services\SmtpMailService;
+use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class FormController extends Controller
@@ -173,6 +176,112 @@ class FormController extends Controller
         abort_if($submission->form_id !== $form->id, 404);
         $submission->delete();
         return redirect()->route('admin.forms.submissions', $form)->with('success', 'Submission deleted.');
+    }
+
+    public function resendEmail(Form $form, FormSubmission $submission)
+    {
+        abort_if($submission->form_id !== $form->id, 404);
+
+        if (!$form->welcome_email_enabled) {
+            return back()->with('error', 'Welcome email is not enabled for this form. Enable it in the Welcome Email tab first.');
+        }
+
+        $data = is_array($submission->data) ? $submission->data : [];
+
+        // Resolve recipient using same priority logic as FrontendController
+        $toEmail = null;
+        if ($form->welcome_email_field && !empty($data[$form->welcome_email_field])) {
+            $toEmail = $data[$form->welcome_email_field];
+        }
+        if (!$toEmail) {
+            foreach (['email', 'email_address', 'your_email', 'registrant_email'] as $key) {
+                if (!empty($data[$key]) && filter_var($data[$key], FILTER_VALIDATE_EMAIL)) {
+                    $toEmail = $data[$key];
+                    break;
+                }
+            }
+        }
+        if (!$toEmail) {
+            $emailField = $form->fields->where('field_type', 'email')->where('is_active', true)->first();
+            if ($emailField && !empty($data[$emailField->name])) {
+                $toEmail = $data[$emailField->name];
+            }
+        }
+        if (!$toEmail) {
+            foreach ($data as $val) {
+                if (is_string($val) && filter_var($val, FILTER_VALIDATE_EMAIL)) {
+                    $toEmail = $val;
+                    break;
+                }
+            }
+        }
+
+        if (!$toEmail) {
+            return back()->with('error', 'No email address found in this submission.');
+        }
+
+        $siteName     = Setting::get('site_name', '7AI');
+        $supportEmail = Setting::get('support_email') ?: Setting::get('contact_email', '');
+        $submittedName = $data['name']
+            ?? $data['full_name']
+            ?? (trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '')) ?: null)
+            ?? $data['your_name']
+            ?? '';
+
+        $vars = array_merge($data, [
+            'name'          => $submittedName,
+            'email'         => $toEmail,
+            'form_name'     => $form->name,
+            'site_name'     => $siteName,
+            'support_email' => $supportEmail,
+            'current_year'  => date('Y'),
+        ]);
+
+        $replace = fn(string $text) => preg_replace_callback(
+            '/\{\{(\w+)\}\}/',
+            fn($m) => $vars[$m[1]] ?? '',
+            $text
+        );
+
+        $subject = $replace($form->welcome_email_subject ?: 'Thank you for registering — ' . $form->name);
+
+        $defaultBody = '<div style="font-family:sans-serif;max-width:560px;margin:40px auto;padding:32px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;">'
+            . '<h2 style="color:#0b4f6c;margin-top:0;">Hello ' . e($vars['name']) . ',</h2>'
+            . '<p style="color:#374151;line-height:1.7;">Thank you for registering for <strong>' . e($vars['form_name']) . '</strong>.</p>'
+            . '<p style="color:#374151;line-height:1.7;">We have received your submission successfully. Our team will review your details and contact you if necessary.</p>'
+            . '<p style="color:#374151;line-height:1.7;">Thank you,<br><strong>' . e($vars['site_name']) . '</strong></p>'
+            . '<hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">'
+            . '<p style="font-size:12px;color:#9ca3af;">© ' . $vars['current_year'] . ' ' . e($vars['site_name']) . '</p></div>';
+
+        $htmlBody = $form->welcome_email_body ? $replace($form->welcome_email_body) : $defaultBody;
+        $fromName = $form->welcome_email_from_name    ?: Setting::get('mail_from_name', '7AI');
+        $fromAddr = $form->welcome_email_from_address ?: Setting::get('mail_from_address', 'hello@7ai.africa');
+
+        try {
+            $configured = SmtpMailService::configure();
+            if (!$configured) {
+                return back()->with('error', 'SMTP is not configured. Go to Settings → Email and save your SMTP credentials.');
+            }
+
+            Mail::html($htmlBody, function ($msg) use ($toEmail, $subject, $fromName, $fromAddr) {
+                $msg->to($toEmail)->subject($subject)->from($fromAddr, $fromName);
+            });
+
+            \Log::info('[FORM EMAIL] Admin resent welcome email', [
+                'to'   => $toEmail,
+                'form' => $form->id,
+                'sub'  => $submission->id,
+            ]);
+
+            return back()->with('success', "Welcome email resent to {$toEmail}.");
+
+        } catch (\Throwable $e) {
+            \Log::error('[FORM EMAIL ERROR] Admin resend failed', [
+                'to'    => $toEmail,
+                'error' => $e->getMessage(),
+            ]);
+            return back()->with('error', 'Failed to send: ' . $e->getMessage());
+        }
     }
 }
 
