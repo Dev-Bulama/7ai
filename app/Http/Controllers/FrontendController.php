@@ -298,54 +298,9 @@ class FrontendController extends Controller
 
         $successMsg = $form->success_message ?: 'Thank you! Your message has been received.';
 
-        // Send form welcome/autoresponder email if enabled
-        if ($form->welcome_email_enabled && $form->welcome_email_body) {
-            $toEmail = null;
-            if ($form->welcome_email_field && isset($data[$form->welcome_email_field])) {
-                $toEmail = $data[$form->welcome_email_field];
-            } else {
-                foreach ($data as $val) {
-                    if (is_string($val) && filter_var($val, FILTER_VALIDATE_EMAIL)) {
-                        $toEmail = $val;
-                        break;
-                    }
-                }
-            }
-
-            if ($toEmail) {
-                try {
-                    SmtpMailService::configure();
-
-                    $subject  = $form->welcome_email_subject ?: 'Welcome!';
-                    $fromName = $form->welcome_email_from_name    ?: Setting::get('mail_from_name', config('mail.from.name'));
-                    $fromAddr = $form->welcome_email_from_address ?: Setting::get('mail_from_address', config('mail.from.address'));
-
-                    // Replace {{field_name}} placeholders with submitted values
-                    $vars = array_merge($data, [
-                        'site_name'     => Setting::get('site_name', '7AI'),
-                        'support_email' => Setting::get('support_email') ?: Setting::get('contact_email', ''),
-                        'current_year'  => date('Y'),
-                    ]);
-                    $htmlBody = preg_replace_callback('/\{\{(\w+)\}\}/', function ($m) use ($vars) {
-                        return $vars[$m[1]] ?? '';
-                    }, $form->welcome_email_body);
-                    $subject = preg_replace_callback('/\{\{(\w+)\}\}/', function ($m) use ($vars) {
-                        return $vars[$m[1]] ?? '';
-                    }, $subject);
-
-                    Mail::html($htmlBody, function ($msg) use ($toEmail, $subject, $fromName, $fromAddr) {
-                        $msg->to($toEmail)->subject($subject)->from($fromAddr, $fromName);
-                    });
-
-                    \Log::info('[MAIL] Form welcome email sent', ['to' => $toEmail, 'form' => $form->id]);
-                } catch (\Throwable $e) {
-                    \Log::error('[MAIL] Form welcome email failed', [
-                        'to'    => $toEmail,
-                        'form'  => $form->id,
-                        'error' => $e->getMessage(),
-                    ]);
-                }
-            }
+        // Send form autoresponder/welcome email if enabled
+        if ($form->welcome_email_enabled) {
+            $this->sendFormWelcomeEmail($form, $data);
         }
 
         if ($form->redirect_url) {
@@ -356,7 +311,140 @@ class FrontendController extends Controller
     }
 
 
-public function cmsPage(string $slug)
+private function sendFormWelcomeEmail(\App\Models\Form $form, array $data): void
+    {
+        \Log::info('[FORM EMAIL] Attempting welcome email', [
+            'form'    => $form->id,
+            'form_name' => $form->name,
+        ]);
+
+        // ── 1. Resolve recipient email ─────────────────────────────────────────
+        $toEmail = null;
+
+        // Priority 1: explicit field set in form settings
+        if ($form->welcome_email_field && isset($data[$form->welcome_email_field])) {
+            $toEmail = $data[$form->welcome_email_field];
+        }
+
+        // Priority 2: look for common email field names
+        if (!$toEmail) {
+            foreach (['email', 'email_address', 'your_email', 'registrant_email'] as $key) {
+                if (!empty($data[$key]) && filter_var($data[$key], FILTER_VALIDATE_EMAIL)) {
+                    $toEmail = $data[$key];
+                    break;
+                }
+            }
+        }
+
+        // Priority 3: first field of type email in the form
+        if (!$toEmail) {
+            $emailField = $form->fields->where('field_type', 'email')->where('is_active', true)->first();
+            if ($emailField && !empty($data[$emailField->name])) {
+                $toEmail = $data[$emailField->name];
+            }
+        }
+
+        // Priority 4: scan all submitted values for anything that looks like an email
+        if (!$toEmail) {
+            foreach ($data as $val) {
+                if (is_string($val) && filter_var($val, FILTER_VALIDATE_EMAIL)) {
+                    $toEmail = $val;
+                    break;
+                }
+            }
+        }
+
+        if (!$toEmail) {
+            \Log::warning('[FORM EMAIL] No recipient email found in submission', [
+                'form'   => $form->id,
+                'fields' => array_keys($data),
+            ]);
+            return;
+        }
+
+        \Log::info('[FORM EMAIL] Recipient resolved', ['to' => $toEmail, 'form' => $form->id]);
+
+        // ── 2. Build template variables ────────────────────────────────────────
+        $siteName     = Setting::get('site_name', '7AI');
+        $supportEmail = Setting::get('support_email') ?: Setting::get('contact_email', '');
+
+        // Try to resolve a human-readable name from submitted fields
+        $submittedName = $data['name']
+            ?? $data['full_name']
+            ?? (trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '')) ?: null)
+            ?? $data['your_name']
+            ?? '';
+
+        $vars = array_merge($data, [
+            'name'          => $submittedName,
+            'email'         => $toEmail,
+            'form_name'     => $form->name,
+            'site_name'     => $siteName,
+            'support_email' => $supportEmail,
+            'current_year'  => date('Y'),
+        ]);
+
+        $replace = fn(string $text) => preg_replace_callback(
+            '/\{\{(\w+)\}\}/',
+            fn($m) => $vars[$m[1]] ?? '',
+            $text
+        );
+
+        // ── 3. Subject & body (with defaults if admin left them blank) ─────────
+        $subject = $replace(
+            $form->welcome_email_subject
+            ?: 'Thank you for registering — ' . $form->name
+        );
+
+        $defaultBody = <<<HTML
+<div style="font-family:sans-serif;max-width:560px;margin:40px auto;padding:32px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;">
+  <h2 style="color:#0b4f6c;margin-top:0;">Hello {$vars['name']},</h2>
+  <p style="color:#374151;line-height:1.7;">Thank you for registering for <strong>{$vars['form_name']}</strong>.</p>
+  <p style="color:#374151;line-height:1.7;">We have received your submission successfully. Our team will review your details and contact you if necessary.</p>
+  <p style="color:#374151;line-height:1.7;">Thank you,<br><strong>{$vars['site_name']}</strong></p>
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
+  <p style="font-size:12px;color:#9ca3af;">If you have questions, contact us at {$vars['support_email']}.</p>
+  <p style="font-size:11px;color:#d1d5db;">© {$vars['current_year']} {$vars['site_name']}</p>
+</div>
+HTML;
+
+        $htmlBody = $form->welcome_email_body
+            ? $replace($form->welcome_email_body)
+            : $defaultBody;
+
+        $fromName = $form->welcome_email_from_name    ?: Setting::get('mail_from_name', '7AI');
+        $fromAddr = $form->welcome_email_from_address ?: Setting::get('mail_from_address', 'hello@7ai.africa');
+
+        // ── 4. Configure SMTP & send ───────────────────────────────────────────
+        try {
+            $configured = SmtpMailService::configure();
+
+            if (!$configured) {
+                \Log::warning('[FORM EMAIL] SMTP not configured — email not sent', ['form' => $form->id]);
+                return;
+            }
+
+            Mail::html($htmlBody, function ($msg) use ($toEmail, $subject, $fromName, $fromAddr) {
+                $msg->to($toEmail)->subject($subject)->from($fromAddr, $fromName);
+            });
+
+            \Log::info('[FORM EMAIL] Welcome email sent', [
+                'to'   => $toEmail,
+                'form' => $form->id,
+                'subj' => $subject,
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('[FORM EMAIL ERROR] Failed to send welcome email', [
+                'to'    => $toEmail,
+                'form'  => $form->id,
+                'error' => $e->getMessage(),
+                'file'  => $e->getFile() . ':' . $e->getLine(),
+            ]);
+            // Never break the form submission — silently continue
+        }
+    }
+
+    public function cmsPage(string $slug)
     {
         $page = \App\Models\Page::where('slug', $slug)
             ->where('status', 'published')

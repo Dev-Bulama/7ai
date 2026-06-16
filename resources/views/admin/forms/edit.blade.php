@@ -186,8 +186,12 @@
 
 {{-- Welcome Email --}}
 <div class="card" style="margin-bottom:24px;">
-  <div style="font-weight:700;color:var(--dark);margin-bottom:4px;font-size:14px;">Welcome Email</div>
-  <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">Send an automatic welcome email to each registrant. Requires SMTP to be configured in <a href="{{ route('admin.settings.index') }}" style="color:var(--teal);">Settings → Email</a>.</p>
+  <div style="font-weight:700;color:var(--dark);margin-bottom:4px;font-size:14px;">Welcome / Autoresponder Email</div>
+  <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">
+    Automatically send a confirmation email to each person who submits this form.
+    Requires SMTP to be configured in <a href="{{ route('admin.settings.index', ['tab'=>'smtp']) }}" style="color:var(--teal);">Settings → Email</a>.
+    If you leave the body blank, a default thank-you email will be sent.
+  </p>
   <form method="POST" action="{{ route('admin.forms.update', $form) }}">
     @csrf @method('PUT')
     <input type="hidden" name="name" value="{{ $form->name }}">
@@ -205,30 +209,90 @@
       <label class="form-check" style="font-size:14px;font-weight:600;">
         <input type="checkbox" name="welcome_email_enabled" value="1" {{ $form->welcome_email_enabled ? 'checked' : '' }}
           id="email-toggle" onchange="document.getElementById('email-config').style.display=this.checked?'block':'none'">
-        Enable welcome email on registration
+        Enable welcome email after form submission
       </label>
     </div>
 
     <div id="email-config" style="display:{{ $form->welcome_email_enabled ? 'block' : 'none' }};">
+
+      {{-- Recipient field --}}
+      <div class="card" style="background:var(--gray-50);border:1px solid var(--gray-200);margin-bottom:20px;padding:14px 16px;">
+        <div style="font-size:13px;font-weight:600;color:var(--dark);margin-bottom:6px;">Recipient Email Field</div>
+        <p style="font-size:12px;color:var(--gray-500);margin:0 0 10px;">
+          Select the form field that contains the submitter's email address. This is who receives the welcome email.
+          If left on auto-detect, the system will use a field named <code>email</code> or the first email-type field.
+        </p>
+        <select name="welcome_email_field" class="form-input" style="max-width:360px;">
+          <option value="">— Auto-detect (recommended) —</option>
+          @php
+            $emailFields = $form->fields->where('is_active', true)->where('field_type', 'email');
+            $otherFields = $form->fields->where('is_active', true)->where('field_type', '!=', 'email');
+          @endphp
+          @if($emailFields->count())
+          <optgroup label="Email fields (recommended)">
+            @foreach($emailFields as $f)
+            <option value="{{ $f->name }}" {{ $form->welcome_email_field === $f->name ? 'selected' : '' }}>
+              {{ $f->label }} — {{ $f->name }}
+            </option>
+            @endforeach
+          </optgroup>
+          @endif
+          @if($otherFields->count())
+          <optgroup label="Other fields">
+            @foreach($otherFields as $f)
+            <option value="{{ $f->name }}" {{ $form->welcome_email_field === $f->name ? 'selected' : '' }}>
+              {{ $f->label }} — {{ $f->name }}
+            </option>
+            @endforeach
+          </optgroup>
+          @endif
+        </select>
+      </div>
+
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">Email Field <span style="font-weight:400;color:var(--gray-400);">(which field contains the registrant's email)</span></label>
-          <select name="welcome_email_field" class="form-input">
-            <option value="">— Auto-detect first email field —</option>
-            @foreach($form->fields->where('is_active', true) as $f)
-            <option value="{{ $f->name }}" {{ $form->welcome_email_field === $f->name ? 'selected' : '' }}>{{ $f->label }} ({{ $f->name }})</option>
-            @endforeach
-          </select>
+          <label class="form-label">Email Subject</label>
+          <input type="text" name="welcome_email_subject" class="form-input"
+            value="{{ old('welcome_email_subject', $form->welcome_email_subject) }}"
+            placeholder="Thank you for registering — {{ $form->name }}">
+          <span style="font-size:11px;color:var(--gray-400);">Leave blank to use default. Supports <code>&#123;&#123;form_name&#125;&#125;</code>, <code>&#123;&#123;name&#125;&#125;</code> etc.</span>
         </div>
-        <div class="form-group"><label class="form-label">Email Subject</label><input type="text" name="welcome_email_subject" class="form-input" value="{{ old('welcome_email_subject', $form->welcome_email_subject) }}" placeholder="Welcome to the Abuja AI Conference!"></div>
+        <div class="form-group">
+          <label class="form-label">From Name</label>
+          <input type="text" name="welcome_email_from_name" class="form-input"
+            value="{{ old('welcome_email_from_name', $form->welcome_email_from_name) }}"
+            placeholder="{{ Setting::get('mail_from_name', '7AI') }}">
+          <span style="font-size:11px;color:var(--gray-400);">Defaults to your global mail From Name in Settings.</span>
+        </div>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">From Name</label><input type="text" name="welcome_email_from_name" class="form-input" value="{{ old('welcome_email_from_name', $form->welcome_email_from_name) }}" placeholder="7AI"></div>
-        <div class="form-group"><label class="form-label">From Email Address</label><input type="email" name="welcome_email_from_address" class="form-input" value="{{ old('welcome_email_from_address', $form->welcome_email_from_address) }}" placeholder="hello@7ai.africa"></div>
+        <div class="form-group">
+          <label class="form-label">From Email Address</label>
+          <input type="email" name="welcome_email_from_address" class="form-input"
+            value="{{ old('welcome_email_from_address', $form->welcome_email_from_address) }}"
+            placeholder="{{ Setting::get('mail_from_address', 'hello@7ai.africa') }}">
+          <span style="font-size:11px;color:var(--gray-400);">Defaults to your global From Address in Settings.</span>
+        </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Email Body (HTML supported)</label>
-        <textarea name="welcome_email_body" class="form-input" rows="16" style="font-family:monospace;font-size:13px;" placeholder="<h1>Welcome!</h1><p>Thank you for registering...</p>">{{ old('welcome_email_body', $form->welcome_email_body) }}</textarea>
+        <label class="form-label">Email Body <span style="font-weight:400;color:var(--gray-400);">(HTML supported — leave blank for default)</span></label>
+        <textarea name="welcome_email_body" class="form-input" rows="14" style="font-family:monospace;font-size:12px;"
+          placeholder="<p>Hello &#123;&#123;name&#125;&#125;,</p>&#10;<p>Thank you for registering for &#123;&#123;form_name&#125;&#125;.</p>">{{ old('welcome_email_body', $form->welcome_email_body) }}</textarea>
+      </div>
+
+      {{-- Variable reference --}}
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 16px;font-size:12px;color:#1e40af;margin-bottom:16px;">
+        <strong>Available variables:</strong><br>
+        <code>&#123;&#123;name&#125;&#125;</code> &nbsp;
+        <code>&#123;&#123;email&#125;&#125;</code> &nbsp;
+        <code>&#123;&#123;form_name&#125;&#125;</code> &nbsp;
+        <code>&#123;&#123;site_name&#125;&#125;</code> &nbsp;
+        <code>&#123;&#123;support_email&#125;&#125;</code> &nbsp;
+        <code>&#123;&#123;current_year&#125;&#125;</code> &nbsp;
+        + any field name from this form e.g.
+        @foreach($form->fields->where('is_active', true)->take(4) as $f)
+          <code>&#123;&#123;{{ $f->name }}&#125;&#125;</code>
+        @endforeach
       </div>
     </div>
 
