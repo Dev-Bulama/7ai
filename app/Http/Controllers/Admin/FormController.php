@@ -186,36 +186,8 @@ class FormController extends Controller
             return back()->with('error', 'Welcome email is not enabled for this form. Enable it in the Welcome Email tab first.');
         }
 
-        $data = is_array($submission->data) ? $submission->data : [];
-
-        // Resolve recipient using same priority logic as FrontendController
-        $toEmail = null;
-        if ($form->welcome_email_field && !empty($data[$form->welcome_email_field])
-            && filter_var($data[$form->welcome_email_field], FILTER_VALIDATE_EMAIL)) {
-            $toEmail = $data[$form->welcome_email_field];
-        }
-        if (!$toEmail) {
-            foreach (['email', 'email_address', 'your_email', 'registrant_email'] as $key) {
-                if (!empty($data[$key]) && filter_var($data[$key], FILTER_VALIDATE_EMAIL)) {
-                    $toEmail = $data[$key];
-                    break;
-                }
-            }
-        }
-        if (!$toEmail) {
-            $emailField = $form->fields->where('field_type', 'email')->where('is_active', true)->first();
-            if ($emailField && !empty($data[$emailField->name])) {
-                $toEmail = $data[$emailField->name];
-            }
-        }
-        if (!$toEmail) {
-            foreach ($data as $val) {
-                if (is_string($val) && filter_var($val, FILTER_VALIDATE_EMAIL)) {
-                    $toEmail = $val;
-                    break;
-                }
-            }
-        }
+        $data    = is_array($submission->data) ? $submission->data : [];
+        $toEmail = $this->resolveEmailFromData($form, $data);
 
         if (!$toEmail) {
             return back()->with('error', 'No email address found in this submission.');
@@ -283,6 +255,120 @@ class FormController extends Controller
             ]);
             return back()->with('error', 'Failed to send: ' . $e->getMessage());
         }
+    }
+
+    public function bulkAction(Request $request, Form $form)
+    {
+        $request->validate([
+            'action'          => 'required|in:resend_email,mark_read,delete',
+            'submission_ids'  => 'required|array|min:1',
+            'submission_ids.*'=> 'integer|exists:form_submissions,id',
+        ]);
+
+        $ids         = $request->input('submission_ids');
+        $action      = $request->input('action');
+        $submissions = FormSubmission::where('form_id', $form->id)->whereIn('id', $ids)->get();
+
+        if ($submissions->isEmpty()) {
+            return back()->with('error', 'No matching submissions found.');
+        }
+
+        if ($action === 'delete') {
+            FormSubmission::where('form_id', $form->id)->whereIn('id', $ids)->delete();
+            return back()->with('success', "Deleted {$submissions->count()} submission(s).");
+        }
+
+        if ($action === 'mark_read') {
+            FormSubmission::where('form_id', $form->id)->whereIn('id', $ids)->update(['is_read' => true]);
+            return back()->with('success', "Marked {$submissions->count()} submission(s) as read.");
+        }
+
+        if ($action === 'resend_email') {
+            if (!$form->welcome_email_enabled) {
+                return back()->with('error', 'Welcome email is not enabled for this form.');
+            }
+
+            $sent   = 0;
+            $failed = 0;
+            $noEmail= 0;
+
+            $configured = SmtpMailService::configure();
+            if (!$configured) {
+                return back()->with('error', 'SMTP is not configured. Go to Settings → Email first.');
+            }
+
+            $siteName     = Setting::get('site_name', '7AI');
+            $supportEmail = Setting::get('support_email') ?: Setting::get('contact_email', '');
+            $fromName     = $form->welcome_email_from_name    ?: Setting::get('mail_from_name', '7AI');
+            $fromAddr     = $form->welcome_email_from_address ?: Setting::get('mail_from_address', 'hello@7ai.africa');
+
+            foreach ($submissions as $submission) {
+                $data    = is_array($submission->data) ? $submission->data : [];
+                $toEmail = $this->resolveEmailFromData($form, $data);
+
+                if (!$toEmail) { $noEmail++; continue; }
+
+                $submittedName = $data['name'] ?? $data['full_name']
+                    ?? (trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '')) ?: null)
+                    ?? '';
+
+                $vars = array_merge($data, [
+                    'name'          => $submittedName,
+                    'email'         => $toEmail,
+                    'form_name'     => $form->name,
+                    'site_name'     => $siteName,
+                    'support_email' => $supportEmail,
+                    'current_year'  => date('Y'),
+                ]);
+                $replace = fn(string $t) => preg_replace_callback('/\{\{(\w+)\}\}/', fn($m) => $vars[$m[1]] ?? '', $t);
+
+                $subject  = $replace($form->welcome_email_subject ?: 'Thank you for registering — ' . $form->name);
+                $htmlBody = $form->welcome_email_body
+                    ? $replace($form->welcome_email_body)
+                    : '<div style="font-family:sans-serif;max-width:560px;margin:40px auto;padding:32px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;">'
+                      . '<h2 style="color:#0b4f6c;margin-top:0;">Hello ' . e($vars['name']) . ',</h2>'
+                      . '<p>Thank you for registering for <strong>' . e($vars['form_name']) . '</strong>.</p>'
+                      . '<p>We have received your submission. Our team will contact you if necessary.</p>'
+                      . '<p>Thank you,<br><strong>' . e($siteName) . '</strong></p>'
+                      . '<p style="font-size:11px;color:#d1d5db;">© ' . date('Y') . ' ' . e($siteName) . '</p></div>';
+
+                try {
+                    Mail::html($htmlBody, function ($msg) use ($toEmail, $subject, $fromName, $fromAddr) {
+                        $msg->to($toEmail)->subject($subject)->from($fromAddr, $fromName);
+                    });
+                    $sent++;
+                    \Log::info('[FORM EMAIL] Bulk resend sent', ['to' => $toEmail, 'form' => $form->id, 'sub' => $submission->id]);
+                } catch (\Throwable $e) {
+                    $failed++;
+                    \Log::error('[FORM EMAIL ERROR] Bulk resend failed', ['to' => $toEmail, 'error' => $e->getMessage()]);
+                }
+            }
+
+            $msg = "Sent: {$sent}";
+            if ($failed)  $msg .= " | Failed: {$failed}";
+            if ($noEmail) $msg .= " | No email found: {$noEmail}";
+            $type = ($failed === 0 && $sent > 0) ? 'success' : 'error';
+            return back()->with($type, $msg);
+        }
+
+        return back();
+    }
+
+    private function resolveEmailFromData(Form $form, array $data): ?string
+    {
+        if ($form->welcome_email_field && !empty($data[$form->welcome_email_field])
+            && filter_var($data[$form->welcome_email_field], FILTER_VALIDATE_EMAIL)) {
+            return $data[$form->welcome_email_field];
+        }
+        foreach (['email', 'email_address', 'your_email', 'registrant_email'] as $key) {
+            if (!empty($data[$key]) && filter_var($data[$key], FILTER_VALIDATE_EMAIL)) return $data[$key];
+        }
+        $emailField = $form->fields->where('field_type', 'email')->where('is_active', true)->first();
+        if ($emailField && !empty($data[$emailField->name])) return $data[$emailField->name];
+        foreach ($data as $val) {
+            if (is_string($val) && filter_var($val, FILTER_VALIDATE_EMAIL)) return $val;
+        }
+        return null;
     }
 }
 

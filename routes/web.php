@@ -118,6 +118,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('forms/{form}/submissions/{submission}', [FormController::class, 'destroySubmission'])->name('form-submissions.destroy');
     Route::post('form-submissions/{submission}/read', [FormController::class, 'markRead'])->name('form-submissions.read');
     Route::post('forms/{form}/submissions/{submission}/resend-email', [FormController::class, 'resendEmail'])->name('form-submissions.resend-email');
+    Route::post('forms/{form}/submissions/bulk-action', [FormController::class, 'bulkAction'])->name('form-submissions.bulk-action');
 
     // Menu Builder
     Route::resource('menus', MenuController::class)->except(['show']);
