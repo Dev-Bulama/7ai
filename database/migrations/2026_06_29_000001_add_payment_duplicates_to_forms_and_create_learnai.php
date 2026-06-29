@@ -27,7 +27,7 @@ return new class extends Migration
             $formId = DB::table('forms')->insertGetId([
                 'name'               => 'Learn AI Registration',
                 'slug'               => 'learnai',
-                'public_path'        => 'learnai',
+                'public_path'        => '/learnai',
                 'title'              => 'Learn AI — Register Now',
                 'subtitle'           => 'Join Africa\'s fastest-growing AI training programme. Choose your course and start your journey today.',
                 'description'        => 'AI training course registration form',
