@@ -29,6 +29,7 @@ class SettingsController extends Controller
             'scripts'  => ['header_scripts','footer_scripts','google_analytics','meta_pixel','chatbot_script'],
             'system'   => ['footer_text','copyright_text','maintenance_mode','registration_enabled','email_notifications'],
             'nav'      => ['nav_cta_text','nav_cta_url','nav_secondary_text','nav_secondary_url'],
+            'payment'  => ['paystack_public_key','paystack_secret_key','paystack_mode'],
         ];
 
         foreach ($groups as $group => $keys) {

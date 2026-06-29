@@ -19,6 +19,7 @@
     'social'   => 'Social Media',
     'scripts'  => 'Scripts',
     'system'   => 'System',
+    'payment'  => '💳 Payment',
   ] as $key => $label)
   <a href="{{ route('admin.settings.index', ['tab' => $key]) }}"
      style="padding:10px 18px;font-size:13px;font-weight:{{ $tab === $key ? '700' : '400' }};color:{{ $tab === $key ? 'var(--teal)' : 'var(--gray-600)' }};border-bottom:2px solid {{ $tab === $key ? 'var(--teal)' : 'transparent' }};text-decoration:none;white-space:nowrap;">
@@ -285,6 +286,53 @@
   </div>
   <button type="submit" class="btn btn-primary">Save System Settings</button>
 </div>
+</form>
+
+@elseif($tab === 'payment')
+{{-- PAYMENT / PAYSTACK --}}
+<form method="POST" action="{{ route('admin.settings.update') }}">
+@csrf @method('PUT')
+<input type="hidden" name="_tab" value="payment">
+<div class="card" style="margin-bottom:20px;">
+  <div style="font-weight:700;font-size:14px;margin-bottom:6px;">Paystack Payment Gateway</div>
+  <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
+    Enter your Paystack API keys. Once saved, you can enable payment on individual forms in the Form Builder.
+    Get your keys from <a href="https://dashboard.paystack.com/#/settings/developer" target="_blank" style="color:var(--teal);">Paystack Dashboard → Settings → API Keys</a>.
+  </p>
+
+  <div class="form-group" style="margin-bottom:16px;">
+    <label class="form-label">Mode</label>
+    <select name="paystack_mode" class="form-input" style="max-width:200px;">
+      <option value="test"  {{ $s('paystack_mode','test') === 'test'  ? 'selected' : '' }}>Test (Sandbox)</option>
+      <option value="live"  {{ $s('paystack_mode','test') === 'live'  ? 'selected' : '' }}>Live (Production)</option>
+    </select>
+    <span style="font-size:12px;color:var(--gray-400);display:block;margin-top:4px;">Use Test mode until you are ready to accept real payments.</span>
+  </div>
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Public Key</label>
+      <input type="text" name="paystack_public_key" class="form-input" value="{{ $s('paystack_public_key') }}" placeholder="pk_test_xxxxxxxxxxxxxxxx">
+      <span style="font-size:12px;color:var(--gray-400);">Starts with <code>pk_test_</code> or <code>pk_live_</code></span>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Secret Key</label>
+      <input type="password" name="paystack_secret_key" class="form-input" value="{{ $s('paystack_secret_key') }}" placeholder="sk_test_xxxxxxxxxxxxxxxx" autocomplete="new-password">
+      <span style="font-size:12px;color:var(--gray-400);">Starts with <code>sk_test_</code> or <code>sk_live_</code> — never share this</span>
+    </div>
+  </div>
+
+  @if($s('paystack_public_key'))
+  <div style="padding:12px 16px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;font-size:13px;color:#065f46;margin-top:8px;">
+    ✓ Paystack keys are configured. You can now enable payments on forms.
+  </div>
+  @else
+  <div style="padding:12px 16px;background:#fef3c7;border:1px solid #fbbf24;border-radius:8px;font-size:13px;color:#92400e;margin-top:8px;">
+    ⚠ No Paystack keys saved yet. Payment will not work on forms until keys are added.
+  </div>
+  @endif
+</div>
+<button type="submit" class="btn btn-primary">Save Payment Settings</button>
 </form>
 
 @endif

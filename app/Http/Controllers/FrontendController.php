@@ -16,6 +16,7 @@ use App\Models\FormSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Services\SmtpMailService;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
 class FrontendController extends Controller
@@ -268,8 +269,8 @@ class FrontendController extends Controller
             return back()->with('error', 'This form is not available.');
         }
 
+        // ── 1. Validate form fields ────────────────────────────────────────────
         $rules = [];
-        $data  = [];
         foreach ($form->fields as $field) {
             if (!$field->is_active) continue;
             $fieldRules = [];
@@ -278,15 +279,50 @@ class FrontendController extends Controller
             if ($field->field_type === 'number') $fieldRules[] = 'numeric';
             $rules[$field->name] = $fieldRules ?: 'nullable';
         }
-
         $validated = $request->validate($rules);
 
+        $data = [];
         foreach ($form->fields as $field) {
             if ($field->is_active) {
                 $data[$field->name] = $validated[$field->name] ?? null;
             }
         }
 
+        // ── 2. Verify Paystack payment if required ─────────────────────────────
+        if ($form->payment_enabled && $form->payment_amount > 0) {
+            $ref = $request->input('_paystack_ref');
+            if (!$ref) {
+                return back()->with('error', 'Payment is required to complete this registration. Please click the Pay button.')->withInput();
+            }
+            $verified = $this->verifyPaystackPayment($ref);
+            if (!$verified) {
+                return back()->with('error', 'Payment could not be verified. Please try again or contact support.')->withInput();
+            }
+            // Store payment reference in submission data
+            $data['_paystack_ref'] = $ref;
+        }
+
+        // ── 3. Duplicate prevention ────────────────────────────────────────────
+        if ($form->prevent_duplicates && $form->store_submissions) {
+            $dupFields = array_filter(array_map('trim', explode(',', $form->duplicate_check_fields ?? 'email')));
+            foreach ($dupFields as $fieldName) {
+                $submittedValue = $data[$fieldName] ?? null;
+                if (!$submittedValue) continue;
+
+                $exists = FormSubmission::where('form_id', $form->id)
+                    ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.{$fieldName}')) = ?", [$submittedValue])
+                    ->exists();
+
+                if ($exists) {
+                    $label = ucfirst(str_replace('_', ' ', $fieldName));
+                    return back()
+                        ->with('error', "You have already registered with this {$label}. Duplicate submissions are not allowed.")
+                        ->withInput();
+                }
+            }
+        }
+
+        // ── 4. Save submission ─────────────────────────────────────────────────
         if ($form->store_submissions) {
             FormSubmission::create([
                 'form_id'    => $form->id,
@@ -298,7 +334,7 @@ class FrontendController extends Controller
 
         $successMsg = $form->success_message ?: 'Thank you! Your message has been received.';
 
-        // Send form autoresponder/welcome email if enabled
+        // ── 5. Send welcome email ──────────────────────────────────────────────
         if ($form->welcome_email_enabled) {
             $this->sendFormWelcomeEmail($form, $data);
         }
@@ -308,6 +344,37 @@ class FrontendController extends Controller
         }
 
         return back()->with('success', $successMsg);
+    }
+
+    private function verifyPaystackPayment(string $reference): bool
+    {
+        $secretKey = Setting::get('paystack_secret_key');
+        if (!$secretKey) {
+            \Log::error('[PAYMENT] Paystack secret key not configured');
+            return false;
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withToken($secretKey)
+                ->get("https://api.paystack.co/transaction/verify/{$reference}");
+
+            $body = $response->json();
+            \Log::info('[PAYMENT] Paystack verification', [
+                'ref'    => $reference,
+                'status' => $body['data']['status'] ?? 'unknown',
+                'amount' => $body['data']['amount'] ?? 0,
+            ]);
+
+            return $response->successful()
+                && ($body['data']['status'] ?? '') === 'success';
+
+        } catch (\Throwable $e) {
+            \Log::error('[PAYMENT] Paystack verification failed', [
+                'ref'   => $reference,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
     }
 
 

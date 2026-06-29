@@ -308,9 +308,143 @@
   </form>
 </div>
 
+{{-- Payment Gateway --}}
+<div class="card" style="margin-bottom:24px;">
+  <div style="font-weight:700;color:var(--dark);margin-bottom:4px;font-size:14px;">💳 Payment (Paystack)</div>
+  <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">
+    Require payment before form submission. Users must pay via Paystack before their registration is accepted.
+    Paystack keys must be configured in <a href="{{ route('admin.settings.index', ['tab'=>'payment']) }}" style="color:var(--teal);">Settings → Payment</a>.
+  </p>
+  <form method="POST" action="{{ route('admin.forms.update', $form) }}">
+    @csrf @method('PUT')
+    <input type="hidden" name="name" value="{{ $form->name }}">
+    <input type="hidden" name="slug" value="{{ $form->slug }}">
+    <input type="hidden" name="public_path" value="{{ $form->public_path }}">
+    <input type="hidden" name="title" value="{{ $form->title }}">
+    <input type="hidden" name="subtitle" value="{{ $form->subtitle }}">
+    <input type="hidden" name="success_message" value="{{ $form->success_message }}">
+    <input type="hidden" name="redirect_url" value="{{ $form->redirect_url }}">
+    <input type="hidden" name="notification_email" value="{{ $form->notification_email }}">
+    @if($form->store_submissions)<input type="hidden" name="store_submissions" value="1">@endif
+    @if($form->is_active)<input type="hidden" name="is_active" value="1">@endif
+    @if($form->welcome_email_enabled)<input type="hidden" name="welcome_email_enabled" value="1">@endif
+    @if($form->prevent_duplicates)<input type="hidden" name="prevent_duplicates" value="1">@endif
+    <input type="hidden" name="duplicate_check_fields" value="{{ $form->duplicate_check_fields }}">
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <label class="form-check" style="font-size:14px;font-weight:600;">
+        <input type="checkbox" name="payment_enabled" value="1" {{ $form->payment_enabled ? 'checked' : '' }}
+          id="payment-toggle" onchange="document.getElementById('payment-config').style.display=this.checked?'block':'none'">
+        Require payment before form submission
+      </label>
+    </div>
+
+    <div id="payment-config" style="display:{{ $form->payment_enabled ? 'block' : 'none' }};">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Amount <span style="font-weight:400;color:var(--gray-400);">(in {{ $form->payment_currency ?: 'NGN' }})</span></label>
+          <input type="number" name="payment_amount" class="form-input" step="0.01" min="0"
+            value="{{ old('payment_amount', $form->payment_amount) }}" placeholder="5000">
+          <span style="font-size:11px;color:var(--gray-400);">Enter the amount in full e.g. 5000 for ₦5,000</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Currency</label>
+          <select name="payment_currency" class="form-input">
+            <option value="NGN" {{ ($form->payment_currency ?: 'NGN') === 'NGN' ? 'selected' : '' }}>NGN — Nigerian Naira (₦)</option>
+            <option value="GHS" {{ $form->payment_currency === 'GHS' ? 'selected' : '' }}>GHS — Ghanaian Cedi</option>
+            <option value="KES" {{ $form->payment_currency === 'KES' ? 'selected' : '' }}>KES — Kenyan Shilling</option>
+            <option value="USD" {{ $form->payment_currency === 'USD' ? 'selected' : '' }}>USD — US Dollar</option>
+            <option value="ZAR" {{ $form->payment_currency === 'ZAR' ? 'selected' : '' }}>ZAR — South African Rand</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Description <span style="font-weight:400;color:var(--gray-400);">(shown in Paystack popup)</span></label>
+        <input type="text" name="payment_description" class="form-input"
+          value="{{ old('payment_description', $form->payment_description) }}"
+          placeholder="Abuja AI Conference Registration Fee">
+      </div>
+      @if(!\App\Models\Setting::get('paystack_public_key'))
+      <div style="padding:12px 16px;background:#fef3c7;border:1px solid #fbbf24;border-radius:8px;font-size:13px;color:#92400e;margin-top:4px;">
+        ⚠ Paystack keys not configured. Go to <a href="{{ route('admin.settings.index', ['tab'=>'payment']) }}" style="color:#92400e;font-weight:600;">Settings → Payment</a> to add them first.
+      </div>
+      @endif
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-sm" style="margin-top:16px;">Save Payment Settings</button>
+  </form>
+</div>
+
+{{-- Duplicate Prevention --}}
+<div class="card" style="margin-bottom:24px;">
+  <div style="font-weight:700;color:var(--dark);margin-bottom:4px;font-size:14px;">🚫 Duplicate Submission Prevention</div>
+  <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">
+    Block users from submitting this form more than once using the same email address or phone number.
+  </p>
+  <form method="POST" action="{{ route('admin.forms.update', $form) }}">
+    @csrf @method('PUT')
+    <input type="hidden" name="name" value="{{ $form->name }}">
+    <input type="hidden" name="slug" value="{{ $form->slug }}">
+    <input type="hidden" name="public_path" value="{{ $form->public_path }}">
+    <input type="hidden" name="title" value="{{ $form->title }}">
+    <input type="hidden" name="subtitle" value="{{ $form->subtitle }}">
+    <input type="hidden" name="success_message" value="{{ $form->success_message }}">
+    <input type="hidden" name="redirect_url" value="{{ $form->redirect_url }}">
+    <input type="hidden" name="notification_email" value="{{ $form->notification_email }}">
+    @if($form->store_submissions)<input type="hidden" name="store_submissions" value="1">@endif
+    @if($form->is_active)<input type="hidden" name="is_active" value="1">@endif
+    @if($form->welcome_email_enabled)<input type="hidden" name="welcome_email_enabled" value="1">@endif
+    @if($form->payment_enabled)<input type="hidden" name="payment_enabled" value="1">@endif
+    <input type="hidden" name="payment_amount" value="{{ $form->payment_amount }}">
+    <input type="hidden" name="payment_currency" value="{{ $form->payment_currency ?: 'NGN' }}">
+    <input type="hidden" name="payment_description" value="{{ $form->payment_description }}">
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <label class="form-check" style="font-size:14px;font-weight:600;">
+        <input type="checkbox" name="prevent_duplicates" value="1" {{ $form->prevent_duplicates ? 'checked' : '' }}
+          id="dup-toggle" onchange="document.getElementById('dup-config').style.display=this.checked?'block':'none'">
+        Block duplicate submissions
+      </label>
+    </div>
+
+    <div id="dup-config" style="display:{{ $form->prevent_duplicates ? 'block' : 'none' }};">
+      <div class="form-group">
+        <label class="form-label">Check for duplicates using</label>
+        @php $dupFields = explode(',', $form->duplicate_check_fields ?? 'email'); @endphp
+        <div style="display:flex;gap:20px;padding-top:6px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
+            <input type="checkbox" name="dup_field_email" value="1" {{ in_array('email',$dupFields) ? 'checked' : '' }} style="width:15px;height:15px;">
+            Email address
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
+            <input type="checkbox" name="dup_field_phone" value="1" {{ in_array('phone',$dupFields) ? 'checked' : '' }} style="width:15px;height:15px;">
+            Phone number
+          </label>
+        </div>
+        <span style="font-size:12px;color:var(--gray-400);display:block;margin-top:6px;">
+          If either field matches an existing submission, the new submission is blocked.
+        </span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-sm" style="margin-top:16px;" onclick="buildDupFields()">Save Duplicate Settings</button>
+  </form>
+</div>
+
 <div style="background:var(--gray-100);border-radius:8px;padding:16px;font-size:13px;color:var(--gray-600);">
   <strong>Form Shortcode:</strong> Use <code style="background:var(--white);padding:2px 8px;border-radius:4px;font-size:12px;">[form:{{ $form->slug }}]</code> to embed this form in page content, or reference it via <code>/forms/{{ $form->slug }}/submit</code>
 </div>
+
+<script>
+function buildDupFields() {
+  var fields = [];
+  if (document.querySelector('[name="dup_field_email"]')?.checked) fields.push('email');
+  if (document.querySelector('[name="dup_field_phone"]')?.checked) fields.push('phone');
+  // inject into the hidden input in the dup form
+  var inputs = document.querySelectorAll('[name="duplicate_check_fields"]');
+  inputs.forEach(function(i){ i.value = fields.join(','); });
+}
+</script>
 
 <script>
 (function () {

@@ -63,14 +63,31 @@ class FormController extends Controller
             'welcome_email_from_name'  => 'nullable|max:255',
             'welcome_email_from_address' => 'nullable|email|max:255',
             'welcome_email_field'      => 'nullable|max:100',
+            'payment_enabled'          => 'nullable|boolean',
+            'payment_amount'           => 'nullable|numeric|min:0',
+            'payment_currency'         => 'nullable|max:10',
+            'payment_description'      => 'nullable|max:255',
+            'prevent_duplicates'       => 'nullable|boolean',
+            'duplicate_check_fields'   => 'nullable|max:255',
         ]);
         if (empty($data['slug'])) $data['slug'] = Str::slug($data['name']);
         if (!empty($data['public_path']) && !str_starts_with($data['public_path'], '/')) {
             $data['public_path'] = '/' . $data['public_path'];
         }
-        $data['store_submissions'] = $request->boolean('store_submissions', true);
-        $data['is_active'] = $request->boolean('is_active', true);
+        $data['store_submissions']   = $request->boolean('store_submissions', true);
+        $data['is_active']           = $request->boolean('is_active', true);
         $data['welcome_email_enabled'] = $request->boolean('welcome_email_enabled', false);
+        $data['payment_enabled']     = $request->boolean('payment_enabled', false);
+        $data['prevent_duplicates']  = $request->boolean('prevent_duplicates', false);
+
+        // Build duplicate_check_fields from checkboxes if not passed as hidden input
+        if (!$request->filled('duplicate_check_fields')) {
+            $dupFields = [];
+            if ($request->boolean('dup_field_email')) $dupFields[] = 'email';
+            if ($request->boolean('dup_field_phone')) $dupFields[] = 'phone';
+            $data['duplicate_check_fields'] = implode(',', $dupFields) ?: 'email';
+        }
+
         $form->update($data);
         return redirect()->route('admin.forms.edit', $form)->with('success', 'Form updated.');
     }
