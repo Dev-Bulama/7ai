@@ -280,9 +280,10 @@ class ConferenceController extends Controller
     {
         return <<<'HTML'
 <style>
+* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 .badge-card {
   width:86mm; min-height:120mm;
-  background:#ffffff;
+  background:#ffffff !important;
   border-radius:10px;
   overflow:hidden;
   box-shadow:0 4px 20px rgba(0,0,0,0.2);
@@ -291,25 +292,29 @@ class ConferenceController extends Controller
   break-inside:avoid;
 }
 .bc-header {
-  background:{{BG_COLOR}};
+  background:{{BG_COLOR}} !important;
   padding:12px 16px 10px;
   display:flex; align-items:center; gap:10px;
 }
-.bc-header-text { font-size:9px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.06em; line-height:1.4; }
+.bc-header-text { font-size:9px; font-weight:700; color:#fff !important; text-transform:uppercase; letter-spacing:0.06em; line-height:1.4; }
 .bc-body { padding:16px; text-align:center; }
-.bc-role { font-size:22px; font-weight:900; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:5px; }
-.bc-accent { width:40px; height:3px; background:#e53e3e; margin:0 auto 14px; border-radius:2px; }
+.bc-role { font-size:22px; font-weight:900; color:#1a1a1a !important; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:5px; }
+.bc-accent { width:40px; height:3px; background:#e53e3e !important; margin:0 auto 14px; border-radius:2px; }
 .bc-qr { display:flex; justify-content:center; margin-bottom:10px; }
 .bc-qr svg { border:3px solid #fff; outline:1px solid #e2e8f0; border-radius:4px; }
-.bc-name { font-size:14px; font-weight:700; color:#1a202c; margin-bottom:3px; line-height:1.2; }
-.bc-id { font-family:monospace; font-size:13px; font-weight:900; color:{{BG_COLOR}}; letter-spacing:0.12em; margin-bottom:4px; }
-.bc-detail { font-size:10px; color:#718096; line-height:1.6; }
+.bc-name { font-size:14px; font-weight:700; color:#1a202c !important; margin-bottom:3px; line-height:1.2; }
+.bc-id { font-family:monospace; font-size:15px; font-weight:900; color:{{BG_COLOR}} !important; letter-spacing:0.12em; margin-bottom:4px; }
+.bc-detail { font-size:10px; color:#718096 !important; line-height:1.6; }
 .bc-footer {
-  background:{{BG_COLOR}};
+  background:{{BG_COLOR}} !important;
   padding:9px 16px; text-align:center;
 }
-.bc-footer-name { font-size:9px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.08em; }
-.bc-footer-sub { font-size:8px; color:rgba(255,255,255,0.65); margin-top:2px; }
+.bc-footer-name { font-size:9px; font-weight:700; color:#fff !important; text-transform:uppercase; letter-spacing:0.08em; }
+.bc-footer-sub { font-size:8px; color:rgba(255,255,255,0.75) !important; margin-top:2px; }
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .badge-card { box-shadow:none; border:1px solid #ccc; }
+}
 </style>
 <div class="badge-card">
   <div class="bc-header">

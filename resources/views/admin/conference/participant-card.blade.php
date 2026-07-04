@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Badge — {{ $submission->participant_id }}</title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * { margin:0; padding:0; box-sizing:border-box;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important; }
     body {
       background:#e8e8e8;
       display:flex; flex-direction:column;
@@ -25,6 +27,7 @@
     .btn-back  { background:#4a5568; color:#fff; }
     .btn-edit  { background:#3182ce; color:#fff; }
     @media print {
+      * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       body { background:white; padding:0; justify-content:center; }
       .actions { display:none !important; }
     }

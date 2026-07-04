@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QR Badge Export — {{ $form->name }}</title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * { margin:0; padding:0; box-sizing:border-box;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important; }
     body { background:#f5f5f5; font-family:Arial,Helvetica,sans-serif; padding:20px; }
     .page-header {
       display:flex; align-items:center; justify-content:space-between;
@@ -25,6 +27,7 @@
     }
     .no-badges { background:#fff5f5; border-radius:8px; padding:60px 20px; text-align:center; color:#c53030; font-size:14px; }
     @media print {
+      * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       body { background:white; padding:10px; }
       .page-header { display:none !important; }
       .badge-grid { grid-template-columns:repeat(3, 1fr); gap:12px; }

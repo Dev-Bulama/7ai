@@ -131,6 +131,7 @@
         >@php echo htmlspecialchars(old('badge_html_template', $settings->badge_html_template ?? \App\Http\Controllers\Admin\ConferenceController::defaultBadgeTemplate())); @endphp</textarea>
         <input type="hidden" name="reset_badge_template" id="reset_badge_template" value="0">
         <p style="font-size:11px;color:#a0aec0;margin-top:6px;">Leave blank or reset to use the system default template. Changes take effect immediately after saving.</p>
+        <p style="font-size:11px;color:#e53e3e;margin-top:4px;">⚠ For colors to print correctly, include <code style="background:#fff5f5;padding:1px 4px;border-radius:2px;">* { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }</code> in your &lt;style&gt; block, and add <code style="background:#fff5f5;padding:1px 4px;border-radius:2px;">!important</code> to all background-color rules.</p>
       </div>
 
     </div>
