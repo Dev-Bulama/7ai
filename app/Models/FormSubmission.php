@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 class FormSubmission extends Model {
     protected $fillable = [
         'form_id','ip_address','user_agent','data','is_read',
-        'participant_id','qr_token','attendance_verified',
+        'participant_id','qr_token','badge_role','attendance_verified',
         'checked_in_at','checked_in_by',
         'lunch_collected','lunch_collected_at','lunch_collected_by',
         'badge_exported_at',

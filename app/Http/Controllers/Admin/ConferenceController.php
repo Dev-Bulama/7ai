@@ -235,6 +235,15 @@ class ConferenceController extends Controller
         return view('admin.conference.export-qr', compact('form', 'settings', 'submissions', 'badges'));
     }
 
+    // ── Update badge role per participant ──────────────────────────────────
+    public function updateBadgeRole(Request $request, Form $form, FormSubmission $submission)
+    {
+        abort_unless($form->is_conference_form && $submission->form_id === $form->id, 404);
+        $request->validate(['badge_role' => 'nullable|string|max:60']);
+        $submission->update(['badge_role' => $request->input('badge_role') ?: null]);
+        return response()->json(['success' => true, 'badge_role' => $submission->badge_role]);
+    }
+
     // ── Badge template renderer ────────────────────────────────────────────
     private function renderBadge(FormSubmission $submission, ?ConferenceSetting $settings, int $qrSize = 130): string
     {
@@ -242,7 +251,9 @@ class ConferenceController extends Controller
         $name      = $data['full_name'] ?? $data['name'] ?? trim(($data['first_name'] ?? '').' '.($data['last_name'] ?? '')) ?: 'Participant';
         $email     = $data['email'] ?? '';
         $phone     = $data['phone'] ?? '';
-        $role      = $data['role'] ?? $data['course'] ?? $data['category'] ?? $data['designation'] ?? $data['title'] ?? 'Participant';
+        $role      = $submission->badge_role
+                     ?? $data['role'] ?? $data['course'] ?? $data['category']
+                     ?? $data['designation'] ?? $data['title'] ?? 'Participant';
         $eventName = $settings?->event_name ?? 'Conference';
         $eventDate = $settings?->event_date?->format('d M Y') ?? '';
         $venue     = $settings?->event_venue ?? '';

@@ -57,6 +57,17 @@
   </div>
   @endif
 
+  {{-- Role colour key --}}
+  @php
+  $roleColors = [
+    'Participant' => ['#e9d8fd','#553c9a'],
+    'Speaker'     => ['#bee3f8','#2b6cb0'],
+    'VIP'         => ['#feebc8','#c05621'],
+    'USHER'       => ['#c6f6d5','#276749'],
+    'Protocol'    => ['#fed7d7','#c53030'],
+  ];
+  @endphp
+
   {{-- Table --}}
   <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -65,23 +76,37 @@
           <th style="padding:10px 14px;text-align:left;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">Participant ID</th>
           <th style="padding:10px 14px;text-align:left;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">Name</th>
           <th style="padding:10px 14px;text-align:left;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">Email</th>
+          <th style="padding:10px 14px;text-align:left;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">Badge Role</th>
           <th style="padding:10px 14px;text-align:center;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">Checked In</th>
           <th style="padding:10px 14px;text-align:center;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">Lunch</th>
-          <th style="padding:10px 14px;text-align:center;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">QR</th>
           <th style="padding:10px 14px;text-align:right;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">Actions</th>
         </tr>
       </thead>
       <tbody>
         @forelse($participants as $p)
         @php
-          $data = $p->data ?? [];
-          $name = $data['full_name'] ?? $data['name'] ?? trim(($data['first_name'] ?? '').' '.($data['last_name'] ?? '')) ?: '—';
+          $data  = $p->data ?? [];
+          $name  = $data['full_name'] ?? $data['name'] ?? trim(($data['first_name'] ?? '').' '.($data['last_name'] ?? '')) ?: '—';
           $email = $data['email'] ?? '—';
+          $role  = $p->badge_role ?: ($data['role'] ?? $data['course'] ?? $data['category'] ?? 'Participant');
+          $rc    = $roleColors[$role] ?? ['#edf2f7','#4a5568'];
         @endphp
         <tr style="border-bottom:1px solid #f0f4f8;@if($p->attendance_verified) background:#f0fff4; @endif">
           <td style="padding:10px 14px;font-family:monospace;color:#553c9a;font-weight:600;">{{ $p->participant_id ?? '—' }}</td>
           <td style="padding:10px 14px;font-weight:500;color:#1a202c;">{{ $name }}</td>
           <td style="padding:10px 14px;color:#4a5568;">{{ $email }}</td>
+          <td style="padding:8px 14px;">
+            <select onchange="setRole({{ $p->id }}, this.value, this)"
+              style="padding:4px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:12px;font-weight:600;
+                     background:{{ $rc[0] }};color:{{ $rc[1] }};cursor:pointer;outline:none;">
+              @foreach(['Participant','Speaker','VIP','USHER','Protocol','Media','Volunteer','Staff','Guest'] as $opt)
+              <option value="{{ $opt }}" @selected($role === $opt)>{{ $opt }}</option>
+              @endforeach
+              <option value="{{ $role }}" @if(!in_array($role,['Participant','Speaker','VIP','USHER','Protocol','Media','Volunteer','Staff','Guest'])) selected @endif>
+                {{ in_array($role,['Participant','Speaker','VIP','USHER','Protocol','Media','Volunteer','Staff','Guest']) ? '' : $role }}
+              </option>
+            </select>
+          </td>
           <td style="padding:10px 14px;text-align:center;">
             @if($p->attendance_verified)
               <span style="background:#9ae6b4;color:#276749;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">✓ YES</span>
@@ -95,13 +120,6 @@
               <span style="background:#feebc8;color:#c05621;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">✓ YES</span>
             @else
               <span style="color:#a0aec0;font-size:11px;">—</span>
-            @endif
-          </td>
-          <td style="padding:10px 14px;text-align:center;">
-            @if($p->qr_token)
-              <span style="color:#38a169;font-size:14px;">✓</span>
-            @else
-              <span style="color:#fc8181;font-size:14px;">✗</span>
             @endif
           </td>
           <td style="padding:10px 14px;text-align:right;">
@@ -132,4 +150,42 @@
   <div style="margin-top:16px;">{{ $participants->withQueryString()->links() }}</div>
 
 </div>
+
+<script>
+var CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+var roleColors = {
+  'Participant': ['#e9d8fd','#553c9a'],
+  'Speaker':     ['#bee3f8','#2b6cb0'],
+  'VIP':         ['#feebc8','#c05621'],
+  'USHER':       ['#c6f6d5','#276749'],
+  'Protocol':    ['#fed7d7','#c53030'],
+  'Media':       ['#e2e8f0','#2d3748'],
+  'Volunteer':   ['#c6f6d5','#276749'],
+  'Staff':       ['#e2e8f0','#4a5568'],
+  'Guest':       ['#fefcbf','#744210'],
+};
+
+function setRole(id, role, selectEl) {
+  var colors = roleColors[role] || ['#edf2f7','#4a5568'];
+  selectEl.style.background = colors[0];
+  selectEl.style.color = colors[1];
+  selectEl.disabled = true;
+
+  fetch('/admin/conference/{{ $form->id }}/participants/' + id + '/role', {
+    method: 'PATCH',
+    headers: {'Content-Type':'application/json','X-CSRF-TOKEN':CSRF,'Accept':'application/json'},
+    body: JSON.stringify({badge_role: role})
+  })
+  .then(r => r.json())
+  .then(function(d) {
+    selectEl.disabled = false;
+    if (!d.success) { alert('Failed to save role.'); }
+  })
+  .catch(function() {
+    selectEl.disabled = false;
+    alert('Network error saving role.');
+  });
+}
+</script>
 </x-admin-layout>

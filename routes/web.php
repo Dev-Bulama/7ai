@@ -201,6 +201,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('conference/{form}/toggle', [ConferenceController::class, 'toggleConference'])->name('conference.toggle');
     Route::get('conference/{form}/participants/{submission}/card', [ConferenceController::class, 'participantCard'])->name('conference.participant-card');
     Route::post('conference/{form}/participants/{submission}/check-in', [ConferenceController::class, 'manualCheckIn'])->name('conference.manual-check-in');
+    Route::patch('conference/{form}/participants/{submission}/role', [ConferenceController::class, 'updateBadgeRole'])->name('conference.update-badge-role');
     Route::get('conference/{form}/scan-logs', [ConferenceController::class, 'scanLogs'])->name('conference.scan-logs');
 });
 
