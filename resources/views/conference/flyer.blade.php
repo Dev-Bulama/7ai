@@ -29,8 +29,9 @@
         .btn-generate:disabled{opacity:.5;cursor:wait}
         .preview-section{margin-top:24px}
         .preview-label{font-size:.8rem;color:#aab4c4;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;text-align:center}
-        #flyer-preview-wrap{display:flex;justify-content:center}
-        #flyer-preview{width:540px;max-width:100%;overflow:hidden;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+        #flyer-preview-wrap{display:flex;justify-content:center;overflow:hidden}
+        #flyer-preview-scaler{transform-origin:top center;display:inline-block}
+        #flyer-preview{width:540px;overflow:hidden;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
         .result-section{display:none;margin-top:24px;text-align:center}
         #flyer-result{max-width:100%;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
         .share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
@@ -86,7 +87,9 @@
     <div class="preview-section">
         <div class="preview-label">Live Preview</div>
         <div id="flyer-preview-wrap">
-            <div id="flyer-preview"></div>
+            <div id="flyer-preview-scaler">
+                <div id="flyer-preview"></div>
+            </div>
         </div>
     </div>
 
@@ -159,12 +162,27 @@
 
     renderPreview();
 
+    function scalePreview(){
+        var wrap = document.getElementById('flyer-preview-wrap');
+        var scaler = document.getElementById('flyer-preview-scaler');
+        var available = wrap.clientWidth;
+        var scale = available >= 540 ? 1 : available / 540;
+        scaler.style.transform = 'scale(' + scale + ')';
+        scaler.style.width = '540px';
+        wrap.style.height = Math.round(675 * scale) + 'px';
+    }
+    scalePreview();
+    window.addEventListener('resize', scalePreview);
+
     document.getElementById('btn-gen').addEventListener('click', function(){
         var btn = this;
         btn.disabled = true;
         btn.textContent = 'Generating…';
         var previewEl = document.getElementById('flyer-preview');
         var target = previewEl.firstElementChild || previewEl;
+        // Reset scale to 1 so html2canvas captures at full 540px, then re-scale after
+        var scaler = document.getElementById('flyer-preview-scaler');
+        scaler.style.transform = 'scale(1)';
         html2canvas(target, {
             scale: 2,
             useCORS: true,
@@ -186,10 +204,12 @@
             document.getElementById('btn-tw').href = 'https://twitter.com/intent/tweet?text=' + msg;
             document.getElementById('btn-fb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(PAGE_URL);
             document.getElementById('btn-li').href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(PAGE_URL);
+            scalePreview();
             document.getElementById('result-section').scrollIntoView({behavior:'smooth', block:'start'});
             btn.disabled = false;
             btn.textContent = '✦ Generate My Flyer';
         }).catch(function(err){
+            scalePreview();
             btn.disabled = false;
             btn.textContent = '✦ Generate My Flyer';
             showToast('Generation failed. Please try again.');
