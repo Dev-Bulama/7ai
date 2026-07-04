@@ -165,18 +165,15 @@
             </div>
             <textarea name="flyer_html_template" id="flyer_html_template" rows="14"
               style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:4px;font-size:12px;font-family:'Courier New',monospace;line-height:1.5;color:#2d3748;resize:vertical;"
-              placeholder="Leave blank to use default template">{{ old('flyer_html_template', $settings->flyer_html_template ?? '') }}</textarea>
+              placeholder="Leave blank to use default template"
+            >@php echo htmlspecialchars(old('flyer_html_template', $settings->flyer_html_template ?? '')); @endphp</textarea>
             <input type="hidden" name="reset_flyer_template" id="reset_flyer_template" value="0">
+            @php $cb2 = '}}'; @endphp
             <p style="font-size:11px;color:#a0aec0;margin-top:4px;">
-              Placeholders: <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{NAME}}</code>
-              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{ROLE}}</code>
-              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{PHOTO}}</code>
-              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{EVENT_NAME}}</code>
-              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{EVENT_DATE}}</code>
-              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{HASHTAG}}</code>
-              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{ACCENT_COLOR}}</code>
-              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{BG_COLOR}}</code>
-              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;">{{LOGO}}</code>
+              Placeholders:
+              @foreach(['NAME','ROLE','PHOTO','EVENT_NAME','EVENT_DATE','HASHTAG','ACCENT_COLOR','BG_COLOR','LOGO'] as $fp)
+              <code style="background:#f7fafc;padding:1px 4px;border-radius:2px;display:inline-block;margin:1px;">{{ '{{' . $fp . $cb2 }}</code>
+              @endforeach
             </p>
           </div>
         </div>
