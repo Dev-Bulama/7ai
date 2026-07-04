@@ -74,6 +74,13 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 });
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+Route::get('/logout', function () {
+    // GET /logout — redirect to login (proper logout requires POST)
+    if (auth()->check()) {
+        return redirect()->route('login')->with('info', 'Please use the Sign Out button to log out securely.');
+    }
+    return redirect('/');
+});
 
 Route::middleware(['auth'])->prefix('dashboard')->name('customer.')->group(function () {
     Route::get('/', [CustomerDashboard::class, 'index'])->name('dashboard');
@@ -208,4 +215,5 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
 });
 
 // Dynamic CMS pages (city landing pages etc.) — must be last
-Route::get('/{slug}', [FrontendController::class, 'cmsPage'])->name('cms-page')->where('slug', '[a-z0-9\-]+');
+Route::get('/{slug}', [FrontendController::class, 'cmsPage'])->name('cms-page')
+    ->where('slug', '^(?!logout|login|register)[a-z0-9][a-z0-9\-]*$');
