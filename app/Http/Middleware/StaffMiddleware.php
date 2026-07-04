@@ -9,22 +9,31 @@ class StaffMiddleware
 {
     public function handle(Request $request, Closure $next, string ...$roles): mixed
     {
-        if (!$request->user()) {
+        $user = $request->user();
+
+        if (!$user) {
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json(['error' => 'Unauthenticated. Please log in again.'], 401);
+            }
             return redirect()->route('login');
         }
 
-        $user = $request->user();
-
-        if (!$user->is_active) {
+        if ($user->is_active === false || $user->is_active === 0) {
             auth()->logout();
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json(['error' => 'Your account has been deactivated.'], 403);
+            }
             return redirect()->route('login')->withErrors(['email' => 'Your account has been deactivated.']);
         }
 
         $staffRoles = ['super-admin', 'admin', 'front-desk-staff', 'lunch-staff'];
-        $allowed = array_merge($staffRoles, $roles);
+        $allowed    = array_merge($staffRoles, $roles);
 
         if (!$user->hasAnyRole($allowed)) {
-            abort(403, 'Access denied. You do not have a staff role.');
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json(['error' => 'Access denied. Insufficient role.'], 403);
+            }
+            return redirect()->route('login')->withErrors(['email' => 'You do not have access to this portal.']);
         }
 
         return $next($request);

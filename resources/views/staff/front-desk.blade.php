@@ -474,8 +474,10 @@ function doSearch() {
   })
   .then(function(r) {
     if (!r.ok) {
-      return r.text().then(function(t) {
-        throw new Error('HTTP ' + r.status + (r.status === 419 ? ' (session expired — please reload the page)' : ': ' + t.substring(0, 120)));
+      return r.json().catch(function() { return {}; }).then(function(j) {
+        if (r.status === 401 || r.status === 403) throw new Error((j.error || 'Access denied') + ' — please reload and log in again.');
+        if (r.status === 419) throw new Error('Session expired — please reload the page.');
+        throw new Error('Server error (' + r.status + '). Please try again.');
       });
     }
     return r.json();
