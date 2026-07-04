@@ -357,101 +357,90 @@ HTML;
     public static function defaultFlyerTemplate(): string
     {
         return <<<'FLYERHTML'
-<div style="width:540px;height:675px;position:relative;font-family:'Segoe UI',Arial,sans-serif;overflow:hidden;border-radius:0;background:#0A1628;">
-<!-- ── Navy section: 0–355px ── -->
+<div style="width:540px;height:675px;position:relative;font-family:'Segoe UI',Arial,sans-serif;overflow:hidden;background:#0A1628;">
+<!-- Navy top -->
 <div style="position:absolute;top:0;left:0;right:0;height:355px;background:{{BG_COLOR}};"></div>
-<!-- ── White section: 355–675px ── -->
+<!-- White bottom -->
 <div style="position:absolute;top:355px;left:0;right:0;bottom:0;background:#ffffff;"></div>
 <!-- Dot grid top-right -->
-<svg style="position:absolute;top:12px;right:14px;" width="56" height="44" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="6" cy="6" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="18" cy="6" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="30" cy="6" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="42" cy="6" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="54" cy="6" r="2.5" fill="rgba(255,255,255,0.22)"/>
-  <circle cx="6" cy="18" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="18" cy="18" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="30" cy="18" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="42" cy="18" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="54" cy="18" r="2.5" fill="rgba(255,255,255,0.22)"/>
-  <circle cx="6" cy="30" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="18" cy="30" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="30" cy="30" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="42" cy="30" r="2.5" fill="rgba(255,255,255,0.22)"/><circle cx="54" cy="30" r="2.5" fill="rgba(255,255,255,0.22)"/>
-</svg>
-<!-- Dot grid left side -->
-<svg style="position:absolute;top:208px;left:12px;" width="44" height="56" viewBox="0 0 44 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="6" cy="6" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="18" cy="6" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="30" cy="6" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="42" cy="6" r="2.5" fill="rgba(255,255,255,0.18)"/>
-  <circle cx="6" cy="18" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="18" cy="18" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="30" cy="18" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="42" cy="18" r="2.5" fill="rgba(255,255,255,0.18)"/>
-  <circle cx="6" cy="30" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="18" cy="30" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="30" cy="30" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="42" cy="30" r="2.5" fill="rgba(255,255,255,0.18)"/>
-  <circle cx="6" cy="42" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="18" cy="42" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="30" cy="42" r="2.5" fill="rgba(255,255,255,0.18)"/><circle cx="42" cy="42" r="2.5" fill="rgba(255,255,255,0.18)"/>
-</svg>
-<!-- Decorative green circle bottom-left of white section -->
-<div style="position:absolute;top:520px;left:-22px;width:80px;height:80px;border-radius:50%;background:rgba(62,224,127,0.18);"></div>
-<!-- Decorative dark dot bottom-right -->
-<div style="position:absolute;top:478px;right:22px;width:22px;height:22px;border-radius:50%;background:{{BG_COLOR}};opacity:.35;"></div>
-<!-- ── Logo / brand ── -->
-<div style="position:absolute;top:16px;left:0;right:0;text-align:center;">
-{{LOGO}}
+<svg style="position:absolute;top:12px;right:14px;" width="56" height="44" viewBox="0 0 56 44" fill="none"><circle cx="6" cy="6" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="18" cy="6" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="30" cy="6" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="42" cy="6" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="54" cy="6" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="6" cy="18" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="18" cy="18" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="30" cy="18" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="42" cy="18" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="54" cy="18" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="6" cy="30" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="18" cy="30" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="30" cy="30" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="42" cy="30" r="2.5" fill="rgba(255,255,255,.22)"/><circle cx="54" cy="30" r="2.5" fill="rgba(255,255,255,.22)"/></svg>
+<!-- Dot grid left -->
+<svg style="position:absolute;top:200px;left:12px;" width="44" height="56" viewBox="0 0 44 56" fill="none"><circle cx="6" cy="6" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="18" cy="6" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="30" cy="6" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="42" cy="6" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="6" cy="18" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="18" cy="18" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="30" cy="18" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="42" cy="18" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="6" cy="30" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="18" cy="30" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="30" cy="30" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="42" cy="30" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="6" cy="42" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="18" cy="42" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="30" cy="42" r="2.5" fill="rgba(255,255,255,.18)"/><circle cx="42" cy="42" r="2.5" fill="rgba(255,255,255,.18)"/></svg>
+<!-- Decorative circles -->
+<div style="position:absolute;top:510px;left:-20px;width:82px;height:82px;border-radius:50%;background:rgba(62,224,127,.18);"></div>
+<div style="position:absolute;top:472px;right:20px;width:20px;height:20px;border-radius:50%;background:{{BG_COLOR}};opacity:.3;"></div>
+<!-- Logo -->
+<div style="position:absolute;top:14px;left:0;right:0;text-align:center;">{{LOGO}}</div>
+<!-- "I AM ATTENDING" arrows label -->
+<div style="position:absolute;top:68px;left:0;right:0;text-align:center;">
+<span style="display:inline-flex;align-items:center;gap:8px;">
+<svg width="7" height="7" viewBox="0 0 7 7"><polygon points="0,7 3.5,0 7,7" fill="{{ACCENT_COLOR}}"/></svg>
+<span style="color:{{ACCENT_COLOR}};font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;">I AM ATTENDING</span>
+<svg width="7" height="7" viewBox="0 0 7 7"><polygon points="0,7 3.5,0 7,7" fill="{{ACCENT_COLOR}}"/></svg>
+</span>
 </div>
-<!-- ── "I AM ATTENDING" label ── -->
-<div style="position:absolute;top:70px;left:0;right:0;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;">
-<svg width="8" height="8" viewBox="0 0 8 8"><polygon points="0,8 4,0 8,8" fill="{{ACCENT_COLOR}}"/></svg>
-<span style="color:{{ACCENT_COLOR}};font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;">I AM ATTENDING</span>
-<svg width="8" height="8" viewBox="0 0 8 8"><polygon points="0,8 4,0 8,8" fill="{{ACCENT_COLOR}}"/></svg>
+<!-- Event name — large, two lines if needed -->
+<div style="position:absolute;top:82px;left:14px;right:14px;text-align:center;">
+<div style="color:#ffffff;font-size:46px;font-weight:900;line-height:.96;letter-spacing:-.02em;text-transform:uppercase;word-break:break-word;">{{EVENT_NAME}}</div>
 </div>
-<!-- ── Event name ── -->
-<div style="position:absolute;top:84px;left:12px;right:12px;text-align:center;">
-<div style="color:#ffffff;font-size:44px;font-weight:900;line-height:.98;letter-spacing:-.02em;text-transform:uppercase;word-break:break-word;">{{EVENT_NAME}}</div>
+<!-- JULY 2026 badge -->
+<div style="position:absolute;top:214px;left:50%;transform:translateX(-50%);">
+<div style="border:2px solid {{ACCENT_COLOR}};color:#ffffff;font-size:18px;font-weight:900;padding:4px 20px;letter-spacing:.14em;white-space:nowrap;text-transform:uppercase;">JULY 2026</div>
 </div>
-<!-- ── 2026 badge ── -->
-<div style="position:absolute;top:210px;left:50%;transform:translateX(-50%);">
-<div style="border:2px solid {{ACCENT_COLOR}};color:#ffffff;font-size:20px;font-weight:900;padding:3px 22px;letter-spacing:.12em;white-space:nowrap;">2026</div>
+<!-- Left ribbon -->
+<div style="position:absolute;top:252px;left:0;background:rgba(62,224,127,.16);border-left:3px solid {{ACCENT_COLOR}};padding:7px 10px;max-width:144px;">
+<div style="color:#ffffff;font-size:10px;font-style:italic;line-height:1.5;font-weight:500;">Let&#39;s Shape Africa&#39;s AI Future.</div>
 </div>
-<!-- ── "Let's Shape" ribbon left ── -->
-<div style="position:absolute;top:252px;left:0;background:rgba(62,224,127,.18);border-left:3px solid {{ACCENT_COLOR}};padding:7px 10px 7px 10px;max-width:148px;">
-<div style="color:#ffffff;font-size:10px;font-style:italic;line-height:1.45;font-weight:500;">Let&#39;s Shape Africa&#39;s AI Future.</div>
-</div>
-<!-- ── Date bubble right ── -->
-<div style="position:absolute;top:236px;right:14px;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);text-align:center;padding-top:8px;">
-<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 1px;display:block;"><rect x="1" y="2" width="14" height="13" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" fill="none"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M5 1v2M11 1v2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" stroke-linecap="round"/></svg>
-<div style="color:#ffffff;font-size:9px;font-weight:700;letter-spacing:.04em;line-height:1.2;">7TH JULY</div>
+<!-- Date bubble right -->
+<div style="position:absolute;top:238px;right:12px;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);text-align:center;padding-top:9px;">
+<svg width="13" height="13" viewBox="0 0 16 16" fill="none" style="margin:0 auto 2px;display:block;"><rect x="1" y="2" width="14" height="13" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" fill="none"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M5 1v2M11 1v2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" stroke-linecap="round"/></svg>
+<div style="color:#fff;font-size:9px;font-weight:700;letter-spacing:.04em;line-height:1.3;">7TH JULY</div>
 <div style="color:{{ACCENT_COLOR}};font-size:13px;font-weight:900;letter-spacing:.05em;line-height:1.2;">2026</div>
-<div style="color:rgba(255,255,255,.6);font-size:6.5px;letter-spacing:.03em;line-height:1.3;">ABUJA, NIGERIA</div>
-<div style="color:rgba(255,255,255,.55);font-size:6px;letter-spacing:.02em;margin-top:1px;">9AM – 4PM</div>
+<div style="color:rgba(255,255,255,.6);font-size:6.5px;line-height:1.4;">ABUJA, NIGERIA</div>
+<div style="color:rgba(255,255,255,.5);font-size:6px;margin-top:1px;">9AM – 4PM</div>
 </div>
-<!-- ── Photo circle: 190px, centered at 355px boundary → top:260px, bottom:450px ── -->
+<!-- Photo circle: 190px, center at navy/white boundary (355px) → top:260, bottom:450 -->
 <div style="position:absolute;top:260px;left:175px;width:190px;height:190px;border-radius:50%;overflow:hidden;border:4px solid {{ACCENT_COLOR}};z-index:10;">
-<div style="width:190px;height:190px;border-radius:50%;background-image:{{PHOTO}};background-size:cover;background-position:center top;background-color:#1e3a5f;"></div>
-<svg xmlns="http://www.w3.org/2000/svg" width="190" height="190" viewBox="0 0 190 190" style="position:absolute;top:0;left:0;z-index:-1;border-radius:50%;"><circle cx="95" cy="95" r="95" fill="#1e3a5f"/><circle cx="95" cy="75" r="33" fill="#4a6888"/><ellipse cx="95" cy="166" rx="58" ry="42" fill="#4a6888"/></svg>
+<div data-photo style="width:190px;height:190px;background-image:{{PHOTO}};background-size:cover;background-position:center top;background-color:#1e3a5f;"></div>
+<svg xmlns="http://www.w3.org/2000/svg" width="190" height="190" viewBox="0 0 190 190" style="position:absolute;top:0;left:0;z-index:-1;"><circle cx="95" cy="95" r="95" fill="#1e3a5f"/><circle cx="95" cy="75" r="33" fill="#4a6888"/><ellipse cx="95" cy="166" rx="58" ry="42" fill="#4a6888"/></svg>
 </div>
-<!-- ── White section: Name + role ── photo bottom: 450, content top: 458 -->
-<div style="position:absolute;top:456px;left:0;right:0;text-align:center;padding:0 20px;">
-<div style="color:#0A1628;font-size:18px;font-weight:800;line-height:1.1;margin-bottom:2px;word-break:break-word;">{{NAME}}</div>
-<div style="color:#778899;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;min-height:12px;">{{ROLE}}</div>
+<!-- Name + role (photo bottom 450, gap 8 → starts 458) -->
+<div style="position:absolute;top:458px;left:0;right:0;text-align:center;padding:0 20px;">
+<div style="color:#0A1628;font-size:17px;font-weight:800;line-height:1.1;margin-bottom:2px;word-break:break-word;">{{NAME}}</div>
+<div style="color:#4a6888;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;min-height:13px;">{{ROLE}}</div>
 </div>
-<!-- ── "I AM / ATTENDING / THE FUTURE." stacked ── -->
-<div style="position:absolute;top:494px;left:0;right:0;text-align:center;line-height:1.05;">
-<div style="color:#0A1628;font-size:29px;font-weight:900;letter-spacing:.01em;">I AM</div>
-<div style="color:{{ACCENT_COLOR}};font-size:29px;font-weight:900;letter-spacing:.01em;">ATTENDING</div>
-<div style="color:#0A1628;font-size:29px;font-weight:900;letter-spacing:.01em;">THE FUTURE.</div>
+<!-- "I AM / ATTENDING" stacked large (top 494, each line ~40px → ends 574) -->
+<div style="position:absolute;top:492px;left:0;right:0;text-align:center;line-height:1.05;">
+<div style="color:#0A1628;font-size:36px;font-weight:900;letter-spacing:.01em;">I AM</div>
+<div style="color:{{ACCENT_COLOR}};font-size:36px;font-weight:900;letter-spacing:.01em;">ATTENDING</div>
 </div>
-<!-- ── Hashtag ── -->
-<div style="position:absolute;top:584px;left:0;right:0;text-align:center;">
-<div style="color:{{ACCENT_COLOR}};font-size:10px;font-weight:700;letter-spacing:.07em;">{{HASHTAG}}</div>
+<!-- Hashtag (top ~578) -->
+<div style="position:absolute;top:577px;left:0;right:0;text-align:center;">
+<div style="color:{{ACCENT_COLOR}};font-size:11px;font-weight:700;letter-spacing:.07em;">{{HASHTAG}}</div>
 </div>
-<!-- ── Icons row ── -->
-<div style="position:absolute;bottom:30px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:0;">
-<div style="text-align:center;padding:0 16px;border-right:1px solid #dde3ec;">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 3px;"><path d="M12 2C9.5 2 8 4 8 6c0 1.1.4 2.1 1 2.8C7.6 9.6 7 11.2 7 13h10c0-1.8-.6-3.4-2-4.2.6-.7 1-1.7 1-2.8C16 4 14.5 2 12 2z" stroke="#8899aa" stroke-width="1.4" stroke-linejoin="round" fill="none"/><path d="M9 13v5M15 13v5M7 18h10" stroke="#8899aa" stroke-width="1.4" stroke-linecap="round"/><circle cx="9" cy="13" r="1" fill="#8899aa"/><circle cx="15" cy="13" r="1" fill="#8899aa"/></svg>
-<div style="color:#8899aa;font-size:6.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">AI<br>INNOVATION</div>
+<!-- Icons row (bottom 68 → starts 607, height ~50) -->
+<div style="position:absolute;bottom:36px;left:0;right:0;display:flex;align-items:flex-start;justify-content:center;gap:0;border-top:1px solid #e8edf3;padding-top:10px;">
+<div style="text-align:center;padding:0 14px;border-right:1px solid #c8d4e0;min-width:0;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><path d="M12 2C9.5 2 8 4 8 6c0 1.1.4 2.1 1 2.8C7.6 9.6 7 11.2 7 13h10c0-1.8-.6-3.4-2-4.2.6-.7 1-1.7 1-2.8C16 4 14.5 2 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9 13v5M15 13v5M7 18h10" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">AI<br>INNOVATION</div>
 </div>
-<div style="text-align:center;padding:0 16px;border-right:1px solid #dde3ec;">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 3px;"><circle cx="12" cy="7" r="2.5" stroke="#8899aa" stroke-width="1.4" fill="none"/><circle cx="5" cy="17" r="2" stroke="#8899aa" stroke-width="1.4" fill="none"/><circle cx="19" cy="17" r="2" stroke="#8899aa" stroke-width="1.4" fill="none"/><path d="M12 9.5v3M12 12.5l-5.5 3M12 12.5l5.5 3" stroke="#8899aa" stroke-width="1.4" stroke-linecap="round"/></svg>
-<div style="color:#8899aa;font-size:6.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">NETWORK</div>
+<div style="text-align:center;padding:0 14px;border-right:1px solid #c8d4e0;min-width:0;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><circle cx="12" cy="7" r="2.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="5" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="19" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M12 9.5v3M12 12.5l-5.5 3M12 12.5l5.5 3" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">NETWORK</div>
 </div>
-<div style="text-align:center;padding:0 16px;border-right:1px solid #dde3ec;">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 3px;"><path d="M12 2a6 6 0 0 1 4.5 10L15 14H9l-1.5-2A6 6 0 0 1 12 2z" stroke="#8899aa" stroke-width="1.4" stroke-linejoin="round" fill="none"/><path d="M9.5 14v2a2.5 2.5 0 0 0 5 0v-2" stroke="#8899aa" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 22h4" stroke="#8899aa" stroke-width="1.4" stroke-linecap="round"/></svg>
-<div style="color:#8899aa;font-size:6.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">LEARN</div>
+<div style="text-align:center;padding:0 14px;border-right:1px solid #c8d4e0;min-width:0;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><path d="M12 2a6 6 0 0 1 4.5 10L15 14H9l-1.5-2A6 6 0 0 1 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9.5 14v2a2.5 2.5 0 0 0 5 0v-2" stroke="#4a6888" stroke-width="1.4"/><path d="M10 22h4" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">LEARN</div>
 </div>
-<div style="text-align:center;padding:0 16px;">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 3px;"><circle cx="12" cy="12" r="9.5" stroke="#8899aa" stroke-width="1.4" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#8899aa" stroke-width="1.4"/></svg>
-<div style="color:#8899aa;font-size:6.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">IMPACT</div>
+<div style="text-align:center;padding:0 14px;min-width:0;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><circle cx="12" cy="12" r="9.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#4a6888" stroke-width="1.4"/></svg>
+<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">IMPACT</div>
 </div>
 </div>
-<!-- ── Footer ── -->
-<div style="position:absolute;bottom:8px;left:0;right:0;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;">
-<svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9.5" stroke="rgba(10,22,40,.35)" stroke-width="1.8" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="rgba(10,22,40,.35)" stroke-width="1.8"/></svg>
-<div style="color:rgba(10,22,40,.35);font-size:8px;letter-spacing:.1em;">www.7ai.africa</div>
+<!-- Footer -->
+<div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="#4a6888" stroke-width="1.8" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#4a6888" stroke-width="1.8"/></svg>
+<div style="color:#4a6888;font-size:8px;letter-spacing:.1em;">www.7ai.africa</div>
 </div>
 </div>
 FLYERHTML;

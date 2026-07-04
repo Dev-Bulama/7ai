@@ -32,7 +32,7 @@
         #flyer-preview-wrap{display:flex;justify-content:center;overflow:hidden}
         #flyer-preview-scaler{transform-origin:top center;display:inline-block}
         #flyer-preview{width:540px;overflow:hidden;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
-        #flyer-render-target{position:fixed;left:-9999px;top:0;width:540px;pointer-events:none;z-index:-1}
+        #flyer-render-target{position:fixed;left:0;top:0;width:540px;opacity:0;pointer-events:none;z-index:-100;overflow:hidden;}
         .result-section{display:none;margin-top:24px;text-align:center}
         #flyer-result{max-width:100%;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
         .share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
@@ -144,19 +144,25 @@
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    function buildHtml(){
+    function buildHtml(forCapture){
         var name = document.getElementById('inp-name').value.trim() || 'Your Name';
         var role = document.getElementById('inp-role').value.trim() || '';
-        // Photo: use background-image CSS value so object-fit is respected by html2canvas
-        var photoCss = currentPhotoDataUrl ? 'url("' + currentPhotoDataUrl + '")' : 'none';
+        // Leave {{PHOTO}} as a sentinel when building for capture — we set it via JS after innerHTML
+        var photoCss = (forCapture || !currentPhotoDataUrl) ? 'none' : 'url("' + currentPhotoDataUrl + '")';
         return TEMPLATE
             .replace(/\{\{NAME\}\}/g, escHtml(name))
             .replace(/\{\{ROLE\}\}/g, escHtml(role))
             .replace(/\{\{PHOTO\}\}/g, photoCss);
     }
 
+    function applyPhoto(container){
+        if(!currentPhotoDataUrl) return;
+        var el = container.querySelector('[data-photo]');
+        if(el) el.style.backgroundImage = 'url("' + currentPhotoDataUrl + '")';
+    }
+
     function renderPreview(){
-        document.getElementById('flyer-preview').innerHTML = buildHtml();
+        document.getElementById('flyer-preview').innerHTML = buildHtml(false);
     }
 
     function scalePreview(){
@@ -173,6 +179,7 @@
     // Preview button
     document.getElementById('btn-preview').addEventListener('click', function(){
         renderPreview();
+        applyPhoto(document.getElementById('flyer-preview'));
         var ps = document.getElementById('preview-section');
         ps.style.display = 'block';
         scalePreview();
@@ -183,7 +190,10 @@
     // Auto-update preview if already open
     function liveUpdate(){
         var ps = document.getElementById('preview-section');
-        if(ps.style.display !== 'none') renderPreview();
+        if(ps.style.display !== 'none'){
+            renderPreview();
+            applyPhoto(document.getElementById('flyer-preview'));
+        }
     }
     document.getElementById('inp-name').addEventListener('input', liveUpdate);
     document.getElementById('inp-role').addEventListener('input', liveUpdate);
@@ -205,11 +215,15 @@
         btn.disabled = true;
         btn.textContent = 'Generating…';
 
-        // Populate the hidden full-size render target (no transform applied)
+        // Populate the hidden full-size render target (opacity:0, no transform)
         var renderTarget = document.getElementById('flyer-render-target');
-        renderTarget.innerHTML = buildHtml();
+        renderTarget.innerHTML = buildHtml(true);
+        // Apply photo via JS after innerHTML parse — most reliable for html2canvas
+        applyPhoto(renderTarget);
         var captureEl = renderTarget.firstElementChild || renderTarget;
 
+        // Small delay so browser finishes layout before capture
+        setTimeout(function(){
         html2canvas(captureEl, {
             scale: 2,
             useCORS: true,
@@ -217,7 +231,8 @@
             logging: false,
             backgroundColor: null,
             width: 540,
-            height: 675
+            height: 675,
+            imageTimeout: 0
         }).then(function(canvas){
             generatedDataUrl = canvas.toDataURL('image/png');
             document.getElementById('flyer-result').src = generatedDataUrl;
@@ -239,6 +254,7 @@
             showToast('Generation failed. Please try again.');
             console.error(err);
         });
+        }, 120); // allow browser to paint background-image before capture
     });
 
     document.getElementById('btn-download').addEventListener('click', function(){
