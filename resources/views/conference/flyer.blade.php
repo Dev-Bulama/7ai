@@ -144,15 +144,20 @@
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    // Build placeholder strings via concatenation so Blade never sees {{ }} literals
+    var PH_NAME  = '{' + '{NAME}' + '}';
+    var PH_ROLE  = '{' + '{ROLE}' + '}';
+    var PH_PHOTO = '{' + '{PHOTO}' + '}';
+
     function buildHtml(forCapture){
         var name = document.getElementById('inp-name').value.trim() || 'Your Name';
         var role = document.getElementById('inp-role').value.trim() || '';
-        // Leave {{PHOTO}} as a sentinel when building for capture — we set it via JS after innerHTML
+        // Leave PHOTO placeholder when forCapture — applyPhoto() sets it via JS after innerHTML
         var photoCss = (forCapture || !currentPhotoDataUrl) ? 'none' : 'url("' + currentPhotoDataUrl + '")';
         return TEMPLATE
-            .replace(/\{\{NAME\}\}/g, escHtml(name))
-            .replace(/\{\{ROLE\}\}/g, escHtml(role))
-            .replace(/\{\{PHOTO\}\}/g, photoCss);
+            .split(PH_NAME).join(escHtml(name))
+            .split(PH_ROLE).join(escHtml(role))
+            .split(PH_PHOTO).join(photoCss);
     }
 
     function applyPhoto(container){
