@@ -62,7 +62,7 @@ class ConferenceController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('participant_id', 'like', "%{$search}%")
-                  ->orWhereRaw("JSON_SEARCH(LOWER(data), 'one', LOWER(?)) IS NOT NULL", ["%{$search}%"]);
+                  ->orWhereRaw("LOWER(CAST(data AS CHAR)) LIKE LOWER(?)", ["%{$search}%"]);
             });
         }
 
@@ -92,8 +92,9 @@ class ConferenceController extends Controller
     public function participantCard(Form $form, FormSubmission $submission)
     {
         abort_unless($form->is_conference_form && $submission->form_id === $form->id, 404);
-        $settings = ConferenceSetting::where('form_id', $form->id)->first();
-        return view('admin.conference.participant-card', compact('form', 'submission', 'settings'));
+        $settings  = ConferenceSetting::where('form_id', $form->id)->first();
+        $badgeHtml = $this->renderBadge($submission, $settings, 150);
+        return view('admin.conference.participant-card', compact('form', 'submission', 'settings', 'badgeHtml'));
     }
 
     // ── Conference settings form ───────────────────────────────────────────
@@ -118,7 +119,12 @@ class ConferenceController extends Controller
             'badge_bg_color'       => 'nullable|string|max:7',
             'badge_accent_color'   => 'nullable|string|max:7',
             'badge_logo'           => 'nullable|image|max:2048',
+            'badge_html_template'  => 'nullable|string',
         ]);
+
+        if ($request->input('reset_badge_template')) {
+            $data['badge_html_template'] = null;
+        }
 
         $settings = ConferenceSetting::firstOrCreate(['form_id' => $form->id], ['event_name' => $form->name]);
 
@@ -225,7 +231,105 @@ class ConferenceController extends Controller
         abort_unless($form->is_conference_form, 404);
         $settings    = ConferenceSetting::where('form_id', $form->id)->first();
         $submissions = $form->submissions()->whereNotNull('qr_token')->get();
-        return view('admin.conference.export-qr', compact('form', 'settings', 'submissions'));
+        $badges = $submissions->map(fn($s) => $this->renderBadge($s, $settings, 110));
+        return view('admin.conference.export-qr', compact('form', 'settings', 'submissions', 'badges'));
+    }
+
+    // ── Badge template renderer ────────────────────────────────────────────
+    private function renderBadge(FormSubmission $submission, ?ConferenceSetting $settings, int $qrSize = 130): string
+    {
+        $data      = $submission->data ?? [];
+        $name      = $data['full_name'] ?? $data['name'] ?? trim(($data['first_name'] ?? '').' '.($data['last_name'] ?? '')) ?: 'Participant';
+        $email     = $data['email'] ?? '';
+        $phone     = $data['phone'] ?? '';
+        $role      = $data['role'] ?? $data['course'] ?? $data['category'] ?? $data['designation'] ?? $data['title'] ?? 'Participant';
+        $eventName = $settings?->event_name ?? 'Conference';
+        $eventDate = $settings?->event_date?->format('d M Y') ?? '';
+        $venue     = $settings?->event_venue ?? '';
+        $accentColor = $settings?->badge_accent_color ?? '#3ee07f';
+        $bgColor     = $settings?->badge_bg_color ?? '#0a1628';
+        $pid         = $submission->participant_id ?? 'NO-ID';
+        $qrValue     = $submission->qr_token ?? $pid;
+
+        try {
+            $qrSvg = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
+                ->size($qrSize)->errorCorrection('M')->generate($qrValue);
+        } catch (\Throwable $e) {
+            $qrSvg = '<div style="width:'.$qrSize.'px;height:'.$qrSize.'px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:monospace;">QR Error</div>';
+        }
+
+        $logoHtml = '';
+        if ($settings?->badge_logo_path) {
+            $logoHtml = '<img src="'.asset('storage/'.$settings->badge_logo_path).'" style="height:30px;object-fit:contain;display:block;margin:0 auto 4px;" onerror="this.style.display=\'none\'">';
+        }
+
+        $template = $settings?->badge_html_template ?: self::defaultBadgeTemplate();
+
+        return str_replace(
+            ['{{NAME}}','{{PARTICIPANT_ID}}','{{QR_CODE}}','{{EMAIL}}','{{PHONE}}','{{ROLE}}',
+             '{{EVENT_NAME}}','{{EVENT_DATE}}','{{EVENT_VENUE}}','{{LOGO}}',
+             '{{ACCENT_COLOR}}','{{BG_COLOR}}'],
+            [$name, $pid, $qrSvg, $email, $phone, $role,
+             $eventName, $eventDate, $venue, $logoHtml,
+             $accentColor, $bgColor],
+            $template
+        );
+    }
+
+    public static function defaultBadgeTemplate(): string
+    {
+        return <<<'HTML'
+<style>
+.badge-card {
+  width:86mm; min-height:120mm;
+  background:#ffffff;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  font-family:Arial,Helvetica,sans-serif;
+  page-break-inside:avoid;
+  break-inside:avoid;
+}
+.bc-header {
+  background:{{BG_COLOR}};
+  padding:12px 16px 10px;
+  display:flex; align-items:center; gap:10px;
+}
+.bc-header-text { font-size:9px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.06em; line-height:1.4; }
+.bc-body { padding:16px; text-align:center; }
+.bc-role { font-size:22px; font-weight:900; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:5px; }
+.bc-accent { width:40px; height:3px; background:#e53e3e; margin:0 auto 14px; border-radius:2px; }
+.bc-qr { display:flex; justify-content:center; margin-bottom:10px; }
+.bc-qr svg { border:3px solid #fff; outline:1px solid #e2e8f0; border-radius:4px; }
+.bc-name { font-size:14px; font-weight:700; color:#1a202c; margin-bottom:3px; line-height:1.2; }
+.bc-id { font-family:monospace; font-size:13px; font-weight:900; color:{{BG_COLOR}}; letter-spacing:0.12em; margin-bottom:4px; }
+.bc-detail { font-size:10px; color:#718096; line-height:1.6; }
+.bc-footer {
+  background:{{BG_COLOR}};
+  padding:9px 16px; text-align:center;
+}
+.bc-footer-name { font-size:9px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.08em; }
+.bc-footer-sub { font-size:8px; color:rgba(255,255,255,0.65); margin-top:2px; }
+</style>
+<div class="badge-card">
+  <div class="bc-header">
+    {{LOGO}}
+    <div class="bc-header-text">{{EVENT_NAME}}</div>
+  </div>
+  <div class="bc-body">
+    <div class="bc-role">{{ROLE}}</div>
+    <div class="bc-accent"></div>
+    <div class="bc-qr">{{QR_CODE}}</div>
+    <div class="bc-name">{{NAME}}</div>
+    <div class="bc-id">{{PARTICIPANT_ID}}</div>
+    <div class="bc-detail">{{EMAIL}}{{PHONE}}</div>
+  </div>
+  <div class="bc-footer">
+    <div class="bc-footer-name">{{EVENT_NAME}}</div>
+    <div class="bc-footer-sub">{{EVENT_DATE}}{{EVENT_VENUE}}</div>
+  </div>
+</div>
+HTML;
     }
 
     // ── Staff management ───────────────────────────────────────────────────

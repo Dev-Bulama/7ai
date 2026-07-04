@@ -100,6 +100,46 @@
         <code style="font-family:monospace;font-weight:600;">php artisan conference:generate-participant-qrcodes --form={{ $form->slug }}</code>
       </div>
 
+      {{-- Badge HTML Template Editor --}}
+      <div style="border-top:1px solid #e2e8f0;padding-top:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+          <h3 style="font-size:14px;font-weight:600;color:#1a202c;margin:0;">Badge HTML Template</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            @php $previewSub = $form->submissions()->whereNotNull('qr_token')->first(); @endphp
+            @if($previewSub)
+            <a href="{{ route('admin.conference.participant-card', [$form, $previewSub]) }}"
+               target="_blank"
+               style="padding:6px 14px;background:#553c9a;color:#fff;text-decoration:none;border-radius:4px;font-size:12px;font-weight:600;">
+              👁 Preview Badge
+            </a>
+            @endif
+            <button type="button" onclick="resetTemplate()"
+              style="padding:6px 14px;background:#e53e3e;color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;">
+              ↩ Reset to Default
+            </button>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#718096;margin-bottom:10px;">
+          Customize the badge design using HTML &amp; CSS. Available placeholders:
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{NAME}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{PARTICIPANT_ID}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{QR_CODE}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{ROLE}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{EMAIL}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{PHONE}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{EVENT_NAME}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{EVENT_DATE}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{EVENT_VENUE}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{LOGO}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{ACCENT_COLOR}}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{BG_COLOR}}</code>
+        </p>
+        <textarea name="badge_html_template" id="badge_html_template" rows="22"
+          style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:4px;font-size:12px;font-family:'Courier New',monospace;line-height:1.5;color:#2d3748;resize:vertical;">{{ old('badge_html_template', $settings->badge_html_template ?? \App\Http\Controllers\Admin\ConferenceController::defaultBadgeTemplate()) }}</textarea>
+        <input type="hidden" name="reset_badge_template" id="reset_badge_template" value="0">
+        <p style="font-size:11px;color:#a0aec0;margin-top:6px;">Leave blank or reset to use the system default template. Changes take effect immediately after saving.</p>
+      </div>
+
     </div>
 
     <div style="margin-top:28px;display:flex;gap:10px;">
@@ -115,4 +155,13 @@
   </form>
 
 </div>
+
+<script>
+function resetTemplate() {
+  if (!confirm('Reset badge template to the system default? This will clear your custom HTML.')) return;
+  document.getElementById('reset_badge_template').value = '1';
+  document.getElementById('badge_html_template').value = '';
+  document.querySelector('form').submit();
+}
+</script>
 </x-admin-layout>
