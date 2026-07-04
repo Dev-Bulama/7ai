@@ -219,6 +219,15 @@ class ConferenceController extends Controller
         ]);
     }
 
+    // ── Bulk QR export (printable page) ──────────────────────────────────
+    public function exportQrCodes(Form $form)
+    {
+        abort_unless($form->is_conference_form, 404);
+        $settings    = ConferenceSetting::where('form_id', $form->id)->first();
+        $submissions = $form->submissions()->whereNotNull('qr_token')->get();
+        return view('admin.conference.export-qr', compact('form', 'settings', 'submissions'));
+    }
+
     // ── Staff management ───────────────────────────────────────────────────
     public function staff()
     {
@@ -303,13 +312,19 @@ class ConferenceController extends Controller
     // ── Private helpers ───────────────────────────────────────────────────
     private function sendStaffCredentials(User $user, string $plainPassword): void
     {
+        $portalUrl = match(true) {
+            $user->hasRole('front-desk-staff') => route('staff.front-desk'),
+            $user->hasRole('lunch-staff')      => route('staff.lunch-scanner'),
+            default                            => route('admin.dashboard'),
+        };
+
         try {
             \App\Services\SmtpMailService::configure();
             \Illuminate\Support\Facades\Mail::html(
                 view('emails.staff-credentials', [
                     'user'          => $user,
                     'plain_password'=> $plainPassword,
-                    'login_url'     => url('/login'),
+                    'portal_url'    => $portalUrl,
                 ])->render(),
                 function ($msg) use ($user) {
                     $msg->to($user->email, $user->name)

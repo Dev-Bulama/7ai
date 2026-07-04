@@ -188,6 +188,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('conference/staff/{user}', [ConferenceController::class, 'destroyStaff'])->name('conference.destroy-staff');
     Route::get('conference/{form}/participants', [ConferenceController::class, 'participants'])->name('conference.participants');
     Route::get('conference/{form}/participants/export', [ConferenceController::class, 'exportParticipants'])->name('conference.export-participants');
+    Route::get('conference/{form}/participants/export-qr', [ConferenceController::class, 'exportQrCodes'])->name('conference.export-qr');
     Route::get('conference/{form}/settings', [ConferenceController::class, 'settings'])->name('conference.settings');
     Route::put('conference/{form}/settings', [ConferenceController::class, 'updateSettings'])->name('conference.update-settings');
     Route::post('conference/{form}/toggle', [ConferenceController::class, 'toggleConference'])->name('conference.toggle');

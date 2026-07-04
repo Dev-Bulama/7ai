@@ -11,7 +11,11 @@
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <a href="{{ route('admin.conference.export-participants', $form) }}"
          style="padding:8px 16px;background:#276749;color:#fff;text-decoration:none;border-radius:4px;font-size:13px;">
-        ⬇ Export CSV
+        ⬇ CSV
+      </a>
+      <a href="{{ route('admin.conference.export-qr', $form) }}" target="_blank"
+         style="padding:8px 16px;background:#553c9a;color:#fff;text-decoration:none;border-radius:4px;font-size:13px;">
+        🏷 Export All QR Badges
       </a>
       <a href="{{ route('admin.conference.settings', $form) }}"
          style="padding:8px 16px;background:#4a5568;color:#fff;text-decoration:none;border-radius:4px;font-size:13px;">

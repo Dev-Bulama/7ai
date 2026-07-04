@@ -17,6 +17,12 @@ class LoginController extends Controller
             if ($user->hasRole(['super-admin','admin','marketing-manager','content-manager','support-staff'])) {
                 return redirect()->route('admin.dashboard');
             }
+            if ($user->hasRole('front-desk-staff')) {
+                return redirect()->route('staff.front-desk');
+            }
+            if ($user->hasRole('lunch-staff')) {
+                return redirect()->route('staff.lunch-scanner');
+            }
             return redirect()->route('customer.dashboard');
         }
         return back()->withErrors(['email'=>'Invalid credentials.'])->withInput();

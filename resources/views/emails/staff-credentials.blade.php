@@ -7,7 +7,8 @@
     <p>Hello {{ $user->name }},</p>
     <p>Your staff portal account has been created. Use the credentials below to log in:</p>
     <div style="background:#f8f9fa;border-radius:4px;padding:20px;margin:24px 0;">
-      <p style="margin:0 0 8px;"><strong>Portal URL:</strong> <a href="{{ $login_url }}">{{ $login_url }}</a></p>
+      <p style="margin:0 0 8px;"><strong>Login URL:</strong> <a href="{{ route('login') }}">{{ route('login') }}</a></p>
+      <p style="margin:0 0 8px;"><strong>Staff Portal:</strong> <a href="{{ $portal_url ?? route('login') }}">{{ $portal_url ?? route('login') }}</a></p>
       <p style="margin:0 0 8px;"><strong>Email:</strong> {{ $user->email }}</p>
       <p style="margin:0;"><strong>Password:</strong> <code>{{ $plain_password }}</code></p>
     </div>
