@@ -225,24 +225,24 @@
 
 {{-- ── TABS ────────────────────────────────────────────────────────── --}}
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('camera')" id="tab-camera">
-    <span class="tab-icon">📷</span>Camera Scan
+  <div class="tab active" onclick="switchTab('search')" id="tab-search">
+    <span class="tab-icon">🔍</span>Search
   </div>
   <div class="tab" onclick="switchTab('manual')" id="tab-manual">
-    <span class="tab-icon">⌨️</span>Manual Entry
+    <span class="tab-icon">⌨️</span>QR Token
   </div>
-  <div class="tab" onclick="switchTab('search')" id="tab-search">
-    <span class="tab-icon">🔍</span>Search
+  <div class="tab" onclick="switchTab('camera')" id="tab-camera">
+    <span class="tab-icon">📷</span>Camera
   </div>
 </div>
 
 {{-- ── PANELS ──────────────────────────────────────────────────────── --}}
 
-{{-- Camera Scan Panel --}}
-<div class="panel active" id="panel-camera">
+{{-- Search Panel (default) --}}
+<div class="panel active" id="panel-search">
 
   @if($forms->count() > 1)
-  <select class="form-select" id="form-select-cam" onchange="changeForm(this.value)">
+  <select class="form-select" onchange="changeForm(this.value)">
     @foreach($forms as $f)
     <option value="{{ $f->id }}" @selected($form?->id == $f->id)>{{ $f->name }}</option>
     @endforeach
@@ -267,8 +267,38 @@
   </div>
   @endif
 
-  <div id="scan-result-cam" class="result-box"></div>
+  <div class="section-title">Search Participants</div>
+  <div class="input-row">
+    <input id="search-input" type="search" class="scan-field" placeholder="Name, email, phone, or participant ID..." autocomplete="off" autofocus>
+    <button class="action-btn btn-search" onclick="doSearch()">Search</button>
+  </div>
+  <div id="search-results"></div>
+  @else
+  <div class="no-form"><div class="icon">🎪</div><p>No conference forms available.</p></div>
+  @endif
+</div>
 
+{{-- QR Token Manual Entry Panel --}}
+<div class="panel" id="panel-manual">
+  @if($form)
+  <div class="section-title">Enter QR Token Manually</div>
+  <div id="scan-result-manual" class="result-box"></div>
+  <div class="input-row">
+    <input id="manual-input" type="text" class="scan-field" placeholder="Paste or type QR token from badge..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="action-btn btn-green" onclick="submitScan('manual')">✓ Check In</button>
+  </div>
+  <div style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;margin-top:4px;">
+    Enter the long token printed on the participant badge, then press Enter or Check In.
+  </div>
+  @else
+  <div class="no-form"><div class="icon">🎪</div><p>No conference forms available.</p></div>
+  @endif
+</div>
+
+{{-- Camera Scan Panel --}}
+<div class="panel" id="panel-camera">
+  @if($form)
+  <div id="scan-result-cam" class="result-box"></div>
   <div class="camera-wrap" id="camera-wrap">
     <div id="qr-reader"></div>
     <div class="camera-overlay">
@@ -278,48 +308,8 @@
       </div>
     </div>
   </div>
-
   <div class="camera-status" id="cam-status">Tap Start Camera to begin scanning</div>
   <button class="camera-toggle-btn" id="cam-btn" onclick="toggleCamera()">📷 Start Camera</button>
-
-  @else
-  <div class="no-form">
-    <div class="icon">🎪</div>
-    <p>No conference forms available.</p>
-    <p style="font-size:12px;margin-top:8px;">Contact your administrator.</p>
-  </div>
-  @endif
-</div>
-
-{{-- Manual Entry Panel --}}
-<div class="panel" id="panel-manual">
-
-  @if($form)
-  <div class="section-title">Enter QR Token Manually</div>
-  <div id="scan-result-manual" class="result-box"></div>
-  <div class="input-row">
-    <input id="manual-input" type="text" class="scan-field" placeholder="Paste or type QR token..." autocomplete="off" autocorrect="off" spellcheck="false">
-    <button class="action-btn btn-green" onclick="submitScan('manual')">✓ Check In</button>
-  </div>
-  <div style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;margin-top:4px;">
-    This is the long token printed on the badge. Press Enter or click Check In.
-  </div>
-  @else
-  <div class="no-form"><div class="icon">🎪</div><p>No conference forms available.</p></div>
-  @endif
-</div>
-
-{{-- Search Panel --}}
-<div class="panel" id="panel-search">
-
-  @if($form)
-  <div class="section-title">Search Participants</div>
-  <div id="search-result-box" class="result-box"></div>
-  <div class="input-row">
-    <input id="search-input" type="search" class="scan-field" placeholder="Name, email, phone, or ID..." autocomplete="off">
-    <button class="action-btn btn-search" onclick="doSearch()">Search</button>
-  </div>
-  <div id="search-results"></div>
   @else
   <div class="no-form"><div class="icon">🎪</div><p>No conference forms available.</p></div>
   @endif

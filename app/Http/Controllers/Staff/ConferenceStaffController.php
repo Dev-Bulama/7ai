@@ -85,12 +85,9 @@ class ConferenceStaffController extends Controller
         $submissions = FormSubmission::where('form_id', $request->form_id)
             ->where(function ($q) use ($search) {
                 $q->where('participant_id', 'like', "%{$search}%")
-                  ->orWhere(function ($q2) use ($search) {
-                      $q2->whereNotNull('data')
-                         ->whereRaw("JSON_SEARCH(LOWER(data), 'one', LOWER(?)) IS NOT NULL", ["%{$search}%"]);
-                  });
+                  ->orWhereRaw("LOWER(CAST(data AS CHAR)) LIKE LOWER(?)", ["%{$search}%"]);
             })
-            ->limit(10)
+            ->limit(15)
             ->get();
 
         $results = $submissions->map(function ($s) {
