@@ -9,7 +9,7 @@ class ConferenceSetting extends Model
         'form_id', 'event_name', 'event_date', 'event_venue',
         'participant_id_prefix', 'lunch_enabled', 'lunch_rounds',
         'badge_enabled', 'badge_bg_color', 'badge_accent_color',
-        'badge_logo_path', 'qr_generated_at',
+        'badge_logo_path', 'badge_html_template', 'qr_generated_at',
     ];
 
     protected $casts = [

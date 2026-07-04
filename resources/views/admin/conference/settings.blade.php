@@ -121,18 +121,9 @@
         </div>
         <p style="font-size:12px;color:#718096;margin-bottom:10px;">
           Customize the badge design using HTML &amp; CSS. Available placeholders:
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{NAME}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{PARTICIPANT_ID}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{QR_CODE}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{ROLE}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{EMAIL}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{PHONE}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{EVENT_NAME}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{EVENT_DATE}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{EVENT_VENUE}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{LOGO}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{ACCENT_COLOR}}</code>
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;">{{BG_COLOR}}</code>
+          @foreach(['NAME','PARTICIPANT_ID','QR_CODE','ROLE','EMAIL','PHONE','EVENT_NAME','EVENT_DATE','EVENT_VENUE','LOGO','ACCENT_COLOR','BG_COLOR'] as $ph)
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;display:inline-block;margin:2px 1px;">{{ '{{' . $ph . '}}' }}</code>
+          @endforeach
         </p>
         <textarea name="badge_html_template" id="badge_html_template" rows="22"
           style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:4px;font-size:12px;font-family:'Courier New',monospace;line-height:1.5;color:#2d3748;resize:vertical;">{{ old('badge_html_template', $settings->badge_html_template ?? \App\Http\Controllers\Admin\ConferenceController::defaultBadgeTemplate()) }}</textarea>
