@@ -25,9 +25,11 @@ class FlyerController extends Controller
         $eventDate   = $settings?->event_date?->format('jS F Y') ?? '';
         $venue       = $settings?->event_venue        ?? '';
         $hashtag     = $settings?->flyer_hashtag      ?? '#' . str_replace([' ', '-'], '', strtolower($eventName)) . date('Y');
-        $logoHtml    = '';
         if ($settings?->badge_logo_path) {
-            $logoHtml = '<img src="' . asset('storage/' . $settings->badge_logo_path) . '" style="height:40px;object-fit:contain;" onerror="this.style.display=\'none\'">';
+            $logoHtml = '<img src="' . asset('storage/' . $settings->badge_logo_path) . '" style="height:44px;object-fit:contain;display:block;margin:0 auto 4px;" onerror="this.style.display=\'none\'">';
+        } else {
+            $logoHtml = '<div style="color:#ffffff;font-size:22px;font-weight:900;letter-spacing:.15em;line-height:1;">7AI</div>'
+                      . '<div style="color:rgba(255,255,255,.45);font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;margin-top:1px;">African Intelligence, Amplified</div>';
         }
 
         $rawTemplate = $settings?->flyer_html_template ?: ConferenceController::defaultFlyerTemplate();

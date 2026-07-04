@@ -380,10 +380,8 @@ HTML;
 <!-- Decorative dark dot bottom-right -->
 <div style="position:absolute;top:478px;right:22px;width:22px;height:22px;border-radius:50%;background:{{BG_COLOR}};opacity:.35;"></div>
 <!-- ── Logo / brand ── -->
-<div style="position:absolute;top:16px;left:0;right:0;text-align:center;padding-right:60px;">
+<div style="position:absolute;top:16px;left:0;right:0;text-align:center;">
 {{LOGO}}
-<div style="color:#ffffff;font-size:22px;font-weight:900;letter-spacing:.15em;line-height:1;">7AI</div>
-<div style="color:rgba(255,255,255,.45);font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;margin-top:1px;">African Intelligence, Amplified</div>
 </div>
 <!-- ── "I AM ATTENDING" label ── -->
 <div style="position:absolute;top:70px;left:0;right:0;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;">
