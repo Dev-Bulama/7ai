@@ -144,10 +144,12 @@
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // Build placeholder strings via concatenation so Blade never sees {{ }} literals
-    var PH_NAME  = '{' + '{NAME}' + '}';
-    var PH_ROLE  = '{' + '{ROLE}' + '}';
-    var PH_PHOTO = '{' + '{PHOTO}' + '}';
+    // Build placeholder strings without any curly-brace literals in this file
+    var OB = String.fromCharCode(123); // {
+    var CB = String.fromCharCode(125); // }
+    var PH_NAME  = OB+OB+'NAME'+CB+CB;
+    var PH_ROLE  = OB+OB+'ROLE'+CB+CB;
+    var PH_PHOTO = OB+OB+'PHOTO'+CB+CB;
 
     function buildHtml(forCapture){
         var name = document.getElementById('inp-name').value.trim() || 'Your Name';
