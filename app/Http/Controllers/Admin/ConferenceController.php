@@ -402,16 +402,17 @@ HTML;
 <div style="color:#ffffff;font-size:10px;font-style:italic;line-height:1.45;font-weight:500;">Let&#39;s Shape Africa&#39;s AI Future.</div>
 </div>
 <!-- ── Date bubble right ── -->
-<div style="position:absolute;top:244px;right:14px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);text-align:center;padding-top:10px;">
-<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 2px;display:block;"><rect x="1" y="2" width="14" height="13" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" fill="none"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M5 1v2M11 1v2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" stroke-linecap="round"/></svg>
+<div style="position:absolute;top:236px;right:14px;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);text-align:center;padding-top:8px;">
+<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 1px;display:block;"><rect x="1" y="2" width="14" height="13" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" fill="none"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M5 1v2M11 1v2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" stroke-linecap="round"/></svg>
 <div style="color:#ffffff;font-size:9px;font-weight:700;letter-spacing:.04em;line-height:1.2;">7TH JULY</div>
 <div style="color:{{ACCENT_COLOR}};font-size:13px;font-weight:900;letter-spacing:.05em;line-height:1.2;">2026</div>
-<div style="color:rgba(255,255,255,.6);font-size:7px;letter-spacing:.04em;line-height:1.3;">ABUJA<br>NIGERIA</div>
+<div style="color:rgba(255,255,255,.6);font-size:6.5px;letter-spacing:.03em;line-height:1.3;">ABUJA, NIGERIA</div>
+<div style="color:rgba(255,255,255,.55);font-size:6px;letter-spacing:.02em;margin-top:1px;">9AM – 4PM</div>
 </div>
 <!-- ── Photo circle: 190px, centered at 355px boundary → top:260px, bottom:450px ── -->
-<div style="position:absolute;top:260px;left:175px;width:190px;height:190px;border-radius:50%;overflow:hidden;border:4px solid {{ACCENT_COLOR}};background:#1e3a5f;z-index:10;">
-<img src="{{PHOTO}}" style="width:182px;height:182px;border-radius:50%;object-fit:cover;display:block;position:relative;z-index:2;" onerror="this.style.display='none'">
-<svg xmlns="http://www.w3.org/2000/svg" width="182" height="182" viewBox="0 0 182 182" style="position:absolute;top:0;left:0;z-index:1;"><circle cx="91" cy="91" r="91" fill="#1e3a5f"/><circle cx="91" cy="72" r="32" fill="#4a6888"/><ellipse cx="91" cy="160" rx="56" ry="40" fill="#4a6888"/></svg>
+<div style="position:absolute;top:260px;left:175px;width:190px;height:190px;border-radius:50%;overflow:hidden;border:4px solid {{ACCENT_COLOR}};z-index:10;">
+<div style="width:190px;height:190px;border-radius:50%;background-image:{{PHOTO}};background-size:cover;background-position:center top;background-color:#1e3a5f;"></div>
+<svg xmlns="http://www.w3.org/2000/svg" width="190" height="190" viewBox="0 0 190 190" style="position:absolute;top:0;left:0;z-index:-1;border-radius:50%;"><circle cx="95" cy="95" r="95" fill="#1e3a5f"/><circle cx="95" cy="75" r="33" fill="#4a6888"/><ellipse cx="95" cy="166" rx="58" ry="42" fill="#4a6888"/></svg>
 </div>
 <!-- ── White section: Name + role ── photo bottom: 450, content top: 458 -->
 <div style="position:absolute;top:456px;left:0;right:0;text-align:center;padding:0 20px;">

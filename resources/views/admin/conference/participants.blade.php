@@ -69,8 +69,8 @@
   @endphp
 
   {{-- Table --}}
-  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
-    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow-x:auto;">
+    <table style="width:100%;min-width:820px;border-collapse:collapse;font-size:13px;">
       <thead>
         <tr style="background:#f7fafc;">
           <th style="padding:10px 14px;text-align:left;font-weight:600;color:#4a5568;border-bottom:1px solid #e2e8f0;">Participant ID</th>

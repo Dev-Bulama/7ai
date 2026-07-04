@@ -27,11 +27,12 @@
         .btn-generate{width:100%;background:linear-gradient(135deg,#00C896,#00a07a);color:#fff;border:none;border-radius:10px;padding:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:opacity .2s;letter-spacing:.05em}
         .btn-generate:hover{opacity:.88}
         .btn-generate:disabled{opacity:.5;cursor:wait}
-        .preview-section{margin-top:24px}
+        .preview-section{display:none;margin-top:24px}
         .preview-label{font-size:.8rem;color:#aab4c4;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;text-align:center}
         #flyer-preview-wrap{display:flex;justify-content:center;overflow:hidden}
         #flyer-preview-scaler{transform-origin:top center;display:inline-block}
         #flyer-preview{width:540px;overflow:hidden;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+        #flyer-render-target{position:fixed;left:-9999px;top:0;width:540px;pointer-events:none;z-index:-1}
         .result-section{display:none;margin-top:24px;text-align:center}
         #flyer-result{max-width:100%;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
         .share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
@@ -80,17 +81,21 @@
                 <div class="upload-text">Tap to upload a photo&nbsp;(JPEG / PNG)</div>
             </div>
         </div>
-        <button class="btn-generate" id="btn-gen">&#10022; Generate My Flyer</button>
+        <button class="btn-generate" id="btn-preview" style="background:linear-gradient(135deg,#253548,#1a2535);">&#128065; Preview Your Design</button>
+        <button class="btn-generate" id="btn-gen" style="margin-top:10px;">&#10022; Generate &amp; Download Flyer</button>
     </div>
 
-    <div class="preview-section">
-        <div class="preview-label">Live Preview</div>
+    <div class="preview-section" id="preview-section">
+        <div class="preview-label">Your Flyer Preview</div>
         <div id="flyer-preview-wrap">
             <div id="flyer-preview-scaler">
                 <div id="flyer-preview"></div>
             </div>
         </div>
     </div>
+
+    {{-- Hidden full-size render target for html2canvas --}}
+    <div id="flyer-render-target"></div>
 
     <div class="result-section" id="result-section">
         <div class="preview-label">Your Flyer is Ready!</div>
@@ -139,32 +144,20 @@
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    function renderPreview(){
+    function buildHtml(){
         var name = document.getElementById('inp-name').value.trim() || 'Your Name';
         var role = document.getElementById('inp-role').value.trim() || '';
-        var html = TEMPLATE
+        // Photo: use background-image CSS value so object-fit is respected by html2canvas
+        var photoCss = currentPhotoDataUrl ? 'url("' + currentPhotoDataUrl + '")' : 'none';
+        return TEMPLATE
             .replace(/\{\{NAME\}\}/g, escHtml(name))
             .replace(/\{\{ROLE\}\}/g, escHtml(role))
-            .replace(/\{\{PHOTO\}\}/g, currentPhotoDataUrl || '');
-        document.getElementById('flyer-preview').innerHTML = html;
+            .replace(/\{\{PHOTO\}\}/g, photoCss);
     }
 
-    document.getElementById('inp-name').addEventListener('input', renderPreview);
-    document.getElementById('inp-role').addEventListener('input', renderPreview);
-
-    document.getElementById('inp-photo').addEventListener('change', function(e){
-        var file = e.target.files[0];
-        if(!file) return;
-        var reader = new FileReader();
-        reader.onload = function(ev){
-            currentPhotoDataUrl = ev.target.result;
-            document.getElementById('photo-thumb').src = currentPhotoDataUrl;
-            renderPreview();
-        };
-        reader.readAsDataURL(file);
-    });
-
-    renderPreview();
+    function renderPreview(){
+        document.getElementById('flyer-preview').innerHTML = buildHtml();
+    }
 
     function scalePreview(){
         var wrap = document.getElementById('flyer-preview-wrap');
@@ -175,32 +168,61 @@
         scaler.style.width = '540px';
         wrap.style.height = Math.round(675 * scale) + 'px';
     }
-    scalePreview();
     window.addEventListener('resize', scalePreview);
+
+    // Preview button
+    document.getElementById('btn-preview').addEventListener('click', function(){
+        renderPreview();
+        var ps = document.getElementById('preview-section');
+        ps.style.display = 'block';
+        scalePreview();
+        this.textContent = '↺ Update Preview';
+        ps.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    // Auto-update preview if already open
+    function liveUpdate(){
+        var ps = document.getElementById('preview-section');
+        if(ps.style.display !== 'none') renderPreview();
+    }
+    document.getElementById('inp-name').addEventListener('input', liveUpdate);
+    document.getElementById('inp-role').addEventListener('input', liveUpdate);
+
+    document.getElementById('inp-photo').addEventListener('change', function(e){
+        var file = e.target.files[0];
+        if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev){
+            currentPhotoDataUrl = ev.target.result;
+            document.getElementById('photo-thumb').src = currentPhotoDataUrl;
+            liveUpdate();
+        };
+        reader.readAsDataURL(file);
+    });
 
     document.getElementById('btn-gen').addEventListener('click', function(){
         var btn = this;
         btn.disabled = true;
         btn.textContent = 'Generating…';
-        var previewEl = document.getElementById('flyer-preview');
-        var target = previewEl.firstElementChild || previewEl;
-        // Reset scale to 1 so html2canvas captures at full 540px, then re-scale after
-        var scaler = document.getElementById('flyer-preview-scaler');
-        scaler.style.transform = 'scale(1)';
-        html2canvas(target, {
+
+        // Populate the hidden full-size render target (no transform applied)
+        var renderTarget = document.getElementById('flyer-render-target');
+        renderTarget.innerHTML = buildHtml();
+        var captureEl = renderTarget.firstElementChild || renderTarget;
+
+        html2canvas(captureEl, {
             scale: 2,
             useCORS: true,
             allowTaint: true,
             logging: false,
-            backgroundColor: null
+            backgroundColor: null,
+            width: 540,
+            height: 675
         }).then(function(canvas){
             generatedDataUrl = canvas.toDataURL('image/png');
             document.getElementById('flyer-result').src = generatedDataUrl;
             canvas.toBlob(function(blob){ generatedBlob = blob; }, 'image/png');
             document.getElementById('result-section').style.display = 'block';
-            if(navigator.share && navigator.canShare){
-                document.getElementById('btn-webshare').style.display = 'flex';
-            }
             var name = document.getElementById('inp-name').value.trim() || 'I';
             var hashtag = '{{ addslashes($settings->flyer_hashtag ?? "#7AIAbuja2026") }}';
             var eventName = '{{ addslashes($settings->event_name ?? "Abuja AI Conference") }}';
@@ -208,14 +230,12 @@
             document.getElementById('btn-tw').href = 'https://twitter.com/intent/tweet?text=' + msg;
             document.getElementById('btn-fb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(PAGE_URL);
             document.getElementById('btn-li').href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(PAGE_URL);
-            scalePreview();
             document.getElementById('result-section').scrollIntoView({behavior:'smooth', block:'start'});
             btn.disabled = false;
-            btn.textContent = '✦ Generate My Flyer';
+            btn.textContent = '✦ Generate & Download Flyer';
         }).catch(function(err){
-            scalePreview();
             btn.disabled = false;
-            btn.textContent = '✦ Generate My Flyer';
+            btn.textContent = '✦ Generate & Download Flyer';
             showToast('Generation failed. Please try again.');
             console.error(err);
         });
