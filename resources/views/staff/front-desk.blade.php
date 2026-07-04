@@ -429,13 +429,20 @@ function submitScan(context, tokenOverride) {
     headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN':CSRF, 'Accept':'application/json' },
     body: JSON.stringify({ qr_token: token, form_id: FORM_ID })
   })
-  .then(r => r.json())
-  .then(data => {
+  .then(function(r) {
+    if (!r.ok && r.status !== 404) {
+      return r.text().then(function(t) {
+        throw new Error('HTTP ' + r.status + (r.status === 419 ? ' — session expired, reload the page' : ''));
+      });
+    }
+    return r.json();
+  })
+  .then(function(data) {
     showResult(resultId, data.success, data.already_checked, data);
     if (context === 'manual') { document.getElementById('manual-input').value = ''; }
     playBeep(data.success && !data.already_checked);
   })
-  .catch(e => { showResult(resultId, false, false, { message: 'Network error. Try again.' }); });
+  .catch(function(e) { showResult(resultId, false, false, { message: e.message || 'Network error. Try again.' }); });
 }
 
 function showResult(boxId, success, warning, data) {
@@ -475,8 +482,15 @@ function doSearch() {
     headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN':CSRF, 'Accept':'application/json' },
     body: JSON.stringify({ query: q, form_id: FORM_ID })
   })
-  .then(r => r.json())
-  .then(data => {
+  .then(function(r) {
+    if (!r.ok) {
+      return r.text().then(function(t) {
+        throw new Error('HTTP ' + r.status + (r.status === 419 ? ' (session expired — please reload the page)' : ': ' + t.substring(0, 120)));
+      });
+    }
+    return r.json();
+  })
+  .then(function(data) {
     var cont = document.getElementById('search-results');
     if (!data.results || !data.results.length) {
       cont.innerHTML = '<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.4);font-size:14px;">No participants found for "' + escHtml(q) + '"</div>';
@@ -494,8 +508,8 @@ function doSearch() {
         '</div>';
     }).join('');
   })
-  .catch(function() {
-    document.getElementById('search-results').innerHTML = '<div style="padding:20px;text-align:center;color:#fc8181;">Network error. Please try again.</div>';
+  .catch(function(err) {
+    document.getElementById('search-results').innerHTML = '<div style="padding:20px;text-align:center;color:#fc8181;font-size:13px;">' + escHtml(err.message || 'Request failed. Please try again.') + '</div>';
   });
 }
 
