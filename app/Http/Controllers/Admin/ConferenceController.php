@@ -403,39 +403,42 @@ HTML;
 <div data-photo style="width:190px;height:190px;background-image:{{PHOTO}};background-size:cover;background-position:center top;background-color:#1e3a5f;"></div>
 <svg xmlns="http://www.w3.org/2000/svg" width="190" height="190" viewBox="0 0 190 190" style="position:absolute;top:0;left:0;z-index:-1;"><circle cx="95" cy="95" r="95" fill="#1e3a5f"/><circle cx="95" cy="75" r="33" fill="#4a6888"/><ellipse cx="95" cy="166" rx="58" ry="42" fill="#4a6888"/></svg>
 </div>
-<!-- Name + role (photo bottom 450, start 460) -->
-<div style="position:absolute;top:460px;left:0;right:0;text-align:center;padding:0 28px;">
-<div style="color:#0A1628;font-size:18px;font-weight:800;line-height:1.15;margin-bottom:4px;word-break:break-word;">{{NAME}}</div>
-<div style="color:#4a6888;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;min-height:13px;">{{ROLE}}</div>
+<!-- Name + role (photo bottom 450 → start 458) -->
+<div style="position:absolute;top:458px;left:0;right:0;text-align:center;padding:0 32px;">
+<div style="color:#0A1628;font-size:17px;font-weight:800;line-height:1.2;margin-bottom:3px;word-break:break-word;">{{NAME}}</div>
+<div style="color:#4a6888;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;min-height:12px;">{{ROLE}}</div>
 </div>
-<!-- Divider line -->
-<div style="position:absolute;top:500px;left:60px;right:60px;height:1px;background:#e2e8f0;"></div>
-<!-- "I AM / ATTENDING" stacked large -->
-<div style="position:absolute;top:508px;left:0;right:0;text-align:center;line-height:1.08;">
-<div style="color:#0A1628;font-size:38px;font-weight:900;letter-spacing:.01em;">I AM</div>
-<div style="color:{{ACCENT_COLOR}};font-size:38px;font-weight:900;letter-spacing:.01em;">ATTENDING</div>
+<!-- Divider -->
+<div style="position:absolute;top:500px;left:50px;right:50px;height:1px;background:#dde4ed;"></div>
+<!-- "I AM / ATTENDING" stacked -->
+<div style="position:absolute;top:508px;left:0;right:0;text-align:center;line-height:1.06;">
+<div style="color:#0A1628;font-size:32px;font-weight:900;letter-spacing:.01em;">I AM</div>
+<div style="color:{{ACCENT_COLOR}};font-size:32px;font-weight:900;letter-spacing:.01em;">ATTENDING</div>
 </div>
 <!-- Hashtag -->
-<div style="position:absolute;top:590px;left:0;right:0;text-align:center;">
-<div style="color:{{ACCENT_COLOR}};font-size:11px;font-weight:700;letter-spacing:.07em;">{{HASHTAG}}</div>
+<div style="position:absolute;top:577px;left:0;right:0;text-align:center;">
+<div style="color:{{ACCENT_COLOR}};font-size:10px;font-weight:700;letter-spacing:.08em;">{{HASHTAG}}</div>
 </div>
-<!-- Icons row -->
-<div style="position:absolute;bottom:34px;left:0;right:0;display:flex;align-items:flex-start;justify-content:center;gap:0;border-top:1px solid #e8edf3;padding-top:10px;">
-<div style="text-align:center;padding:0 14px;border-right:1px solid #c8d4e0;min-width:0;">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><path d="M12 2C9.5 2 8 4 8 6c0 1.1.4 2.1 1 2.8C7.6 9.6 7 11.2 7 13h10c0-1.8-.6-3.4-2-4.2.6-.7 1-1.7 1-2.8C16 4 14.5 2 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9 13v5M15 13v5M7 18h10" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
-<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">AI<br>INNOVATION</div>
+<!-- Icons row: fixed position so it never overlaps hashtag -->
+<div style="position:absolute;top:598px;left:0;right:0;border-top:1px solid #dde4ed;padding-top:10px;display:flex;align-items:flex-start;justify-content:center;gap:0;">
+<div style="text-align:center;width:25%;padding:0 6px;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 5px;"><path d="M12 2C9.5 2 8 4 8 6c0 1.1.4 2.1 1 2.8C7.6 9.6 7 11.2 7 13h10c0-1.8-.6-3.4-2-4.2.6-.7 1-1.7 1-2.8C16 4 14.5 2 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9 13v5M15 13v5M7 18h10" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;">AI<br>INNOVATION</div>
 </div>
-<div style="text-align:center;padding:0 14px;border-right:1px solid #c8d4e0;min-width:0;">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><circle cx="12" cy="7" r="2.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="5" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="19" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M12 9.5v3M12 12.5l-5.5 3M12 12.5l5.5 3" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
-<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">NETWORK</div>
+<div style="width:1px;background:#dde4ed;align-self:stretch;margin:0 2px;"></div>
+<div style="text-align:center;width:25%;padding:0 6px;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 5px;"><circle cx="12" cy="7" r="2.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="5" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="19" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M12 9.5v3M12 12.5l-5.5 3M12 12.5l5.5 3" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;">NETWORK</div>
 </div>
-<div style="text-align:center;padding:0 14px;border-right:1px solid #c8d4e0;min-width:0;">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><path d="M12 2a6 6 0 0 1 4.5 10L15 14H9l-1.5-2A6 6 0 0 1 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9.5 14v2a2.5 2.5 0 0 0 5 0v-2" stroke="#4a6888" stroke-width="1.4"/><path d="M10 22h4" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
-<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">LEARN</div>
+<div style="width:1px;background:#dde4ed;align-self:stretch;margin:0 2px;"></div>
+<div style="text-align:center;width:25%;padding:0 6px;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 5px;"><path d="M12 2a6 6 0 0 1 4.5 10L15 14H9l-1.5-2A6 6 0 0 1 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9.5 14v2a2.5 2.5 0 0 0 5 0v-2" stroke="#4a6888" stroke-width="1.4"/><path d="M10 22h4" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;">LEARN</div>
 </div>
-<div style="text-align:center;padding:0 14px;min-width:0;">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><circle cx="12" cy="12" r="9.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#4a6888" stroke-width="1.4"/></svg>
-<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">IMPACT</div>
+<div style="width:1px;background:#dde4ed;align-self:stretch;margin:0 2px;"></div>
+<div style="text-align:center;width:25%;padding:0 6px;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 5px;"><circle cx="12" cy="12" r="9.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#4a6888" stroke-width="1.4"/></svg>
+<div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;">IMPACT</div>
 </div>
 </div>
 <!-- Footer -->
