@@ -120,10 +120,16 @@ class ConferenceController extends Controller
             'badge_accent_color'   => 'nullable|string|max:7',
             'badge_logo'           => 'nullable|image|max:2048',
             'badge_html_template'  => 'nullable|string',
+            'flyer_hashtag'        => 'nullable|string|max:100',
+            'flyer_html_template'  => 'nullable|string',
         ]);
 
         if ($request->input('reset_badge_template')) {
             $data['badge_html_template'] = null;
+        }
+
+        if ($request->input('reset_flyer_template')) {
+            $data['flyer_html_template'] = null;
         }
 
         $settings = ConferenceSetting::firstOrCreate(['form_id' => $form->id], ['event_name' => $form->name]);
@@ -346,6 +352,52 @@ class ConferenceController extends Controller
   </div>
 </div>
 HTML;
+    }
+
+    public static function defaultFlyerTemplate(): string
+    {
+        return <<<'FLYERHTML'
+<div style="width:540px;height:675px;position:relative;font-family:'Segoe UI',Arial,sans-serif;overflow:hidden;border-radius:12px;background:#0A1628;">
+<style>*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}</style>
+<div style="position:absolute;top:0;left:0;right:0;height:420px;background:{{BG_COLOR}};"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:290px;background:#ffffff;"></div>
+<div style="position:absolute;top:16px;right:16px;background:{{ACCENT_COLOR}};color:#fff;padding:6px 12px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.05em;text-align:center;line-height:1.5;">7TH JULY 2026<br>ABUJA NIGERIA</div>
+<div style="position:absolute;top:16px;left:0;right:0;text-align:center;">
+<div style="color:rgba(255,255,255,.9);font-size:22px;font-weight:900;letter-spacing:.15em;">7AI</div>
+<div style="color:rgba(255,255,255,.5);font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-top:1px;">African Intelligence, Amplified</div>
+</div>
+<div style="position:absolute;top:74px;left:0;right:0;text-align:center;">
+<span style="color:{{ACCENT_COLOR}};font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;">&#9650; I AM ATTENDING &#9650;</span>
+</div>
+<div style="position:absolute;top:92px;left:0;right:0;text-align:center;padding:0 16px;">
+<div style="color:#fff;font-size:34px;font-weight:900;line-height:1.05;letter-spacing:-.01em;text-transform:uppercase;">{{EVENT_NAME}}</div>
+</div>
+<div style="position:absolute;top:172px;left:50%;transform:translateX(-50%);white-space:nowrap;">
+<span style="background:{{ACCENT_COLOR}};color:#fff;font-size:26px;font-weight:900;padding:3px 20px;border-radius:5px;letter-spacing:.06em;">2026</span>
+</div>
+<div style="position:absolute;top:226px;left:26px;color:rgba(255,255,255,.6);font-size:11px;font-style:italic;">Let&#39;s Shape Africa&#39;s AI Future.</div>
+<div style="position:absolute;top:295px;left:50%;transform:translateX(-50%);width:214px;height:214px;border-radius:50%;overflow:hidden;border:5px solid {{ACCENT_COLOR}};background:#1e3a5f;z-index:10;">
+<img src="{{PHOTO}}" style="width:204px;height:204px;border-radius:50%;object-fit:cover;display:block;" onerror="this.style.display='none'">
+<svg xmlns="http://www.w3.org/2000/svg" width="204" height="204" viewBox="0 0 204 204" style="position:absolute;top:0;left:0;"><circle cx="102" cy="102" r="102" fill="#1e3a5f"/><circle cx="102" cy="80" r="36" fill="#4a6888"/><ellipse cx="102" cy="180" rx="62" ry="46" fill="#4a6888"/></svg>
+</div>
+<div style="position:absolute;bottom:148px;left:0;right:0;text-align:center;padding:0 20px;">
+<div style="color:#0A1628;font-size:20px;font-weight:900;letter-spacing:.01em;margin-bottom:2px;line-height:1.1;">{{NAME}}</div>
+<div style="color:#667788;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;min-height:14px;">{{ROLE}}</div>
+<div style="line-height:1.08;margin-bottom:6px;">
+<span style="color:#0A1628;font-size:24px;font-weight:900;">I AM </span><span style="color:{{ACCENT_COLOR}};font-size:24px;font-weight:900;">ATTENDING</span><br>
+<span style="color:#0A1628;font-size:24px;font-weight:900;">THE FUTURE.</span>
+</div>
+<div style="color:{{ACCENT_COLOR}};font-size:12px;font-weight:700;letter-spacing:.08em;">{{HASHTAG}}</div>
+</div>
+<div style="position:absolute;bottom:50px;left:0;right:0;display:flex;justify-content:center;gap:24px;">
+<div style="text-align:center"><div style="font-size:16px;">🤖</div><div style="color:#8899aa;font-size:7.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-top:2px;">AI Innovation</div></div>
+<div style="text-align:center"><div style="font-size:16px;">🤝</div><div style="color:#8899aa;font-size:7.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-top:2px;">Network</div></div>
+<div style="text-align:center"><div style="font-size:16px;">📚</div><div style="color:#8899aa;font-size:7.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-top:2px;">Learn</div></div>
+<div style="text-align:center"><div style="font-size:16px;">🌍</div><div style="color:#8899aa;font-size:7.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-top:2px;">Impact</div></div>
+</div>
+<div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;color:rgba(255,255,255,.35);font-size:9px;letter-spacing:.1em;">www.7ai.africa</div>
+</div>
+FLYERHTML;
     }
 
     // ── Staff management ───────────────────────────────────────────────────

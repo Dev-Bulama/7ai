@@ -31,6 +31,7 @@ use App\Http\Controllers\Customer\TicketController as CustomerTicketController;
 use App\Http\Controllers\LeadCaptureController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\InvestorController;
+use App\Http\Controllers\FlyerController;
 
 // Public frontend routes
 Route::get('/', [FrontendController::class, 'home'])->name('home');
@@ -62,9 +63,12 @@ Route::get('/advisory', [FrontendController::class, 'advisory'])->name('advisory
 Route::get('/forms/{form:slug}', [FrontendController::class, 'showForm'])->name('forms.show');
 Route::post('/forms/{form}/submit', [FrontendController::class, 'submitForm'])->name('forms.submit');
 
+// Public flyer generator
+Route::get('/flyer/{slug}', [FlyerController::class, 'show'])->name('conference.flyer');
+
 // Dynamic public form paths (e.g. /abuja)
 Route::get('/{formPath}', [FrontendController::class, 'dynamicFormPage'])
-    ->where('formPath', '^(?!login|register|logout|admin|dashboard|forms|staff|solutions|smart-homes?|ai-solutions|pricing|case-studies|industries|about|careers|blog|contact|support|docs|privacy|terms|investors|business-automation|personal-ai|advisory)[a-z0-9][a-z0-9\-]*$')
+    ->where('formPath', '^(?!login|register|logout|admin|dashboard|forms|staff|flyer|solutions|smart-homes?|ai-solutions|pricing|case-studies|industries|about|careers|blog|contact|support|docs|privacy|terms|investors|business-automation|personal-ai|advisory)[a-z0-9][a-z0-9\-]*$')
     ->name('form.dynamic');
 
 Route::middleware('guest')->group(function () {
@@ -217,4 +221,4 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
 
 // Dynamic CMS pages (city landing pages etc.) — must be last
 Route::get('/{slug}', [FrontendController::class, 'cmsPage'])->name('cms-page')
-    ->where('slug', '^(?!logout|login|register)[a-z0-9][a-z0-9\-]*$');
+    ->where('slug', '^(?!logout|login|register|flyer)[a-z0-9][a-z0-9\-]*$');
