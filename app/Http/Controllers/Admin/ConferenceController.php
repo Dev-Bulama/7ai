@@ -356,7 +356,13 @@ HTML;
 
     public static function defaultFlyerTemplate(): string
     {
-        return <<<'FLYERHTML'
+        $svgIcon1 = 'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C9.5 2 8 4 8 6c0 1.1.4 2.1 1 2.8C7.6 9.6 7 11.2 7 13h10c0-1.8-.6-3.4-2-4.2.6-.7 1-1.7 1-2.8C16 4 14.5 2 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9 13v5M15 13v5M7 18h10" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>');
+        $svgIcon2 = 'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="2.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="5" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="19" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M12 9.5v3M12 12.5l-5.5 3M12 12.5l5.5 3" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>');
+        $svgIcon3 = 'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2a6 6 0 0 1 4.5 10L15 14H9l-1.5-2A6 6 0 0 1 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9.5 14v2a2.5 2.5 0 0 0 5 0v-2" stroke="#4a6888" stroke-width="1.4"/><path d="M10 22h4" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>');
+        $svgIcon4 = 'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#4a6888" stroke-width="1.4"/></svg>');
+        $svgFooter = 'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="#4a6888" stroke-width="1.8" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#4a6888" stroke-width="1.8"/></svg>');
+
+        return <<<FLYERHTML
 <div style="width:540px;height:675px;position:relative;font-family:'Segoe UI',Arial,sans-serif;overflow:hidden;background:#0A1628;">
 <!-- Navy top -->
 <div style="position:absolute;top:0;left:0;right:0;height:355px;background:{{BG_COLOR}};"></div>
@@ -422,28 +428,28 @@ HTML;
 <!-- Icons row: fixed position so it never overlaps hashtag -->
 <div style="position:absolute;top:598px;left:0;right:0;border-top:1px solid #dde4ed;padding-top:10px;display:flex;align-items:flex-start;justify-content:center;gap:0;">
 <div style="text-align:center;width:25%;padding:0 6px;">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 5px;"><path d="M12 2C9.5 2 8 4 8 6c0 1.1.4 2.1 1 2.8C7.6 9.6 7 11.2 7 13h10c0-1.8-.6-3.4-2-4.2.6-.7 1-1.7 1-2.8C16 4 14.5 2 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9 13v5M15 13v5M7 18h10" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<img src="{$svgIcon1}" width="22" height="22" style="display:block;margin:0 auto 5px;">
 <div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;">AI<br>INNOVATION</div>
 </div>
 <div style="width:1px;background:#dde4ed;align-self:stretch;margin:0 2px;"></div>
 <div style="text-align:center;width:25%;padding:0 6px;">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 5px;"><circle cx="12" cy="7" r="2.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="5" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><circle cx="19" cy="17" r="2" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M12 9.5v3M12 12.5l-5.5 3M12 12.5l5.5 3" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<img src="{$svgIcon2}" width="22" height="22" style="display:block;margin:0 auto 5px;">
 <div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;">NETWORK</div>
 </div>
 <div style="width:1px;background:#dde4ed;align-self:stretch;margin:0 2px;"></div>
 <div style="text-align:center;width:25%;padding:0 6px;">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 5px;"><path d="M12 2a6 6 0 0 1 4.5 10L15 14H9l-1.5-2A6 6 0 0 1 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9.5 14v2a2.5 2.5 0 0 0 5 0v-2" stroke="#4a6888" stroke-width="1.4"/><path d="M10 22h4" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
+<img src="{$svgIcon3}" width="22" height="22" style="display:block;margin:0 auto 5px;">
 <div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;">LEARN</div>
 </div>
 <div style="width:1px;background:#dde4ed;align-self:stretch;margin:0 2px;"></div>
 <div style="text-align:center;width:25%;padding:0 6px;">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 5px;"><circle cx="12" cy="12" r="9.5" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#4a6888" stroke-width="1.4"/></svg>
+<img src="{$svgIcon4}" width="22" height="22" style="display:block;margin:0 auto 5px;">
 <div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;">IMPACT</div>
 </div>
 </div>
 <!-- Footer -->
 <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;">
-<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="#4a6888" stroke-width="1.8" fill="none"/><path d="M2.5 12h19M12 2.5C10 6 9 9 9 12s1 6 3 9.5M12 2.5C14 6 15 9 15 12s-1 6-3 9.5" stroke="#4a6888" stroke-width="1.8"/></svg>
+<img src="{$svgFooter}" width="10" height="10">
 <div style="color:#4a6888;font-size:8px;letter-spacing:.1em;">www.7ai.africa</div>
 </div>
 </div>
