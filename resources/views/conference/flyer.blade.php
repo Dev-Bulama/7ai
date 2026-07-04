@@ -154,8 +154,8 @@
     function buildHtml(forCapture){
         var name = document.getElementById('inp-name').value.trim() || 'Your Name';
         var role = document.getElementById('inp-role').value.trim() || '';
-        // Leave PHOTO placeholder when forCapture — applyPhoto() sets it via JS after innerHTML
-        var photoCss = (forCapture || !currentPhotoDataUrl) ? 'none' : 'url("' + currentPhotoDataUrl + '")';
+        // Use single quotes inside url() so the value is safe inside a double-quoted HTML style attribute
+        var photoCss = (forCapture || !currentPhotoDataUrl) ? 'none' : "url('" + currentPhotoDataUrl + "')";
         return TEMPLATE
             .split(PH_NAME).join(escHtml(name))
             .split(PH_ROLE).join(escHtml(role))
@@ -165,7 +165,7 @@
     function applyPhoto(container){
         if(!currentPhotoDataUrl) return;
         var el = container.querySelector('[data-photo]');
-        if(el) el.style.backgroundImage = 'url("' + currentPhotoDataUrl + '")';
+        if(el) el.style.backgroundImage = "url('" + currentPhotoDataUrl + "')";
     }
 
     function renderPreview(){

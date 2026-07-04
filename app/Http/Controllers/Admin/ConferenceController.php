@@ -372,27 +372,26 @@ HTML;
 <!-- Logo -->
 <div style="position:absolute;top:14px;left:0;right:0;text-align:center;">{{LOGO}}</div>
 <!-- "I AM ATTENDING" arrows label -->
-<div style="position:absolute;top:68px;left:0;right:0;text-align:center;">
-<span style="display:inline-flex;align-items:center;gap:8px;">
-<svg width="7" height="7" viewBox="0 0 7 7"><polygon points="0,7 3.5,0 7,7" fill="{{ACCENT_COLOR}}"/></svg>
-<span style="color:{{ACCENT_COLOR}};font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;">I AM ATTENDING</span>
-<svg width="7" height="7" viewBox="0 0 7 7"><polygon points="0,7 3.5,0 7,7" fill="{{ACCENT_COLOR}}"/></svg>
+<div style="position:absolute;top:64px;left:0;right:0;text-align:center;">
+<span style="display:inline-flex;align-items:center;gap:10px;">
+<svg width="8" height="8" viewBox="0 0 8 8"><polygon points="0,8 4,0 8,8" fill="{{ACCENT_COLOR}}"/></svg>
+<span style="color:{{ACCENT_COLOR}};font-size:11px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;">I AM ATTENDING</span>
+<svg width="8" height="8" viewBox="0 0 8 8"><polygon points="0,8 4,0 8,8" fill="{{ACCENT_COLOR}}"/></svg>
 </span>
 </div>
-<!-- Event name — large, two lines if needed -->
-<div style="position:absolute;top:82px;left:14px;right:14px;text-align:center;">
-<div style="color:#ffffff;font-size:46px;font-weight:900;line-height:.96;letter-spacing:-.02em;text-transform:uppercase;word-break:break-word;">{{EVENT_NAME}}</div>
-</div>
-<!-- JULY 2026 badge -->
-<div style="position:absolute;top:214px;left:50%;transform:translateX(-50%);">
-<div style="border:2px solid {{ACCENT_COLOR}};color:#ffffff;font-size:18px;font-weight:900;padding:4px 20px;letter-spacing:.14em;white-space:nowrap;text-transform:uppercase;">JULY 2026</div>
+<!-- Title block: ABUJA / AI CONFERENCE / JULY / 2026 -->
+<div style="position:absolute;top:78px;left:16px;right:16px;text-align:center;">
+<div style="color:#ffffff;font-size:74px;font-weight:900;line-height:.9;letter-spacing:-.01em;text-transform:uppercase;">ABUJA</div>
+<div style="color:#ffffff;font-size:35px;font-weight:800;line-height:1;letter-spacing:.06em;text-transform:uppercase;margin-top:6px;">AI CONFERENCE</div>
+<div style="color:{{ACCENT_COLOR}};font-size:13px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin-top:10px;">JULY</div>
+<div style="display:inline-block;border:2px solid {{ACCENT_COLOR}};color:#ffffff;font-size:19px;font-weight:900;padding:2px 20px;letter-spacing:.14em;margin-top:4px;">2026</div>
 </div>
 <!-- Left ribbon -->
-<div style="position:absolute;top:252px;left:0;background:rgba(62,224,127,.16);border-left:3px solid {{ACCENT_COLOR}};padding:7px 10px;max-width:144px;">
-<div style="color:#ffffff;font-size:10px;font-style:italic;line-height:1.5;font-weight:500;">Let&#39;s Shape Africa&#39;s AI Future.</div>
+<div style="position:absolute;top:258px;left:0;background:rgba(62,224,127,.14);border-left:3px solid {{ACCENT_COLOR}};padding:8px 12px;">
+<div style="color:#ffffff;font-size:10px;font-style:italic;line-height:1.6;font-weight:500;max-width:130px;">Let&#39;s Shape Africa&#39;s AI Future.</div>
 </div>
 <!-- Date bubble right -->
-<div style="position:absolute;top:238px;right:12px;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);text-align:center;padding-top:9px;">
+<div style="position:absolute;top:244px;right:12px;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);text-align:center;padding-top:10px;">
 <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style="margin:0 auto 2px;display:block;"><rect x="1" y="2" width="14" height="13" rx="2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" fill="none"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M5 1v2M11 1v2" stroke="rgba(255,255,255,.7)" stroke-width="1.2" stroke-linecap="round"/></svg>
 <div style="color:#fff;font-size:9px;font-weight:700;letter-spacing:.04em;line-height:1.3;">7TH JULY</div>
 <div style="color:{{ACCENT_COLOR}};font-size:13px;font-weight:900;letter-spacing:.05em;line-height:1.2;">2026</div>
@@ -404,22 +403,24 @@ HTML;
 <div data-photo style="width:190px;height:190px;background-image:{{PHOTO}};background-size:cover;background-position:center top;background-color:#1e3a5f;"></div>
 <svg xmlns="http://www.w3.org/2000/svg" width="190" height="190" viewBox="0 0 190 190" style="position:absolute;top:0;left:0;z-index:-1;"><circle cx="95" cy="95" r="95" fill="#1e3a5f"/><circle cx="95" cy="75" r="33" fill="#4a6888"/><ellipse cx="95" cy="166" rx="58" ry="42" fill="#4a6888"/></svg>
 </div>
-<!-- Name + role (photo bottom 450, gap 8 → starts 458) -->
-<div style="position:absolute;top:458px;left:0;right:0;text-align:center;padding:0 20px;">
-<div style="color:#0A1628;font-size:17px;font-weight:800;line-height:1.1;margin-bottom:2px;word-break:break-word;">{{NAME}}</div>
-<div style="color:#4a6888;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;min-height:13px;">{{ROLE}}</div>
+<!-- Name + role (photo bottom 450, start 460) -->
+<div style="position:absolute;top:460px;left:0;right:0;text-align:center;padding:0 28px;">
+<div style="color:#0A1628;font-size:18px;font-weight:800;line-height:1.15;margin-bottom:4px;word-break:break-word;">{{NAME}}</div>
+<div style="color:#4a6888;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;min-height:13px;">{{ROLE}}</div>
 </div>
-<!-- "I AM / ATTENDING" stacked large (top 494, each line ~40px → ends 574) -->
-<div style="position:absolute;top:492px;left:0;right:0;text-align:center;line-height:1.05;">
-<div style="color:#0A1628;font-size:36px;font-weight:900;letter-spacing:.01em;">I AM</div>
-<div style="color:{{ACCENT_COLOR}};font-size:36px;font-weight:900;letter-spacing:.01em;">ATTENDING</div>
+<!-- Divider line -->
+<div style="position:absolute;top:500px;left:60px;right:60px;height:1px;background:#e2e8f0;"></div>
+<!-- "I AM / ATTENDING" stacked large -->
+<div style="position:absolute;top:508px;left:0;right:0;text-align:center;line-height:1.08;">
+<div style="color:#0A1628;font-size:38px;font-weight:900;letter-spacing:.01em;">I AM</div>
+<div style="color:{{ACCENT_COLOR}};font-size:38px;font-weight:900;letter-spacing:.01em;">ATTENDING</div>
 </div>
-<!-- Hashtag (top ~578) -->
-<div style="position:absolute;top:577px;left:0;right:0;text-align:center;">
+<!-- Hashtag -->
+<div style="position:absolute;top:590px;left:0;right:0;text-align:center;">
 <div style="color:{{ACCENT_COLOR}};font-size:11px;font-weight:700;letter-spacing:.07em;">{{HASHTAG}}</div>
 </div>
-<!-- Icons row (bottom 68 → starts 607, height ~50) -->
-<div style="position:absolute;bottom:36px;left:0;right:0;display:flex;align-items:flex-start;justify-content:center;gap:0;border-top:1px solid #e8edf3;padding-top:10px;">
+<!-- Icons row -->
+<div style="position:absolute;bottom:34px;left:0;right:0;display:flex;align-items:flex-start;justify-content:center;gap:0;border-top:1px solid #e8edf3;padding-top:10px;">
 <div style="text-align:center;padding:0 14px;border-right:1px solid #c8d4e0;min-width:0;">
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 4px;"><path d="M12 2C9.5 2 8 4 8 6c0 1.1.4 2.1 1 2.8C7.6 9.6 7 11.2 7 13h10c0-1.8-.6-3.4-2-4.2.6-.7 1-1.7 1-2.8C16 4 14.5 2 12 2z" stroke="#4a6888" stroke-width="1.4" fill="none"/><path d="M9 13v5M15 13v5M7 18h10" stroke="#4a6888" stroke-width="1.4" stroke-linecap="round"/></svg>
 <div style="color:#4a6888;font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;">AI<br>INNOVATION</div>
