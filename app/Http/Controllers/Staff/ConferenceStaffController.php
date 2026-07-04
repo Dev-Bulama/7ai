@@ -137,7 +137,8 @@ class ConferenceStaffController extends Controller
         $formId = request('form_id', $forms->first()?->id);
         $form   = $formId ? Form::find($formId) : null;
 
-        $stats = null;
+        $stats    = null;
+        $settings = null;
         if ($form) {
             $settings = ConferenceSetting::where('form_id', $form->id)->first();
             $stats = [

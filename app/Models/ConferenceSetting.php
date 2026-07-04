@@ -13,10 +13,11 @@ class ConferenceSetting extends Model
     ];
 
     protected $casts = [
-        'event_date'    => 'date',
-        'lunch_enabled' => 'boolean',
-        'badge_enabled' => 'boolean',
-        'lunch_rounds'  => 'integer',
+        'event_date'      => 'date',
+        'lunch_enabled'   => 'boolean',
+        'badge_enabled'   => 'boolean',
+        'lunch_rounds'    => 'integer',
+        'qr_generated_at' => 'datetime',
     ];
 
     public function form()

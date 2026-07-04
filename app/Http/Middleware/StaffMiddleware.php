@@ -14,11 +14,17 @@ class StaffMiddleware
         }
 
         $user = $request->user();
+
+        if (!$user->is_active) {
+            auth()->logout();
+            return redirect()->route('login')->withErrors(['email' => 'Your account has been deactivated.']);
+        }
+
         $staffRoles = ['super-admin', 'admin', 'front-desk-staff', 'lunch-staff'];
         $allowed = array_merge($staffRoles, $roles);
 
         if (!$user->hasAnyRole($allowed)) {
-            abort(403, 'Access denied.');
+            abort(403, 'Access denied. You do not have a staff role.');
         }
 
         return $next($request);

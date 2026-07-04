@@ -91,7 +91,7 @@
 
       @if($settings->qr_generated_at)
       <div style="background:#f0fff4;border:1px solid #9ae6b4;border-radius:4px;padding:12px 16px;font-size:13px;color:#276749;">
-        ✓ QR codes last generated: {{ $settings->qr_generated_at }}
+        ✓ QR codes last generated: {{ $settings->qr_generated_at->format('d M Y H:i') }}
       </div>
       @endif
 

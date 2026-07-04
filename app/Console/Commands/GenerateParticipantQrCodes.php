@@ -81,6 +81,6 @@ class GenerateParticipantQrCodes extends Command
         $this->newLine();
         $this->info("[{$form->name}] Generated {$submissions->count()} QR tokens.");
 
-        $settings->update(['qr_generated_at' => now()->toDateTimeString()]);
+        $settings->update(['qr_generated_at' => now()]);
     }
 }

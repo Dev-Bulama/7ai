@@ -41,7 +41,7 @@ return new class extends Migration
             $table->string('badge_bg_color', 7)->default('#0a1628');
             $table->string('badge_accent_color', 7)->default('#3ee07f');
             $table->string('badge_logo_path')->nullable();
-            $table->text('qr_generated_at')->nullable();
+            $table->timestamp('qr_generated_at')->nullable();
             $table->timestamps();
 
             $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');

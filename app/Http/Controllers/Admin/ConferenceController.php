@@ -19,7 +19,29 @@ class ConferenceController extends Controller
     public function index()
     {
         $forms = Form::where('is_conference_form', true)->withCount('submissions')->get();
-        return view('admin.conference.index', compact('forms'));
+
+        $globalStats = [
+            'total_registrations' => FormSubmission::whereIn('form_id', $forms->pluck('id'))->count(),
+            'total_checked_in'    => FormSubmission::whereIn('form_id', $forms->pluck('id'))->where('attendance_verified', true)->count(),
+            'total_lunch'         => FormSubmission::whereIn('form_id', $forms->pluck('id'))->where('lunch_collected', true)->count(),
+            'front_desk_staff'    => User::role('front-desk-staff')->count(),
+            'lunch_staff'         => User::role('lunch-staff')->count(),
+        ];
+
+        $recentCheckIns = FormSubmission::whereIn('form_id', $forms->pluck('id'))
+            ->where('attendance_verified', true)
+            ->whereNotNull('checked_in_at')
+            ->orderByDesc('checked_in_at')
+            ->limit(5)
+            ->get();
+
+        $recentScans = ParticipantScanLog::whereHas('submission', fn($q) => $q->whereIn('form_id', $forms->pluck('id')))
+            ->with('scanner', 'submission')
+            ->orderByDesc('scanned_at')
+            ->limit(5)
+            ->get();
+
+        return view('admin.conference.index', compact('forms', 'globalStats', 'recentCheckIns', 'recentScans'));
     }
 
     // ── Participants list ──────────────────────────────────────────────────
