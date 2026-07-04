@@ -6,9 +6,9 @@ use Illuminate\Support\Str;
 
 class Form extends Model {
     use SoftDeletes;
-    protected $fillable = ['name','slug','public_path','title','subtitle','bg_color','description','success_message','redirect_url','notification_email','store_submissions','is_active','welcome_email_enabled','welcome_email_subject','welcome_email_body','welcome_email_from_name','welcome_email_from_address','welcome_email_field','payment_enabled','payment_amount','payment_currency','payment_description','prevent_duplicates','duplicate_check_fields'];
+    protected $fillable = ['name','slug','public_path','title','subtitle','bg_color','description','success_message','redirect_url','notification_email','store_submissions','is_active','welcome_email_enabled','welcome_email_subject','welcome_email_body','welcome_email_from_name','welcome_email_from_address','welcome_email_field','payment_enabled','payment_amount','payment_currency','payment_description','prevent_duplicates','duplicate_check_fields','is_conference_form'];
 
-    protected $casts = ['welcome_email_enabled' => 'boolean', 'store_submissions' => 'boolean', 'is_active' => 'boolean', 'payment_enabled' => 'boolean', 'prevent_duplicates' => 'boolean', 'payment_amount' => 'decimal:2'];
+    protected $casts = ['welcome_email_enabled' => 'boolean', 'store_submissions' => 'boolean', 'is_active' => 'boolean', 'payment_enabled' => 'boolean', 'prevent_duplicates' => 'boolean', 'payment_amount' => 'decimal:2', 'is_conference_form' => 'boolean'];
 
     public function fields() { return $this->hasMany(FormField::class)->orderBy('sort_order'); }
     public function submissions() { return $this->hasMany(FormSubmission::class); }

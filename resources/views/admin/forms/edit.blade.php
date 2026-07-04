@@ -431,6 +431,34 @@
   </form>
 </div>
 
+{{-- Conference Mode --}}
+<div class="card" style="margin-bottom:24px;">
+  <div style="font-weight:700;color:var(--dark);margin-bottom:4px;font-size:14px;">🎪 Conference Mode</div>
+  <div style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">Enable to unlock participant verification, QR code check-in, lunch scanning, and badge printing for this form.</div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      @if($form->is_conference_form)
+        <span style="background:#f0fff4;color:#276749;border:1px solid #9ae6b4;border-radius:4px;padding:4px 12px;font-size:12px;font-weight:600;">✓ Conference Mode Enabled</span>
+      @else
+        <span style="background:#f7fafc;color:#718096;border:1px solid #e2e8f0;border-radius:4px;padding:4px 12px;font-size:12px;">Conference Mode Disabled</span>
+      @endif
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <form method="POST" action="{{ route('admin.conference.toggle', $form) }}" style="margin:0;">
+        @csrf
+        <button type="submit" class="btn btn-sm {{ $form->is_conference_form ? 'btn-outline' : 'btn-primary' }}">
+          {{ $form->is_conference_form ? 'Disable Conference Mode' : 'Enable Conference Mode' }}
+        </button>
+      </form>
+      @if($form->is_conference_form)
+      <a href="{{ route('admin.conference.participants', $form) }}" class="btn btn-sm btn-outline">👥 Manage Participants</a>
+      <a href="{{ route('admin.conference.settings', $form) }}" class="btn btn-sm btn-outline">⚙ Conference Settings</a>
+      @endif
+    </div>
+  </div>
+</div>
+
 <div style="background:var(--gray-100);border-radius:8px;padding:16px;font-size:13px;color:var(--gray-600);">
   <strong>Form Shortcode:</strong> Use <code style="background:var(--white);padding:2px 8px;border-radius:4px;font-size:12px;">[form:{{ $form->slug }}]</code> to embed this form in page content, or reference it via <code>/forms/{{ $form->slug }}/submit</code>
 </div>

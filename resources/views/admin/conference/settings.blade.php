@@ -1,0 +1,118 @@
+<x-admin-layout :title="'Conference Settings — '.$form->name">
+<div style="padding:32px;max-width:700px;">
+
+  <div style="margin-bottom:24px;">
+    <div style="font-size:12px;color:#718096;margin-bottom:4px;">
+      <a href="{{ route('admin.conference.index') }}" style="color:#3182ce;text-decoration:none;">Conference</a> /
+      <a href="{{ route('admin.conference.participants', $form) }}" style="color:#3182ce;text-decoration:none;">{{ $form->name }}</a> /
+    </div>
+    <h1 style="font-size:20px;font-weight:700;color:#1a202c;margin:0;">Conference Settings</h1>
+  </div>
+
+  @if(session('success'))
+  <div style="background:#f0fff4;border:1px solid #9ae6b4;color:#276749;padding:12px 16px;border-radius:6px;margin-bottom:20px;font-size:14px;">
+    {{ session('success') }}
+  </div>
+  @endif
+
+  <form method="POST" action="{{ route('admin.conference.update-settings', $form) }}" enctype="multipart/form-data"
+    style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:32px;">
+    @csrf @method('PUT')
+
+    <div style="display:grid;gap:20px;">
+
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:#4a5568;margin-bottom:6px;">Event Name</label>
+        <input name="event_name" value="{{ old('event_name', $settings->event_name) }}" required
+          style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:4px;font-size:14px;">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a5568;margin-bottom:6px;">Event Date</label>
+          <input name="event_date" type="date" value="{{ old('event_date', $settings->event_date?->format('Y-m-d')) }}"
+            style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:4px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a5568;margin-bottom:6px;">Participant ID Prefix</label>
+          <input name="participant_id_prefix" value="{{ old('participant_id_prefix', $settings->participant_id_prefix) }}" maxlength="10"
+            placeholder="e.g. CONF, AI25" required
+            style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:4px;font-size:14px;">
+        </div>
+      </div>
+
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:#4a5568;margin-bottom:6px;">Event Venue</label>
+        <input name="event_venue" value="{{ old('event_venue', $settings->event_venue) }}"
+          style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:4px;font-size:14px;">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:#4a5568;">
+            <input type="hidden" name="lunch_enabled" value="0">
+            <input type="checkbox" name="lunch_enabled" value="1" @checked($settings->lunch_enabled)
+              style="width:16px;height:16px;">
+            Enable Lunch Tracking
+          </label>
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a5568;margin-bottom:6px;">Lunch Rounds</label>
+          <input name="lunch_rounds" type="number" min="1" max="5" value="{{ old('lunch_rounds', $settings->lunch_rounds) }}"
+            style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:4px;font-size:14px;">
+        </div>
+      </div>
+
+      <div style="border-top:1px solid #e2e8f0;padding-top:20px;">
+        <h3 style="font-size:14px;font-weight:600;color:#4a5568;margin:0 0 16px;">Badge Appearance</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a5568;margin-bottom:6px;">Background Color</label>
+            <input name="badge_bg_color" type="color" value="{{ old('badge_bg_color', $settings->badge_bg_color ?? '#0a1628') }}"
+              style="width:100%;height:40px;padding:2px;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a5568;margin-bottom:6px;">Accent Color</label>
+            <input name="badge_accent_color" type="color" value="{{ old('badge_accent_color', $settings->badge_accent_color ?? '#3ee07f') }}"
+              style="width:100%;height:40px;padding:2px;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;">
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a5568;margin-bottom:6px;">Badge Logo (optional)</label>
+          @if($settings->badge_logo_path)
+          <div style="margin-bottom:8px;">
+            <img src="{{ asset('storage/'.$settings->badge_logo_path) }}" style="height:40px;border-radius:4px;">
+          </div>
+          @endif
+          <input name="badge_logo" type="file" accept="image/*"
+            style="font-size:14px;color:#4a5568;">
+        </div>
+      </div>
+
+      @if($settings->qr_generated_at)
+      <div style="background:#f0fff4;border:1px solid #9ae6b4;border-radius:4px;padding:12px 16px;font-size:13px;color:#276749;">
+        ✓ QR codes last generated: {{ $settings->qr_generated_at }}
+      </div>
+      @endif
+
+      <div style="background:#fffaf0;border:1px solid #fbd38d;border-radius:4px;padding:12px 16px;font-size:13px;color:#7b341e;">
+        After saving settings, run this command on the server to generate QR codes for all participants:<br>
+        <code style="font-family:monospace;font-weight:600;">php artisan conference:generate-participant-qrcodes --form={{ $form->slug }}</code>
+      </div>
+
+    </div>
+
+    <div style="margin-top:28px;display:flex;gap:10px;">
+      <button type="submit"
+        style="padding:10px 24px;background:#3182ce;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:600;">
+        Save Settings
+      </button>
+      <a href="{{ route('admin.conference.participants', $form) }}"
+        style="padding:10px 20px;background:#f7fafc;color:#4a5568;text-decoration:none;border:1px solid #e2e8f0;border-radius:4px;font-size:14px;">
+        Cancel
+      </a>
+    </div>
+  </form>
+
+</div>
+</x-admin-layout>

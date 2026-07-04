@@ -152,6 +152,9 @@
     <a href="{{ route('admin.forms.index') }}" class="nav-item {{ request()->routeIs('admin.forms.*') ? 'active' : '' }}">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg> Form Builder
     </a>
+    <a href="{{ route('admin.conference.index') }}" class="nav-item {{ request()->routeIs('admin.conference.*') ? 'active' : '' }}">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg> Conference
+    </a>
 
     <div class="nav-section">Blog</div>
     <a href="{{ route('admin.posts.index') }}" class="nav-item {{ request()->routeIs('admin.posts.*') ? 'active' : '' }}">

@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\CardController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\EmailTemplateController;
+use App\Http\Controllers\Admin\ConferenceController;
+use App\Http\Controllers\Staff\ConferenceStaffController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Customer\TicketController as CustomerTicketController;
 use App\Http\Controllers\LeadCaptureController;
@@ -62,7 +64,7 @@ Route::post('/forms/{form}/submit', [FrontendController::class, 'submitForm'])->
 
 // Dynamic public form paths (e.g. /abuja)
 Route::get('/{formPath}', [FrontendController::class, 'dynamicFormPage'])
-    ->where('formPath', '^(?!login|register|logout|admin|dashboard|forms|solutions|smart-homes?|ai-solutions|pricing|case-studies|industries|about|careers|blog|contact|support|docs|privacy|terms|investors|business-automation|personal-ai|advisory)[a-z0-9][a-z0-9\-]*$')
+    ->where('formPath', '^(?!login|register|logout|admin|dashboard|forms|staff|solutions|smart-homes?|ai-solutions|pricing|case-studies|industries|about|careers|blog|contact|support|docs|privacy|terms|investors|business-automation|personal-ai|advisory)[a-z0-9][a-z0-9\-]*$')
     ->name('form.dynamic');
 
 Route::middleware('guest')->group(function () {
@@ -175,6 +177,33 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // Admin docs/guide
     Route::get('docs', [\App\Http\Controllers\Admin\DocsController::class, 'index'])->name('docs.index');
+
+    // Conference Management
+    Route::get('conference', [ConferenceController::class, 'index'])->name('conference.index');
+    Route::get('conference/staff', [ConferenceController::class, 'staff'])->name('conference.staff');
+    Route::get('conference/staff/create', [ConferenceController::class, 'createStaff'])->name('conference.create-staff');
+    Route::post('conference/staff', [ConferenceController::class, 'storeStaff'])->name('conference.store-staff');
+    Route::get('conference/staff/{user}/edit', [ConferenceController::class, 'editStaff'])->name('conference.edit-staff');
+    Route::put('conference/staff/{user}', [ConferenceController::class, 'updateStaff'])->name('conference.update-staff');
+    Route::delete('conference/staff/{user}', [ConferenceController::class, 'destroyStaff'])->name('conference.destroy-staff');
+    Route::get('conference/{form}/participants', [ConferenceController::class, 'participants'])->name('conference.participants');
+    Route::get('conference/{form}/participants/export', [ConferenceController::class, 'exportParticipants'])->name('conference.export-participants');
+    Route::get('conference/{form}/settings', [ConferenceController::class, 'settings'])->name('conference.settings');
+    Route::put('conference/{form}/settings', [ConferenceController::class, 'updateSettings'])->name('conference.update-settings');
+    Route::post('conference/{form}/toggle', [ConferenceController::class, 'toggleConference'])->name('conference.toggle');
+    Route::get('conference/{form}/participants/{submission}/card', [ConferenceController::class, 'participantCard'])->name('conference.participant-card');
+    Route::post('conference/{form}/participants/{submission}/check-in', [ConferenceController::class, 'manualCheckIn'])->name('conference.manual-check-in');
+    Route::get('conference/{form}/scan-logs', [ConferenceController::class, 'scanLogs'])->name('conference.scan-logs');
+});
+
+// Staff Portals
+Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
+    Route::get('/front-desk', [ConferenceStaffController::class, 'frontDesk'])->name('front-desk');
+    Route::post('/scan-check-in', [ConferenceStaffController::class, 'scanCheckIn'])->name('scan-check-in');
+    Route::post('/lookup-participant', [ConferenceStaffController::class, 'lookupParticipant'])->name('lookup-participant');
+    Route::post('/check-in-by-id', [ConferenceStaffController::class, 'checkInById'])->name('check-in-by-id');
+    Route::get('/lunch-scanner', [ConferenceStaffController::class, 'lunchScanner'])->name('lunch-scanner');
+    Route::post('/scan-lunch', [ConferenceStaffController::class, 'scanLunch'])->name('scan-lunch');
 });
 
 // Dynamic CMS pages (city landing pages etc.) — must be last
