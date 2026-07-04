@@ -249,7 +249,7 @@ class ConferenceController extends Controller
         $accentColor = $settings?->badge_accent_color ?? '#3ee07f';
         $bgColor     = $settings?->badge_bg_color ?? '#0a1628';
         $pid         = $submission->participant_id ?? 'NO-ID';
-        $qrValue     = $submission->qr_token ?? $pid;
+        $qrValue     = $pid; // QR encodes participant ID — reprints work, one check-in enforced by DB
 
         try {
             $qrSvg = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')

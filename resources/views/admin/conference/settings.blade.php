@@ -121,12 +121,14 @@
         </div>
         <p style="font-size:12px;color:#718096;margin-bottom:10px;">
           Customize the badge design using HTML &amp; CSS. Available placeholders:
+          @php $cb = '}}'; @endphp
           @foreach(['NAME','PARTICIPANT_ID','QR_CODE','ROLE','EMAIL','PHONE','EVENT_NAME','EVENT_DATE','EVENT_VENUE','LOGO','ACCENT_COLOR','BG_COLOR'] as $ph)
-          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;display:inline-block;margin:2px 1px;">{{ '{{' . $ph . '}}' }}</code>
+          <code style="background:#f7fafc;padding:1px 5px;border-radius:3px;display:inline-block;margin:2px 1px;">{{ '{{' . $ph . $cb }}</code>
           @endforeach
         </p>
         <textarea name="badge_html_template" id="badge_html_template" rows="22"
-          style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:4px;font-size:12px;font-family:'Courier New',monospace;line-height:1.5;color:#2d3748;resize:vertical;">{{ old('badge_html_template', $settings->badge_html_template ?? \App\Http\Controllers\Admin\ConferenceController::defaultBadgeTemplate()) }}</textarea>
+          style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:4px;font-size:12px;font-family:'Courier New',monospace;line-height:1.5;color:#2d3748;resize:vertical;"
+        >@php echo htmlspecialchars(old('badge_html_template', $settings->badge_html_template ?? \App\Http\Controllers\Admin\ConferenceController::defaultBadgeTemplate())); @endphp</textarea>
         <input type="hidden" name="reset_badge_template" id="reset_badge_template" value="0">
         <p style="font-size:11px;color:#a0aec0;margin-top:6px;">Leave blank or reset to use the system default template. Changes take effect immediately after saving.</p>
       </div>

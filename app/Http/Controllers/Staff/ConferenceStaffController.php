@@ -35,12 +35,16 @@ class ConferenceStaffController extends Controller
     {
         $request->validate(['qr_token' => 'required|string', 'form_id' => 'required|integer']);
 
-        $submission = FormSubmission::where('qr_token', trim($request->qr_token))
-            ->where('form_id', $request->form_id)
+        $scanned = trim($request->qr_token);
+        $submission = FormSubmission::where('form_id', $request->form_id)
+            ->where(function ($q) use ($scanned) {
+                $q->where('participant_id', $scanned)
+                  ->orWhere('qr_token', $scanned);
+            })
             ->first();
 
         if (!$submission) {
-            return response()->json(['success' => false, 'message' => 'Participant not found. Invalid QR code.'], 404);
+            return response()->json(['success' => false, 'message' => 'Participant not found. Check the ID on the badge.'], 404);
         }
 
         $alreadyCheckedIn = $submission->attendance_verified;
@@ -80,18 +84,26 @@ class ConferenceStaffController extends Controller
     {
         $request->validate(['query' => 'required|string|min:2', 'form_id' => 'required|integer']);
 
-        $search = $request->query;
+        $search = trim($request->input('query'));
+        $formId = (int) $request->input('form_id');
 
-        $submissions = FormSubmission::where('form_id', $request->form_id)
-            ->where(function ($q) use ($search) {
-                $q->where('participant_id', 'like', "%{$search}%")
-                  ->orWhereRaw("LOWER(CAST(data AS CHAR)) LIKE LOWER(?)", ["%{$search}%"]);
-            })
-            ->limit(15)
-            ->get();
+        try {
+            $submissions = FormSubmission::where('form_id', $formId)
+                ->where(function ($q) use ($search) {
+                    $q->where('participant_id', 'like', "%{$search}%")
+                      ->orWhereRaw("LOWER(CONVERT(data, CHAR)) LIKE LOWER(?)", ["%{$search}%"]);
+                })
+                ->limit(20)
+                ->get();
+        } catch (\Throwable $e) {
+            $submissions = FormSubmission::where('form_id', $formId)
+                ->where('participant_id', 'like', "%{$search}%")
+                ->limit(20)
+                ->get();
+        }
 
         $results = $submissions->map(function ($s) {
-            $data = $s->data ?? [];
+            $data = is_array($s->data) ? $s->data : [];
             $name = $data['full_name'] ?? $data['name'] ?? trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '')) ?: 'Unknown';
             return [
                 'id'             => $s->id,
@@ -99,7 +111,7 @@ class ConferenceStaffController extends Controller
                 'name'           => $name,
                 'email'          => $data['email'] ?? '',
                 'phone'          => $data['phone'] ?? '',
-                'checked_in'     => $s->attendance_verified,
+                'checked_in'     => (bool) $s->attendance_verified,
                 'checked_in_at'  => $s->checked_in_at?->format('H:i d/m/Y'),
             ];
         });
@@ -156,8 +168,12 @@ class ConferenceStaffController extends Controller
     {
         $request->validate(['qr_token' => 'required|string', 'form_id' => 'required|integer']);
 
-        $submission = FormSubmission::where('qr_token', trim($request->qr_token))
-            ->where('form_id', $request->form_id)
+        $scanned = trim($request->qr_token);
+        $submission = FormSubmission::where('form_id', $request->form_id)
+            ->where(function ($q) use ($scanned) {
+                $q->where('participant_id', $scanned)
+                  ->orWhere('qr_token', $scanned);
+            })
             ->first();
 
         if (!$submission) {
