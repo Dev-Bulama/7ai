@@ -62,9 +62,9 @@
   <div class="card-title">Discount Notification Email</div>
   <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">
     This email is automatically sent to registrants who qualify for a discount. Leave body blank to use the default template.
-    Available variables: <code>{{name}}</code>, <code>{{email}}</code>, <code>{{form_name}}</code>,
-    <code>{{discount_percent}}</code>, <code>{{site_name}}</code>, <code>{{support_email}}</code>, <code>{{current_year}}</code>.
-    You can also use any submitted field name e.g. <code>{{course}}</code>.
+    Available variables: <code>@{{name}}</code>, <code>@{{email}}</code>, <code>@{{form_name}}</code>,
+    <code>@{{discount_percent}}</code>, <code>@{{site_name}}</code>, <code>@{{support_email}}</code>, <code>@{{current_year}}</code>.
+    You can also use any submitted field name e.g. <code>@{{course}}</code>.
   </p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
