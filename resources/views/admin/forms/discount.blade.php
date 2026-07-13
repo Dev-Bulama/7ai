@@ -83,7 +83,7 @@
   <div style="margin-bottom:16px;">
     <label class="form-label">Email Subject</label>
     <input type="text" name="discount_email_subject" value="{{ old('discount_email_subject', $form->discount_email_subject) }}"
-      class="form-input" placeholder="🎉 You qualify for a {{discount_percent}}% discount — {{form_name}}">
+      class="form-input" placeholder="🎉 You qualify for a @{{discount_percent}}% discount — @{{form_name}}">
   </div>
 
   <div>
