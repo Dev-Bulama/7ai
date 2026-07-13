@@ -371,6 +371,81 @@ class FormController extends Controller
         return back();
     }
 
+    public function discountSettings(Form $form)
+    {
+        $allForms = Form::where('id', '!=', $form->id)->orderBy('name')->get();
+        return view('admin.forms.discount', compact('form', 'allForms'));
+    }
+
+    public function updateDiscountSettings(Request $request, Form $form)
+    {
+        $validated = $request->validate([
+            'discount_enabled'          => 'nullable|boolean',
+            'discount_percent'          => 'required|numeric|min:1|max:100',
+            'discount_check_form_id'    => 'nullable|exists:forms,id',
+            'discount_email_subject'    => 'nullable|string|max:255',
+            'discount_email_body'       => 'nullable|string',
+            'discount_email_from_name'  => 'nullable|string|max:100',
+            'discount_email_from_address' => 'nullable|email|max:150',
+        ]);
+
+        $form->update([
+            'discount_enabled'            => (bool) $request->input('discount_enabled'),
+            'discount_percent'            => $validated['discount_percent'],
+            'discount_check_form_id'      => $validated['discount_check_form_id'] ?: null,
+            'discount_email_subject'      => $validated['discount_email_subject'],
+            'discount_email_body'         => $validated['discount_email_body'],
+            'discount_email_from_name'    => $validated['discount_email_from_name'],
+            'discount_email_from_address' => $validated['discount_email_from_address'],
+        ]);
+
+        return back()->with('success', 'Discount settings saved.');
+    }
+
+    public function resendDiscountEmail(Form $form, FormSubmission $submission)
+    {
+        abort_if($submission->form_id !== $form->id, 404);
+        abort_unless($submission->discount_applied, 422);
+
+        $data  = $submission->data ?? [];
+        $email = null;
+        foreach (['email', 'email_address', 'your_email'] as $k) {
+            if (!empty($data[$k]) && filter_var($data[$k], FILTER_VALIDATE_EMAIL)) { $email = $data[$k]; break; }
+        }
+        if (!$email) return back()->with('error', 'No email address found in submission.');
+
+        try {
+            $configured = SmtpMailService::configure();
+            if (!$configured) return back()->with('error', 'SMTP not configured.');
+
+            $percent   = number_format((float) ($submission->discount_pct ?? $form->discount_percent), 0);
+            $siteName  = Setting::get('site_name', '7AI');
+            $name      = $data['full_name'] ?? $data['name'] ?? trim(($data['first_name'] ?? '').' '.($data['last_name'] ?? '')) ?: '';
+            $supportEmail = Setting::get('support_email') ?: Setting::get('contact_email', '');
+
+            $vars = array_merge($data, [
+                'name' => $name, 'email' => $email, 'form_name' => $form->name,
+                'site_name' => $siteName, 'support_email' => $supportEmail,
+                'discount_percent' => $percent, 'current_year' => date('Y'),
+            ]);
+            $replace = fn(string $text) => preg_replace_callback('/\{\{(\w+)\}\}/', fn($m) => $vars[$m[1]] ?? '', $text);
+
+            $subject  = $replace($form->discount_email_subject ?: "🎉 You qualify for a {$percent}% discount — {$form->name}");
+            $htmlBody = $form->discount_email_body ? $replace($form->discount_email_body)
+                : "<div style=\"font-family:sans-serif;max-width:560px;margin:40px auto;padding:32px;\"><h2>Hello {$name},</h2><p>You qualify for a <strong>{$percent}% discount</strong> on {$form->name}.</p><p>Thank you,<br>{$siteName}</p></div>";
+
+            $fromName = $form->discount_email_from_name    ?: Setting::get('mail_from_name', '7AI');
+            $fromAddr = $form->discount_email_from_address ?: Setting::get('mail_from_address', 'hello@7ai.africa');
+
+            Mail::html($htmlBody, fn($msg) => $msg->to($email)->subject($subject)->from($fromAddr, $fromName));
+            $submission->update(['discount_email_sent_at' => now()]);
+
+            return back()->with('success', "Discount email resent to {$email}.");
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Failed to send: ' . $e->getMessage());
+        }
+    }
+
     private function resolveEmailFromData(Form $form, array $data): ?string
     {
         if ($form->welcome_email_field && !empty($data[$form->welcome_email_field])

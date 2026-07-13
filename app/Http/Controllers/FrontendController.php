@@ -323,8 +323,9 @@ class FrontendController extends Controller
         }
 
         // ── 4. Save submission ─────────────────────────────────────────────────
+        $submission = null;
         if ($form->store_submissions) {
-            FormSubmission::create([
+            $submission = FormSubmission::create([
                 'form_id'    => $form->id,
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
@@ -337,6 +338,11 @@ class FrontendController extends Controller
         // ── 5. Send welcome email ──────────────────────────────────────────────
         if ($form->welcome_email_enabled) {
             $this->sendFormWelcomeEmail($form, $data);
+        }
+
+        // ── 6. Discount check ──────────────────────────────────────────────────
+        if ($submission && $form->discount_enabled && $form->discount_check_form_id) {
+            $this->applyDiscountIfEligible($form, $submission, $data);
         }
 
         if ($form->redirect_url) {
@@ -378,7 +384,107 @@ class FrontendController extends Controller
     }
 
 
-private function sendFormWelcomeEmail(\App\Models\Form $form, array $data): void
+private function applyDiscountIfEligible(\App\Models\Form $form, \App\Models\FormSubmission $submission, array $data): void
+    {
+        // Resolve the submitter's email
+        $email = null;
+        foreach (['email', 'email_address', 'your_email'] as $key) {
+            if (!empty($data[$key]) && filter_var($data[$key], FILTER_VALIDATE_EMAIL)) {
+                $email = strtolower(trim($data[$key]));
+                break;
+            }
+        }
+        if (!$email) {
+            foreach ($data as $val) {
+                if (is_string($val) && filter_var($val, FILTER_VALIDATE_EMAIL)) {
+                    $email = strtolower(trim($val));
+                    break;
+                }
+            }
+        }
+        if (!$email) return;
+
+        // Check if this email exists in the reference form
+        $found = \App\Models\FormSubmission::where('form_id', $form->discount_check_form_id)
+            ->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(data, '$.email'))) = ?", [$email])
+            ->exists();
+
+        if (!$found) return;
+
+        // Mark discount on the submission
+        $submission->update([
+            'discount_applied' => true,
+            'discount_pct'     => $form->discount_percent,
+        ]);
+
+        // Send discount notification email
+        $this->sendDiscountEmail($form, $submission, $data, $email);
+    }
+
+    private function sendDiscountEmail(\App\Models\Form $form, \App\Models\FormSubmission $submission, array $data, string $toEmail): void
+    {
+        try {
+            $configured = SmtpMailService::configure();
+            if (!$configured) return;
+
+            $siteName     = \App\Models\Setting::get('site_name', '7AI');
+            $supportEmail = \App\Models\Setting::get('support_email') ?: \App\Models\Setting::get('contact_email', '');
+            $percent      = number_format((float) $form->discount_percent, 0);
+
+            $submittedName = $data['full_name'] ?? $data['name']
+                ?? (trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '')) ?: null)
+                ?? '';
+
+            $vars = array_merge($data, [
+                'name'             => $submittedName,
+                'email'            => $toEmail,
+                'form_name'        => $form->name,
+                'site_name'        => $siteName,
+                'support_email'    => $supportEmail,
+                'discount_percent' => $percent,
+                'current_year'     => date('Y'),
+            ]);
+
+            $replace = fn(string $text) => preg_replace_callback(
+                '/\{\{(\w+)\}\}/',
+                fn($m) => $vars[$m[1]] ?? '',
+                $text
+            );
+
+            $subject = $replace(
+                $form->discount_email_subject
+                ?: "🎉 You qualify for a {$percent}% discount — {$form->name}"
+            );
+
+            $defaultBody = <<<HTML
+<div style="font-family:sans-serif;max-width:560px;margin:40px auto;padding:32px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;">
+  <h2 style="color:#0b4f6c;margin-top:0;">Hello {$vars['name']},</h2>
+  <p style="color:#374151;line-height:1.7;">Thank you for registering for <strong>{$vars['form_name']}</strong>.</p>
+  <p style="color:#374151;line-height:1.7;">Because you previously registered for our conference, you qualify for a <strong style="color:#16a34a;">{$percent}% discount</strong> on this course!</p>
+  <p style="color:#374151;line-height:1.7;">Our team will reach out to you shortly with payment details reflecting your discounted price.</p>
+  <p style="color:#374151;line-height:1.7;">Thank you,<br><strong>{$vars['site_name']}</strong></p>
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
+  <p style="font-size:12px;color:#9ca3af;">If you have questions, contact us at {$vars['support_email']}.</p>
+  <p style="font-size:11px;color:#d1d5db;">© {$vars['current_year']} {$vars['site_name']}</p>
+</div>
+HTML;
+
+            $htmlBody = $form->discount_email_body ? $replace($form->discount_email_body) : $defaultBody;
+
+            $fromName = $form->discount_email_from_name    ?: \App\Models\Setting::get('mail_from_name', '7AI');
+            $fromAddr = $form->discount_email_from_address ?: \App\Models\Setting::get('mail_from_address', 'hello@7ai.africa');
+
+            Mail::html($htmlBody, fn($msg) => $msg->to($toEmail)->subject($subject)->from($fromAddr, $fromName));
+
+            $submission->update(['discount_email_sent_at' => now()]);
+
+            \Log::info('[DISCOUNT EMAIL] Sent', ['to' => $toEmail, 'form' => $form->id, 'pct' => $percent]);
+        } catch (\Throwable $e) {
+            \Log::error('[DISCOUNT EMAIL ERROR]', ['error' => $e->getMessage(), 'form' => $form->id]);
+        }
+    }
+
+    private function sendFormWelcomeEmail(\App\Models\Form $form, array $data): void
     {
         \Log::info('[FORM EMAIL] Attempting welcome email', [
             'form'    => $form->id,

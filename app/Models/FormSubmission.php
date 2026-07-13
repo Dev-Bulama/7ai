@@ -9,15 +9,19 @@ class FormSubmission extends Model {
         'checked_in_at','checked_in_by',
         'lunch_collected','lunch_collected_at','lunch_collected_by',
         'badge_exported_at',
+        'discount_applied','discount_pct','discount_email_sent_at',
     ];
 
     protected $casts = [
-        'data'                => 'array',
-        'attendance_verified' => 'boolean',
-        'lunch_collected'     => 'boolean',
-        'checked_in_at'       => 'datetime',
-        'lunch_collected_at'  => 'datetime',
-        'badge_exported_at'   => 'datetime',
+        'data'                    => 'array',
+        'attendance_verified'     => 'boolean',
+        'lunch_collected'         => 'boolean',
+        'checked_in_at'           => 'datetime',
+        'lunch_collected_at'      => 'datetime',
+        'badge_exported_at'       => 'datetime',
+        'discount_applied'        => 'boolean',
+        'discount_pct'            => 'decimal:2',
+        'discount_email_sent_at'  => 'datetime',
     ];
 
     public function form() { return $this->belongsTo(Form::class); }

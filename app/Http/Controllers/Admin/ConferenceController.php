@@ -187,24 +187,39 @@ class ConferenceController extends Controller
     }
 
     // ── Export participants (CSV) ──────────────────────────────────────────
-    public function exportParticipants(Form $form)
+    public function exportParticipants(Request $request, Form $form)
     {
         abort_unless($form->is_conference_form, 404);
 
-        $submissions = $form->submissions()->with('checkedInBy')->get();
+        $filter = $request->input('filter', 'all');
+
+        $query = $form->submissions()->with('checkedInBy');
+        if ($filter === 'checked_in') {
+            $query->where('attendance_verified', true);
+        } elseif ($filter === 'not_checked_in') {
+            $query->where('attendance_verified', false);
+        }
+
+        $submissions = $query->orderBy('id')->get();
         $fields      = $form->fields()->where('is_active', true)->pluck('label', 'name')->toArray();
 
-        $filename = 'participants-' . $form->slug . '-' . now()->format('Ymd') . '.csv';
+        $filterLabel = match ($filter) {
+            'checked_in'     => '-checked-in',
+            'not_checked_in' => '-not-checked-in',
+            default          => '',
+        };
+        $filename = 'participants-' . $form->slug . $filterLabel . '-' . now()->format('Ymd') . '.csv';
 
-        $headers = array_merge(
+        $csvHeaders = array_merge(
             ['Participant ID', 'QR Token', 'Checked In', 'Checked In At', 'Checked In By', 'Lunch Collected', 'Lunch At'],
             array_values($fields),
             ['Submitted At']
         );
 
-        $callback = function () use ($submissions, $fields, $headers) {
+        $callback = function () use ($submissions, $fields, $csvHeaders) {
             $fh = fopen('php://output', 'w');
-            fputcsv($fh, $headers);
+            fprintf($fh, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+            fputcsv($fh, $csvHeaders);
             foreach ($submissions as $sub) {
                 $data = $sub->data ?? [];
                 $row  = [
@@ -216,8 +231,8 @@ class ConferenceController extends Controller
                     $sub->lunch_collected ? 'Yes' : 'No',
                     $sub->lunch_collected_at?->format('Y-m-d H:i') ?? '',
                 ];
-                foreach (array_keys($fields) as $name) {
-                    $row[] = $data[$name] ?? '';
+                foreach (array_keys($fields) as $fieldName) {
+                    $row[] = $data[$fieldName] ?? '';
                 }
                 $row[] = $sub->created_at->format('Y-m-d H:i');
                 fputcsv($fh, $row);
@@ -229,6 +244,38 @@ class ConferenceController extends Controller
             'Content-Type'        => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ]);
+    }
+
+    // ── Bulk check-in ─────────────────────────────────────────────────────
+    public function bulkCheckIn(Request $request, Form $form)
+    {
+        abort_unless($form->is_conference_form, 404);
+
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'integer']);
+
+        $submissions = FormSubmission::where('form_id', $form->id)
+            ->whereIn('id', $request->input('ids'))
+            ->where('attendance_verified', false)
+            ->get();
+
+        $count = 0;
+        foreach ($submissions as $submission) {
+            $submission->update([
+                'attendance_verified' => true,
+                'checked_in_at'       => now(),
+                'checked_in_by'       => auth()->id(),
+            ]);
+            ParticipantScanLog::create([
+                'form_submission_id' => $submission->id,
+                'scanned_by'         => auth()->id(),
+                'action'             => 'manual_verify',
+                'ip_address'         => $request->ip(),
+                'notes'              => 'Bulk check-in',
+            ]);
+            $count++;
+        }
+
+        return back()->with('success', "Bulk check-in complete: {$count} participant(s) checked in.");
     }
 
     // ── Bulk QR export (printable page) ──────────────────────────────────

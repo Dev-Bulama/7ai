@@ -3,6 +3,7 @@
   <span class="section-title">Submissions: {{ $form->name }} <span style="font-weight:400;font-size:13px;color:var(--gray-500);">({{ $submissions->total() }})</span></span>
   <div style="display:flex;gap:8px;">
     <a href="{{ route('admin.forms.submissions.export', $form) }}" class="btn btn-outline btn-sm">⬇ Export CSV</a>
+    <a href="{{ route('admin.forms.discount', $form) }}" class="btn btn-outline btn-sm" style="color:#7c3aed;border-color:#7c3aed;">🏷 Discount Settings</a>
     <a href="{{ route('admin.forms.edit', $form) }}" class="btn btn-outline btn-sm">← Back to Form</a>
   </div>
 </div>
@@ -60,6 +61,7 @@
           <th>{{ $field->label }}</th>
           @endforeach
           <th>IP</th>
+          <th>Discount</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
@@ -78,6 +80,20 @@
           </td>
           @endforeach
           <td style="font-size:11px;color:var(--gray-400);">{{ $sub->ip_address }}</td>
+          <td style="white-space:nowrap;text-align:center;">
+            @if($sub->discount_applied)
+              <span style="background:#ede9fe;color:#6d28d9;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">
+                {{ number_format((float)$sub->discount_pct, 0) }}% OFF
+              </span>
+              @if($sub->discount_email_sent_at)
+              <div style="font-size:10px;color:#9ca3af;margin-top:2px;" title="Email sent {{ $sub->discount_email_sent_at->format('M d H:i') }}">✉ sent</div>
+              @else
+              <div style="font-size:10px;color:#f59e0b;margin-top:2px;">✉ unsent</div>
+              @endif
+            @else
+              <span style="font-size:11px;color:#d1d5db;">—</span>
+            @endif
+          </td>
           <td>
             @if($sub->is_read)
             <span style="font-size:12px;color:var(--gray-400);">Read</span>
@@ -94,6 +110,11 @@
             @if($form->welcome_email_enabled)
             <form method="POST" action="{{ route('admin.form-submissions.resend-email', [$form, $sub]) }}" style="display:inline;" onsubmit="return confirm('Resend welcome email to this person?')">
               @csrf<button class="btn btn-outline btn-sm" style="color:#0b9e6e;border-color:#0b9e6e;">✉ Resend</button>
+            </form>
+            @endif
+            @if($sub->discount_applied)
+            <form method="POST" action="{{ route('admin.form-submissions.resend-discount-email', [$form, $sub]) }}" style="display:inline;" onsubmit="return confirm('Resend discount email to this person?')">
+              @csrf<button class="btn btn-outline btn-sm" style="color:#7c3aed;border-color:#7c3aed;">🏷 Resend Discount</button>
             </form>
             @endif
             <form method="POST" action="{{ route('admin.form-submissions.destroy', [$form, $sub]) }}" style="display:inline;" onsubmit="return confirm('Delete this submission?')">
