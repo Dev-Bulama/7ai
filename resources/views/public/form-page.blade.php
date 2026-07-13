@@ -47,10 +47,15 @@
   <h2 style="font-family:'Playfair Display',serif;font-size:clamp(26px,4.5vw,46px);font-weight:900;color:#fff;line-height:1.1;margin:0 0 20px;">
     TWO COURSES. TWO DAYS. ONE DECISION.
   </h2>
-  <p style="font-size:clamp(15px,2vw,17px);color:rgba(255,255,255,0.65);line-height:1.8;max-width:620px;margin:0 auto 0;">
+  <p style="font-size:clamp(15px,2vw,17px);color:rgba(255,255,255,0.65);line-height:1.8;max-width:620px;margin:0 auto 28px;">
     Are you still doing everything manually?<br>
     <span style="color:rgba(255,255,255,0.85);">AI is already doing the work of an entire team</span> for creators and business owners who know how to use it. In just 3 hours, we will show you exactly how.
   </p>
+  <a href="#register"
+    style="display:inline-block;padding:15px 36px;background:#3ee07f;color:#0a1628;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;text-decoration:none;transition:background 0.2s;"
+    onmouseover="this.style.background='#62e896'" onmouseout="this.style.background='#3ee07f'">
+    Register for a Course →
+  </a>
 </div>
 
 {{-- Course cards --}}
