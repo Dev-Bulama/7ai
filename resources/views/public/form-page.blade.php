@@ -2,7 +2,8 @@
 
 @php
   $paystackKey = \App\Models\Setting::get('paystack_public_key');
-  $paymentEnabled = $form->payment_enabled && $paystackKey && $form->payment_amount > 0;
+  $hasOptionPrices = $form->fields->where('is_active', true)->contains(fn($f) => !empty($f->option_prices) && in_array($f->field_type, ['select','radio']));
+  $paymentEnabled = $form->payment_enabled && $paystackKey && ($form->payment_amount > 0 || $hasOptionPrices);
   $amountKobo = (int)($form->payment_amount * 100);
   $currency = $form->payment_currency ?: 'NGN';
   $currencySymbol = ['NGN'=>'₦','GHS'=>'₵','KES'=>'KSh','USD'=>'$','ZAR'=>'R'][$currency] ?? $currency;
@@ -31,7 +32,7 @@
     @if($form->subtitle)
     <p style="font-size:17px;font-weight:300;color:rgba(255,255,255,0.7);line-height:1.7;max-width:500px;margin:0 auto;">{{ $form->subtitle }}</p>
     @endif
-    @if($paymentEnabled)
+    @if($paymentEnabled && $form->payment_amount > 0)
     <div style="margin-top:20px;display:inline-flex;align-items:center;gap:8px;background:rgba(62,224,127,0.1);border:1px solid rgba(62,224,127,0.3);border-radius:4px;padding:10px 20px;">
       <span style="color:#3ee07f;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;">REGISTRATION FEE</span>
       <span style="color:#fff;font-size:20px;font-weight:700;">{{ $currencySymbol }}{{ number_format($form->payment_amount, 0) }}</span>
@@ -300,13 +301,13 @@
         <div style="margin-top:36px;">
           <div style="background:rgba(62,224,127,0.06);border:0.5px solid rgba(62,224,127,0.2);border-radius:4px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:rgba(255,255,255,0.6);">
             🔒 Your registration will be confirmed after payment of
-            <strong id="price-display" style="color:#3ee07f;">{{ $currencySymbol }}{{ number_format($form->payment_amount, 0) }}</strong>
+            <strong id="price-display" style="color:#3ee07f;">{{ $hasOptionPrices && $form->payment_amount == 0 ? 'Select a course above' : $currencySymbol.number_format($form->payment_amount, 0) }}</strong>
             via Paystack. Your card details are secured by Paystack.
           </div>
           <button type="button" id="paystack-btn" onclick="initiatePayment()"
             style="width:100%;padding:16px 32px;background:#3ee07f;color:#0a1628;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s;"
             onmouseover="this.style.background='#62e896'" onmouseout="this.style.background='#3ee07f'">
-            Pay <span id="btn-price-label">{{ $currencySymbol }}{{ number_format($form->payment_amount, 0) }}</span> & Submit →
+            Pay <span id="btn-price-label">{{ $hasOptionPrices && $form->payment_amount == 0 ? '...' : $currencySymbol.number_format($form->payment_amount, 0) }}</span> & Submit →
           </button>
         </div>
         @else
@@ -383,9 +384,15 @@ function initiatePayment() {
     return;
   }
 
+  if (ACTIVE_AMOUNT_KOBO <= 0) {
+    alert('Please select a course to see the price before proceeding.');
+    return;
+  }
+
   var btn = document.getElementById('paystack-btn');
-  btn.disabled    = true;
-  btn.textContent = 'Opening payment...';
+  btn.disabled  = true;
+  var savedHTML = btn.innerHTML;
+  btn.innerHTML = 'Opening payment...';
 
   var handler = PaystackPop.setup({
     key:      '{{ $paystackKey }}',
@@ -406,8 +413,7 @@ function initiatePayment() {
     },
     onClose: function() {
       btn.disabled = false;
-      var lbl = document.getElementById('btn-price-label');
-      btn.innerHTML = 'Pay ' + (lbl ? lbl.outerHTML : '') + ' & Submit →';
+      btn.innerHTML = savedHTML;
     }
   });
 
