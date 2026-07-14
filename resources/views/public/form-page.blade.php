@@ -3,9 +3,17 @@
 @php
   $paystackKey = \App\Models\Setting::get('paystack_public_key');
   $paymentEnabled = $form->payment_enabled && $paystackKey && $form->payment_amount > 0;
-  $amountKobo = (int)($form->payment_amount * 100); // Paystack uses kobo/cents
+  $amountKobo = (int)($form->payment_amount * 100);
   $currency = $form->payment_currency ?: 'NGN';
   $currencySymbol = ['NGN'=>'₦','GHS'=>'₵','KES'=>'KSh','USD'=>'$','ZAR'=>'R'][$currency] ?? $currency;
+
+  // Build option_prices map across all fields for JS
+  $allOptionPrices = [];
+  foreach ($form->fields->where('is_active', true) as $f) {
+    if ($f->option_prices && in_array($f->field_type, ['select','radio'])) {
+      $allOptionPrices[$f->name] = $f->option_prices;
+    }
+  }
 @endphp
 
 <!-- HERO -->
@@ -201,10 +209,7 @@
   <div style="max-width:600px;margin:0 auto;">
 
     @if(session('success'))
-    <div style="background:rgba(62,224,127,0.12);border:0.5px solid #3ee07f;border-radius:6px;padding:24px;margin-bottom:32px;text-align:center;">
-      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#3ee07f;margin-bottom:8px;">✓ Submitted</div>
-      <div style="font-size:15px;color:rgba(255,255,255,0.7);">{{ session('success') }}</div>
-    </div>
+    {{-- Success handled by popup below --}}
     @endif
 
     @if(!session('success'))
@@ -243,8 +248,10 @@
             @elseif($field->field_type === 'select')
             <select name="{{ $field->name }}"
               @if($field->is_required) required @endif
+              @if($paymentEnabled && $field->option_prices) data-price-driver="1" data-option-prices="{{ json_encode($field->option_prices) }}" @endif
               style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(122,174,142,0.3);border-radius:2px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;outline:none;transition:border-color 0.2s;appearance:none;"
-              onfocus="this.style.borderColor='#a8cdb8'" onblur="this.style.borderColor='rgba(122,174,142,0.3)'">
+              onfocus="this.style.borderColor='#a8cdb8'" onblur="this.style.borderColor='rgba(122,174,142,0.3)'"
+              onchange="updatePrice(this)">
               <option value="" style="background:#0a1628;">{{ $field->placeholder ?: 'Select '.$field->label }}</option>
               @foreach($field->getOptionsArrayAttribute() as $opt)
               <option value="{{ $opt }}" style="background:#0a1628;" @if(old($field->name) === $opt) selected @endif>{{ $opt }}</option>
@@ -293,13 +300,13 @@
         <div style="margin-top:36px;">
           <div style="background:rgba(62,224,127,0.06);border:0.5px solid rgba(62,224,127,0.2);border-radius:4px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:rgba(255,255,255,0.6);">
             🔒 Your registration will be confirmed after payment of
-            <strong style="color:#3ee07f;">{{ $currencySymbol }}{{ number_format($form->payment_amount, 0) }}</strong>
+            <strong id="price-display" style="color:#3ee07f;">{{ $currencySymbol }}{{ number_format($form->payment_amount, 0) }}</strong>
             via Paystack. Your card details are secured by Paystack.
           </div>
           <button type="button" id="paystack-btn" onclick="initiatePayment()"
             style="width:100%;padding:16px 32px;background:#3ee07f;color:#0a1628;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s;"
             onmouseover="this.style.background='#62e896'" onmouseout="this.style.background='#3ee07f'">
-            Pay {{ $currencySymbol }}{{ number_format($form->payment_amount, 0) }} & Submit →
+            Pay <span id="btn-price-label">{{ $currencySymbol }}{{ number_format($form->payment_amount, 0) }}</span> & Submit →
           </button>
         </div>
         @else
@@ -318,11 +325,46 @@
 
 @if($paymentEnabled)
 <script src="https://js.paystack.co/v1/inline.js"></script>
+@endif
+
 <script>
+// ── Dynamic pricing ────────────────────────────────────────────────────────
+var BASE_AMOUNT_KOBO  = {{ $paymentEnabled ? $amountKobo : 0 }};
+var CURRENCY_SYMBOL   = '{{ $currencySymbol }}';
+var ACTIVE_AMOUNT_KOBO = BASE_AMOUNT_KOBO;
+
+function updatePrice(selectEl) {
+  if (!selectEl.dataset.priceDriver) return;
+  var prices = {};
+  try { prices = JSON.parse(selectEl.dataset.optionPrices || '{}'); } catch(e) {}
+  var selected = selectEl.value;
+  var price = prices[selected];
+
+  if (price && price > 0) {
+    ACTIVE_AMOUNT_KOBO = Math.round(price * 100);
+  } else {
+    ACTIVE_AMOUNT_KOBO = BASE_AMOUNT_KOBO;
+  }
+
+  var formatted = CURRENCY_SYMBOL + Number(ACTIVE_AMOUNT_KOBO / 100).toLocaleString('en-NG', {minimumFractionDigits:0, maximumFractionDigits:0});
+  var disp = document.getElementById('price-display');
+  var lbl  = document.getElementById('btn-price-label');
+  if (disp) disp.textContent = formatted;
+  if (lbl)  lbl.textContent  = formatted;
+}
+
+// Trigger on page load in case old() repopulates a select
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-price-driver]').forEach(function(sel) {
+    if (sel.value) updatePrice(sel);
+  });
+});
+
+@if($paymentEnabled)
+// ── Paystack ───────────────────────────────────────────────────────────────
 function initiatePayment() {
   var form = document.getElementById('main-form');
 
-  // Validate required fields first
   var requiredFields = form.querySelectorAll('[required]');
   for (var i = 0; i < requiredFields.length; i++) {
     if (!requiredFields[i].value.trim()) {
@@ -333,7 +375,6 @@ function initiatePayment() {
     }
   }
 
-  // Get email from form
   var emailField = form.querySelector('input[type="email"]') || form.querySelector('[name="email"]');
   var userEmail  = emailField ? emailField.value.trim() : '';
   if (!userEmail) {
@@ -343,39 +384,81 @@ function initiatePayment() {
   }
 
   var btn = document.getElementById('paystack-btn');
-  btn.disabled = true;
+  btn.disabled    = true;
   btn.textContent = 'Opening payment...';
 
   var handler = PaystackPop.setup({
     key:      '{{ $paystackKey }}',
     email:    userEmail,
-    amount:   {{ $amountKobo }},
+    amount:   ACTIVE_AMOUNT_KOBO,
     currency: '{{ $currency }}',
     ref:      'PS-' + Date.now() + '-' + Math.floor(Math.random() * 99999),
     label:    '{{ addslashes($form->payment_description ?: $form->name) }}',
-    metadata: {
-      form_id:   {{ $form->id }},
-      form_name: '{{ addslashes($form->name) }}',
-    },
+    metadata: { form_id: {{ $form->id }}, form_name: '{{ addslashes($form->name) }}' },
     callback: function(response) {
-      // Payment successful — inject reference and submit form
-      var refInput = document.createElement('input');
+      var refInput   = document.createElement('input');
       refInput.type  = 'hidden';
       refInput.name  = '_paystack_ref';
       refInput.value = response.reference;
       form.appendChild(refInput);
-
       btn.textContent = '✓ Payment confirmed — submitting...';
       form.submit();
     },
     onClose: function() {
       btn.disabled = false;
-      btn.textContent = 'Pay {{ $currencySymbol }}{{ number_format($form->payment_amount, 0) }} & Submit →';
+      var lbl = document.getElementById('btn-price-label');
+      btn.innerHTML = 'Pay ' + (lbl ? lbl.outerHTML : '') + ' & Submit →';
     }
   });
 
   handler.openIframe();
 }
+@endif
+</script>
+
+{{-- ── Success popup modal ───────────────────────────────────────────────── --}}
+@if(session('success'))
+<div id="success-modal" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="position:absolute;inset:0;background:rgba(6,14,28,0.85);backdrop-filter:blur(6px);" onclick="closeSuccessModal()"></div>
+  <div style="position:relative;background:#0a1628;border:0.5px solid rgba(62,224,127,0.4);border-radius:8px;padding:48px 40px;max-width:480px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.6);">
+    <div style="width:56px;height:56px;border-radius:50%;background:rgba(62,224,127,0.12);border:1.5px solid #3ee07f;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;">✓</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:#fff;margin:0 0 12px;">You're registered!</h2>
+    <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.7;margin:0 0 28px;">{{ session('success') }}</p>
+    <button onclick="closeSuccessModal()"
+      style="padding:13px 36px;background:#3ee07f;color:#0a1628;border:none;border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">
+      Done
+    </button>
+  </div>
+</div>
+<script>
+function closeSuccessModal() {
+  var m = document.getElementById('success-modal');
+  if (m) { m.style.opacity='0'; m.style.transition='opacity .25s'; setTimeout(function(){ m.remove(); }, 260); }
+}
+// Close on Escape
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSuccessModal(); });
+</script>
+@endif
+
+@if(session('error'))
+<div id="error-modal" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="position:absolute;inset:0;background:rgba(6,14,28,0.85);backdrop-filter:blur(6px);" onclick="closeErrorModal()"></div>
+  <div style="position:relative;background:#0a1628;border:0.5px solid rgba(244,160,160,0.4);border-radius:8px;padding:48px 40px;max-width:480px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.6);">
+    <div style="width:56px;height:56px;border-radius:50%;background:rgba(200,80,80,0.12);border:1.5px solid #f4a0a0;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;">✗</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#fff;margin:0 0 12px;">Something went wrong</h2>
+    <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.7;margin:0 0 28px;">{{ session('error') }}</p>
+    <button onclick="closeErrorModal()"
+      style="padding:13px 36px;background:rgba(244,160,160,0.15);color:#f4a0a0;border:0.5px solid rgba(244,160,160,0.4);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">
+      Close
+    </button>
+  </div>
+</div>
+<script>
+function closeErrorModal() {
+  var m = document.getElementById('error-modal');
+  if (m) { m.style.opacity='0'; m.style.transition='opacity .25s'; setTimeout(function(){ m.remove(); }, 260); }
+}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeErrorModal(); });
 </script>
 @endif
 

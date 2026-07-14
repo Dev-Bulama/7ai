@@ -99,40 +99,55 @@ class FormController extends Controller
     // Field management
     public function storeField(Request $request, Form $form) {
         $data = $request->validate([
-            'label' => 'required|max:255',
-            'name' => 'required|max:100|regex:/^[a-z_][a-z0-9_]*$/',
-            'field_type' => 'required|in:text,email,phone,number,textarea,select,radio,checkbox,file,date,hidden',
-            'placeholder' => 'nullable|max:255',
-            'help_text' => 'nullable',
-            'is_required' => 'nullable|boolean',
-            'options' => 'nullable',
-            'sort_order' => 'nullable|integer',
+            'label'        => 'required|max:255',
+            'name'         => 'required|max:100|regex:/^[a-z_][a-z0-9_]*$/',
+            'field_type'   => 'required|in:text,email,phone,number,textarea,select,radio,checkbox,file,date,hidden',
+            'placeholder'  => 'nullable|max:255',
+            'help_text'    => 'nullable',
+            'is_required'  => 'nullable|boolean',
+            'options'      => 'nullable',
+            'sort_order'   => 'nullable|integer',
+            'option_prices'=> 'nullable|string',
         ]);
-        $data['form_id'] = $form->id;
-        $data['is_required'] = $request->boolean('is_required');
-        $data['is_active'] = true;
+        $data['form_id']      = $form->id;
+        $data['is_required']  = $request->boolean('is_required');
+        $data['is_active']    = true;
+        $data['option_prices'] = $this->parseOptionPrices($request->input('option_prices'));
         FormField::create($data);
         return redirect()->route('admin.forms.edit', $form)->with('success', 'Field added.');
     }
+
     public function updateField(Request $request, Form $form, FormField $field) {
         $data = $request->validate([
-            'label'      => 'required|max:255',
-            'name'       => ['required', 'max:100', 'regex:/^[a-z_][a-z0-9_]*$/',
-                             \Illuminate\Validation\Rule::unique('form_fields', 'name')
-                                 ->where('form_id', $form->id)
-                                 ->ignore($field->id)],
-            'field_type' => 'required|in:text,email,phone,number,textarea,select,radio,checkbox,file,date,hidden',
-            'placeholder'=> 'nullable|max:255',
-            'help_text'  => 'nullable',
-            'is_required'=> 'nullable|boolean',
-            'options'    => 'nullable',
-            'sort_order' => 'nullable|integer',
-            'is_active'  => 'nullable|boolean',
+            'label'        => 'required|max:255',
+            'name'         => ['required', 'max:100', 'regex:/^[a-z_][a-z0-9_]*$/',
+                               \Illuminate\Validation\Rule::unique('form_fields', 'name')
+                                   ->where('form_id', $form->id)
+                                   ->ignore($field->id)],
+            'field_type'   => 'required|in:text,email,phone,number,textarea,select,radio,checkbox,file,date,hidden',
+            'placeholder'  => 'nullable|max:255',
+            'help_text'    => 'nullable',
+            'is_required'  => 'nullable|boolean',
+            'options'      => 'nullable',
+            'sort_order'   => 'nullable|integer',
+            'is_active'    => 'nullable|boolean',
+            'option_prices'=> 'nullable|string',
         ]);
-        $data['is_required'] = $request->boolean('is_required');
-        $data['is_active']   = $request->boolean('is_active', true);
+        $data['is_required']   = $request->boolean('is_required');
+        $data['is_active']     = $request->boolean('is_active', true);
+        $data['option_prices'] = $this->parseOptionPrices($request->input('option_prices'));
         $field->update($data);
         return redirect()->route('admin.forms.edit', $form)->with('success', 'Field updated.');
+    }
+
+    private function parseOptionPrices(?string $raw): ?array
+    {
+        if (!$raw) return null;
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) return null;
+        // Filter out empty/zero prices so we only store meaningful values
+        $filtered = array_filter($decoded, fn($v) => is_numeric($v) && (float)$v > 0);
+        return $filtered ?: null;
     }
     public function destroyField(Form $form, FormField $field) {
         $field->delete();

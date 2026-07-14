@@ -119,7 +119,17 @@
                 </div>
                 <div id="opts-{{ $field->id }}" class="form-group" style="margin-bottom:12px;{{ in_array($field->field_type, ['select','radio','checkbox']) ? '' : 'display:none;' }}">
                   <label class="form-label" style="font-size:11px;">Options <span style="font-weight:300;color:var(--gray-400);">(one per line)</span></label>
-                  <textarea name="options" class="form-input" rows="6" placeholder="Option One&#10;Option Two&#10;Option Three">{{ old('options', $field->options) }}</textarea>
+                  <textarea name="options" class="form-input options-textarea" id="options-ta-{{ $field->id }}" rows="6"
+                    placeholder="Option One&#10;Option Two&#10;Option Three"
+                    oninput="buildPriceRows('{{ $field->id }}', this.value)">{{ old('options', $field->options) }}</textarea>
+                  {{-- Per-option pricing (only shown when form has payment enabled) --}}
+                  @if($form->payment_enabled)
+                  <div style="margin-top:10px;padding:12px 14px;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:4px;">
+                    <div style="font-size:11px;font-weight:700;color:#065f46;margin-bottom:8px;letter-spacing:.04em;">PER-OPTION PRICING (₦) — leave 0 to use the form's default price</div>
+                    <div id="price-rows-{{ $field->id }}" style="display:flex;flex-direction:column;gap:6px;"></div>
+                    <input type="hidden" name="option_prices" id="option-prices-json-{{ $field->id }}" value="{{ $field->option_prices ? json_encode($field->option_prices) : '{}' }}">
+                  </div>
+                  @endif
                 </div>
                 <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">
                   <div class="form-group" style="margin:0;">
@@ -518,6 +528,9 @@ function openFieldEdit(id) {
   if (viewRow) viewRow.style.opacity = '0.4';
   // Scroll into view
   if (editRow) editRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // Init price rows after panel opens
+  var ta = editRow ? editRow.querySelector('.options-textarea') : null;
+  if (ta) buildPriceRows(id, ta.value);
 }
 
 function closeFieldEdit(id) {
@@ -526,5 +539,66 @@ function closeFieldEdit(id) {
   if (editRow) editRow.style.display = 'none';
   if (viewRow) viewRow.style.opacity = '1';
 }
+
+// ── Per-option price builder ────────────────────────────────────────────────
+function buildPriceRows(fieldId, optionsText) {
+  var container = document.getElementById('price-rows-' + fieldId);
+  var jsonInput  = document.getElementById('option-prices-json-' + fieldId);
+  if (!container || !jsonInput) return;
+
+  var existing = {};
+  try { existing = JSON.parse(jsonInput.value || '{}'); } catch(e) {}
+
+  var opts = optionsText.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+
+  container.innerHTML = '';
+  opts.forEach(function(opt) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+    var lbl = document.createElement('span');
+    lbl.style.cssText = 'flex:1;font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    lbl.textContent = opt;
+    var inp = document.createElement('input');
+    inp.type = 'number';
+    inp.min  = '0';
+    inp.step = '1';
+    inp.placeholder = '0';
+    inp.value = existing[opt] || '';
+    inp.style.cssText = 'width:110px;padding:5px 8px;border:1px solid #d1d5db;border-radius:3px;font-size:12px;';
+    inp.dataset.opt = opt;
+    inp.addEventListener('input', function() { serializePrices(fieldId); });
+    row.appendChild(lbl);
+    var prefix = document.createElement('span');
+    prefix.textContent = '₦';
+    prefix.style.cssText = 'font-size:12px;color:#6b7280;';
+    row.appendChild(prefix);
+    row.appendChild(inp);
+    container.appendChild(row);
+  });
+
+  serializePrices(fieldId);
+}
+
+function serializePrices(fieldId) {
+  var container = document.getElementById('price-rows-' + fieldId);
+  var jsonInput  = document.getElementById('option-prices-json-' + fieldId);
+  if (!container || !jsonInput) return;
+  var out = {};
+  container.querySelectorAll('input[data-opt]').forEach(function(inp) {
+    var v = parseFloat(inp.value);
+    if (v > 0) out[inp.dataset.opt] = v;
+  });
+  jsonInput.value = JSON.stringify(out);
+}
+
+// Init price rows for all open edit panels on page load
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.options-textarea').forEach(function(ta) {
+    var id = ta.id.replace('options-ta-', '');
+    if (document.getElementById('price-rows-' + id)) {
+      buildPriceRows(id, ta.value);
+    }
+  });
+});
 </script>
 </x-admin-layout>
