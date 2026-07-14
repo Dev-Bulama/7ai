@@ -549,7 +549,18 @@ function buildPriceRows(fieldId, optionsText) {
   var existing = {};
   try { existing = JSON.parse(jsonInput.value || '{}'); } catch(e) {}
 
-  var opts = optionsText.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+  // Handle both JSON array format and one-per-line format
+  var opts = [];
+  var trimmed = optionsText.trim();
+  if (trimmed.startsWith('[')) {
+    try {
+      var parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) opts = parsed.map(function(s){ return String(s).trim(); }).filter(Boolean);
+    } catch(e) {}
+  }
+  if (!opts.length) {
+    opts = optionsText.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+  }
 
   container.innerHTML = '';
   opts.forEach(function(opt) {
