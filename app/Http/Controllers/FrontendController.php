@@ -255,6 +255,34 @@ class FrontendController extends Controller
         return view('public.form-page', compact('form', 'settings'));
     }
 
+    public function checkDiscountEmail(\Illuminate\Http\Request $request)
+    {
+        $email  = strtolower(trim($request->input('email', '')));
+        $formId = (int) $request->input('form_id');
+
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL) || !$formId) {
+            return response()->json(['eligible' => false]);
+        }
+
+        $form = \App\Models\Form::find($formId);
+        if (!$form || !$form->discount_enabled || !$form->discount_check_form_id) {
+            return response()->json(['eligible' => false]);
+        }
+
+        $found = FormSubmission::where('form_id', $form->discount_check_form_id)
+            ->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(data, '$.email'))) = ?", [$email])
+            ->exists();
+
+        if (!$found) {
+            return response()->json(['eligible' => false]);
+        }
+
+        return response()->json([
+            'eligible'      => true,
+            'discount_pct'  => (float) $form->discount_percent,
+        ]);
+    }
+
     public function dynamicFormPage(string $formPath)
     {
         $form = Form::where('public_path', '/'.$formPath)->where('is_active', true)->with('fields')->first();
@@ -289,17 +317,24 @@ class FrontendController extends Controller
         }
 
         // ── 2. Verify Paystack payment if required ─────────────────────────────
-        if ($form->payment_enabled && $form->payment_amount > 0) {
-            $ref = $request->input('_paystack_ref');
-            if (!$ref) {
-                return back()->with('error', 'Payment is required to complete this registration. Please click the Pay button.')->withInput();
+        $paymentMethod = $request->input('_payment_method', 'paystack');
+        if ($form->payment_enabled && $paymentMethod !== 'transfer') {
+            $hasOptionPrices = $form->fields->where('is_active', true)->contains(fn($f) => !empty($f->option_prices));
+            $requiresPaystack = $form->payment_amount > 0 || $hasOptionPrices;
+            if ($requiresPaystack) {
+                $ref = $request->input('_paystack_ref');
+                if (!$ref) {
+                    return back()->with('error', 'Payment is required to complete this registration. Please click the Pay button.')->withInput();
+                }
+                $verified = $this->verifyPaystackPayment($ref);
+                if (!$verified) {
+                    return back()->with('error', 'Payment could not be verified. Please try again or contact support.')->withInput();
+                }
+                $data['_paystack_ref'] = $ref;
             }
-            $verified = $this->verifyPaystackPayment($ref);
-            if (!$verified) {
-                return back()->with('error', 'Payment could not be verified. Please try again or contact support.')->withInput();
-            }
-            // Store payment reference in submission data
-            $data['_paystack_ref'] = $ref;
+        }
+        if ($paymentMethod === 'transfer') {
+            $data['_payment_method'] = 'bank_transfer_pending';
         }
 
         // ── 3. Duplicate prevention ────────────────────────────────────────────

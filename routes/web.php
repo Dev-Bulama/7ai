@@ -62,6 +62,7 @@ Route::get('/advisory', [FrontendController::class, 'advisory'])->name('advisory
 // Public form view & submission
 Route::get('/forms/{form:slug}', [FrontendController::class, 'showForm'])->name('forms.show');
 Route::post('/forms/{form}/submit', [FrontendController::class, 'submitForm'])->name('forms.submit');
+Route::get('/api/check-discount', [FrontendController::class, 'checkDiscountEmail'])->name('api.check-discount');
 
 // Public flyer generator
 Route::get('/flyer/{slug}', [FlyerController::class, 'show'])->name('conference.flyer');

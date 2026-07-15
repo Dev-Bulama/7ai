@@ -20,6 +20,7 @@
     'scripts'  => 'Scripts',
     'system'   => 'System',
     'payment'  => '💳 Payment',
+    'learnai'  => '🎓 LearnAI Content',
   ] as $key => $label)
   <a href="{{ route('admin.settings.index', ['tab' => $key]) }}"
      style="padding:10px 18px;font-size:13px;font-weight:{{ $tab === $key ? '700' : '400' }};color:{{ $tab === $key ? 'var(--teal)' : 'var(--gray-600)' }};border-bottom:2px solid {{ $tab === $key ? 'var(--teal)' : 'transparent' }};text-decoration:none;white-space:nowrap;">
@@ -332,7 +333,104 @@
   </div>
   @endif
 </div>
+
+{{-- Bank Transfer Details --}}
+<div class="card" style="margin-bottom:20px;">
+  <div style="font-weight:700;font-size:14px;margin-bottom:6px;">Bank Transfer Details</div>
+  <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
+    These details are shown to users who choose to pay via bank transfer. Leave blank to hide the transfer option on all forms.
+  </p>
+
+  <div class="form-group" style="margin-bottom:16px;">
+    <label class="form-check">
+      <input type="hidden" name="show_paystack_option" value="0">
+      <input type="checkbox" name="show_paystack_option" value="1" {{ $s('show_paystack_option','1') !== '0' ? 'checked' : '' }}>
+      <span style="font-weight:500;">Show "Pay with Card (Paystack)" option</span>
+      <span style="display:block;font-size:12px;color:var(--gray-400);margin-top:2px;">Uncheck to hide Paystack and only offer bank transfer on the payment popup.</span>
+    </label>
+  </div>
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Bank Name</label>
+      <input type="text" name="bank_name" class="form-input" value="{{ $s('bank_name') }}" placeholder="e.g. First Bank">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Account Number</label>
+      <input type="text" name="bank_account_number" class="form-input" value="{{ $s('bank_account_number') }}" placeholder="0123456789">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Account Name</label>
+      <input type="text" name="bank_account_name" class="form-input" value="{{ $s('bank_account_name') }}" placeholder="7AI Technologies Ltd">
+    </div>
+  </div>
+</div>
 <button type="submit" class="btn btn-primary">Save Payment Settings</button>
+</form>
+
+@elseif($tab === 'learnai')
+{{-- LEARNAI CONTENT --}}
+<form method="POST" action="{{ route('admin.settings.update') }}">
+@csrf @method('PUT')
+<input type="hidden" name="_tab" value="learnai">
+
+<div class="card" style="margin-bottom:20px;">
+  <div style="font-weight:700;font-size:14px;margin-bottom:6px;">Hero Tagline</div>
+  <div class="form-group">
+    <label class="form-label">Heading</label>
+    <input type="text" name="learnai_tagline" class="form-input" value="{{ $s('learnai_tagline','TWO COURSES. TWO DAYS. ONE DECISION.') }}">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Intro Paragraph</label>
+    <textarea name="learnai_intro" class="form-input" rows="3">{{ $s('learnai_intro','Are you still doing everything manually? AI is already doing the work of an entire team for creators and business owners who know how to use it. In just 3 hours, we will show you exactly how.') }}</textarea>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <div style="font-weight:700;font-size:14px;margin-bottom:16px;">Course 1</div>
+  <div class="form-grid">
+    <div class="form-group"><label class="form-label">Course Name</label><input type="text" name="learnai_c1_name" class="form-input" value="{{ $s('learnai_c1_name','AI for Content Creators') }}"></div>
+    <div class="form-group"><label class="form-label">Subtitle</label><input type="text" name="learnai_c1_subtitle" class="form-input" value="{{ $s('learnai_c1_subtitle','From Blank Page to Viral Post — With AI') }}"></div>
+    <div class="form-group"><label class="form-label">Date</label><input type="text" name="learnai_c1_date" class="form-input" value="{{ $s('learnai_c1_date','Friday, 24th July 2026') }}"></div>
+    <div class="form-group"><label class="form-label">Time</label><input type="text" name="learnai_c1_time" class="form-input" value="{{ $s('learnai_c1_time','5:00 PM – 8:00 PM') }}"></div>
+    <div class="form-group"><label class="form-label">Format</label><input type="text" name="learnai_c1_format" class="form-input" value="{{ $s('learnai_c1_format','100% Virtual') }}"></div>
+    <div class="form-group"><label class="form-label">Fee (display only)</label><input type="text" name="learnai_c1_fee" class="form-input" value="{{ $s('learnai_c1_fee','₦100,000') }}"></div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">What You Will Learn (one item per line)</label>
+    <textarea name="learnai_c1_items" class="form-input" rows="6" placeholder="Generate 30 days of content in one session&#10;Write captions, scripts, and hooks with AI">{{ $s('learnai_c1_items',"Generate 30 days of content in one session\nWrite captions, scripts, and hooks with AI\nCreate stunning visuals without a designer\nSchedule, repurpose, and automate your content pipeline\nBuild your personal content brand faster than ever") }}</textarea>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <div style="font-weight:700;font-size:14px;margin-bottom:16px;">Course 2</div>
+  <div class="form-grid">
+    <div class="form-group"><label class="form-label">Course Name</label><input type="text" name="learnai_c2_name" class="form-input" value="{{ $s('learnai_c2_name','AI for Business Owners') }}"></div>
+    <div class="form-group"><label class="form-label">Subtitle</label><input type="text" name="learnai_c2_subtitle" class="form-input" value="{{ $s('learnai_c2_subtitle','Automate Your Business. Multiply Your Output.') }}"></div>
+    <div class="form-group"><label class="form-label">Date</label><input type="text" name="learnai_c2_date" class="form-input" value="{{ $s('learnai_c2_date','Friday, 31st July 2026') }}"></div>
+    <div class="form-group"><label class="form-label">Time</label><input type="text" name="learnai_c2_time" class="form-input" value="{{ $s('learnai_c2_time','5:00 PM – 8:00 PM') }}"></div>
+    <div class="form-group"><label class="form-label">Format</label><input type="text" name="learnai_c2_format" class="form-input" value="{{ $s('learnai_c2_format','100% Virtual') }}"></div>
+    <div class="form-group"><label class="form-label">Fee (display only)</label><input type="text" name="learnai_c2_fee" class="form-input" value="{{ $s('learnai_c2_fee','₦140,000') }}"></div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">What You Will Learn (one item per line)</label>
+    <textarea name="learnai_c2_items" class="form-input" rows="6" placeholder="Automate customer service, follow-ups, and lead generation&#10;Use AI to write proposals, invoices, and business documents">{{ $s('learnai_c2_items',"Automate customer service, follow-ups, and lead generation\nUse AI to write proposals, invoices, and business documents\nBuild workflows that run your business while you sleep\nCut costs, save time, and grow revenue with AI tools\nPractical tools you can deploy in your business from Monday") }}</textarea>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <div style="font-weight:700;font-size:14px;margin-bottom:16px;">Bottom Sections</div>
+  <div class="form-group">
+    <label class="form-label">Included Benefits (one per line)</label>
+    <textarea name="learnai_benefits" class="form-input" rows="5">{{ $s('learnai_benefits',"Live virtual session with expert facilitators\nRecording access after the class\n7Ai Academy Certificate of Completion\nPrivate community access for ongoing support") }}</textarea>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Urgency / Contact Note</label>
+    <input type="text" name="learnai_contact_note" class="form-input" value="{{ $s('learnai_contact_note','Seats are strictly limited. Early registration is advised.') }}">
+  </div>
+</div>
+
+<button type="submit" class="btn btn-primary">Save LearnAI Content</button>
 </form>
 
 @endif

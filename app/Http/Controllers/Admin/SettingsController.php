@@ -29,7 +29,8 @@ class SettingsController extends Controller
             'scripts'  => ['header_scripts','footer_scripts','google_analytics','meta_pixel','chatbot_script'],
             'system'   => ['footer_text','copyright_text','maintenance_mode','registration_enabled','email_notifications'],
             'nav'      => ['nav_cta_text','nav_cta_url','nav_secondary_text','nav_secondary_url'],
-            'payment'  => ['paystack_public_key','paystack_secret_key','paystack_mode'],
+            'payment'  => ['paystack_public_key','paystack_secret_key','paystack_mode','show_paystack_option','bank_name','bank_account_number','bank_account_name'],
+            'learnai'  => ['learnai_tagline','learnai_intro','learnai_c1_name','learnai_c1_subtitle','learnai_c1_date','learnai_c1_time','learnai_c1_format','learnai_c1_fee','learnai_c1_items','learnai_c2_name','learnai_c2_subtitle','learnai_c2_date','learnai_c2_time','learnai_c2_format','learnai_c2_fee','learnai_c2_items','learnai_benefits','learnai_contact_note'],
         ];
 
         foreach ($groups as $group => $keys) {
