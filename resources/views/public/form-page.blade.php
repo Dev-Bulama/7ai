@@ -3,17 +3,20 @@
 @php
   $paystackKey = \App\Models\Setting::get('paystack_public_key');
   $hasOptionPrices = $form->fields->where('is_active', true)->contains(fn($f) => !empty($f->option_prices) && in_array($f->field_type, ['select','radio']));
-  $paymentEnabled = $form->payment_enabled && $paystackKey && ($form->payment_amount > 0 || $hasOptionPrices);
   $amountKobo = (int)($form->payment_amount * 100);
   $currency = $form->payment_currency ?: 'NGN';
   $currencySymbol = ['NGN'=>'₦','GHS'=>'₵','KES'=>'KSh','USD'=>'$','ZAR'=>'R'][$currency] ?? $currency;
 
-  // Bank transfer details
+  // Bank transfer details (resolved before $paymentEnabled so transfer alone can enable the modal)
   $bankName    = \App\Models\Setting::get('bank_name','');
   $bankAccNum  = \App\Models\Setting::get('bank_account_number','');
   $bankAccName = \App\Models\Setting::get('bank_account_name','');
   $showPaystack = \App\Models\Setting::get('show_paystack_option','1') !== '0';
   $showTransfer = $bankName && $bankAccNum && $bankAccName;
+
+  // Payment modal shows when: form has payment enabled AND (Paystack configured OR bank transfer configured)
+  $paystackReady = $paystackKey && ($form->payment_amount > 0 || $hasOptionPrices);
+  $paymentEnabled = $form->payment_enabled && ($paystackReady || $showTransfer);
 
   // WhatsApp proof settings
   $waEnabled = \App\Models\Setting::get('whatsapp_proof_enabled','0') === '1';
@@ -322,7 +325,7 @@
   </div>
 </section>
 
-@if($paymentEnabled)
+@if($paystackReady)
 <script src="https://js.paystack.co/v1/inline.js"></script>
 @endif
 
@@ -377,12 +380,12 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-@if($paymentEnabled)
+@if($paymentEnabled) {{-- payment modal JS --}}
 // ── Payment method modal ───────────────────────────────────────────────────
 var BANK_NAME    = '{{ addslashes($bankName) }}';
 var BANK_ACC_NUM = '{{ addslashes($bankAccNum) }}';
 var BANK_ACC_NAME= '{{ addslashes($bankAccName) }}';
-var SHOW_PAYSTACK= {{ $showPaystack ? 'true' : 'false' }};
+var SHOW_PAYSTACK= {{ ($showPaystack && $paystackReady) ? 'true' : 'false' }};
 var SHOW_TRANSFER= {{ $showTransfer ? 'true' : 'false' }};
 var FORM_ID      = {{ $form->id }};
 var WA_LINK      = '{{ addslashes($waLink) }}';
@@ -477,6 +480,7 @@ function submitTransfer() {
   form.submit();
 }
 
+@if($paystackReady)
 function initiatePayment() {
   var form      = document.getElementById('main-form');
   var emailField = form.querySelector('input[type="email"]') || form.querySelector('[name="email"]');
@@ -513,7 +517,8 @@ function initiatePayment() {
   });
   handler.openIframe();
 }
-@endif
+@endif {{-- paystackReady --}}
+@endif {{-- paymentEnabled --}}
 
 // ── Real-time discount check ───────────────────────────────────────────────
 @if($form->discount_enabled && $form->discount_check_form_id)
