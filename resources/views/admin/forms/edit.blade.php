@@ -26,7 +26,10 @@
       <div class="form-group"><label class="form-label">Page Title</label><input type="text" name="title" class="form-input" value="{{ old('title', $form->title) }}"></div>
     </div>
     <div class="form-group"><label class="form-label">Page Subtitle / Tagline</label><input type="text" name="subtitle" class="form-input" value="{{ old('subtitle', $form->subtitle) }}"></div>
-    <div class="form-group"><label class="form-label">Success Message</label><textarea name="success_message" class="form-input" rows="2">{{ old('success_message', $form->success_message) }}</textarea></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Success Popup Heading</label><input type="text" name="success_heading" class="form-input" value="{{ old('success_heading', $form->success_heading) }}" placeholder="You're registered!"></div>
+      <div class="form-group"><label class="form-label">Success Message (body text)</label><textarea name="success_message" class="form-input" rows="2">{{ old('success_message', $form->success_message) }}</textarea></div>
+    </div>
     <div class="form-grid">
       <div class="form-group"><label class="form-label">Redirect URL</label><input type="text" name="redirect_url" class="form-input" value="{{ old('redirect_url', $form->redirect_url) }}"></div>
       <div class="form-group"><label class="form-label">Notification Email</label><input type="email" name="notification_email" class="form-input" value="{{ old('notification_email', $form->notification_email) }}"></div>

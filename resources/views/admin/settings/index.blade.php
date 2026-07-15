@@ -365,6 +365,31 @@
     </div>
   </div>
 </div>
+{{-- WhatsApp Payment Proof --}}
+<div class="card" style="margin-bottom:20px;">
+  <div style="font-weight:700;font-size:14px;margin-bottom:6px;">WhatsApp Payment Proof</div>
+  <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
+    When enabled, a WhatsApp button appears on the bank transfer payment popup and on the registration success popup, prompting users to send their proof of payment.
+  </p>
+  <div class="form-group" style="margin-bottom:16px;">
+    <label class="form-check">
+      <input type="hidden" name="whatsapp_proof_enabled" value="0">
+      <input type="checkbox" name="whatsapp_proof_enabled" value="1" {{ $s('whatsapp_proof_enabled','0') === '1' ? 'checked' : '' }}>
+      <span style="font-weight:500;">Show WhatsApp proof of payment button</span>
+    </label>
+  </div>
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">WhatsApp Number (with country code, no +)</label>
+      <input type="text" name="whatsapp_proof_number" class="form-input" value="{{ $s('whatsapp_proof_number') }}" placeholder="2348012345678">
+      <span style="font-size:12px;color:var(--gray-400);">E.g. 2348065931712 — this number receives the payment screenshots</span>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Pre-filled WhatsApp Message</label>
+      <input type="text" name="whatsapp_proof_message" class="form-input" value="{{ $s('whatsapp_proof_message','Hello! I just registered and I am sending my proof of payment.') }}" placeholder="Hello! I just registered...">
+    </div>
+  </div>
+</div>
 <button type="submit" class="btn btn-primary">Save Payment Settings</button>
 </form>
 

@@ -15,6 +15,12 @@
   $showPaystack = \App\Models\Setting::get('show_paystack_option','1') !== '0';
   $showTransfer = $bankName && $bankAccNum && $bankAccName;
 
+  // WhatsApp proof settings
+  $waEnabled = \App\Models\Setting::get('whatsapp_proof_enabled','0') === '1';
+  $waNumber  = \App\Models\Setting::get('whatsapp_proof_number','');
+  $waMessage = \App\Models\Setting::get('whatsapp_proof_message','Hello! I just registered and I am sending my proof of payment.');
+  $waLink    = ($waEnabled && $waNumber) ? 'https://wa.me/'.preg_replace('/\D/','',$waNumber).'?text='.rawurlencode($waMessage) : '';
+
   // LearnAI content from settings
   $la = fn($k,$d='') => \App\Models\Setting::get($k,$d);
 @endphp
@@ -379,6 +385,7 @@ var BANK_ACC_NAME= '{{ addslashes($bankAccName) }}';
 var SHOW_PAYSTACK= {{ $showPaystack ? 'true' : 'false' }};
 var SHOW_TRANSFER= {{ $showTransfer ? 'true' : 'false' }};
 var FORM_ID      = {{ $form->id }};
+var WA_LINK      = '{{ addslashes($waLink) }}';
 
 function validateForm() {
   var form = document.getElementById('main-form');
@@ -433,6 +440,7 @@ function buildAndShowModal() {
     + '<div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,0.4);">Account Name</span><span style="color:#fff;font-weight:500;">'+BANK_ACC_NAME+'</span></div>'
     + '</div>'
     + '<button onclick="submitTransfer()" style="width:100%;padding:12px 20px;background:rgba(168,205,184,0.15);color:#a8cdb8;border:0.5px solid rgba(168,205,184,0.4);border-radius:2px;font-family:\'DM Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">I\'ve Sent the Transfer →</button>'
+    + (WA_LINK ? '<a href="'+WA_LINK+'" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:12px 20px;background:#25d366;color:#fff;border-radius:2px;font-family:\'DM Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;box-sizing:border-box;"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.549 4.099 1.508 5.827L.057 23.804a.75.75 0 0 0 .923.923l5.976-1.452A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.93 0-3.736-.51-5.29-1.4l-.377-.22-3.906.949.967-3.795-.244-.39A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>Send Proof via WhatsApp</a>' : '')
     + '<p style="font-size:11px;color:rgba(255,255,255,0.3);margin:8px 0 0;text-align:center;">Use your name as the transfer narration. We will confirm and activate your access.</p>'
     + '</div>' : '';
 
@@ -551,10 +559,18 @@ document.addEventListener('DOMContentLoaded', function() {
 @if(session('success'))
 <div id="success-modal" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;">
   <div style="position:absolute;inset:0;background:rgba(6,14,28,0.85);backdrop-filter:blur(6px);" onclick="closeSuccessModal()"></div>
-  <div style="position:relative;background:#0a1628;border:0.5px solid rgba(62,224,127,0.4);border-radius:8px;padding:48px 40px;max-width:480px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.6);">
+  <div style="position:relative;background:#0a1628;border:0.5px solid rgba(62,224,127,0.4);border-radius:8px;padding:48px 40px;max-width:500px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.6);">
     <div style="width:56px;height:56px;border-radius:50%;background:rgba(62,224,127,0.12);border:1.5px solid #3ee07f;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;">✓</div>
-    <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:#fff;margin:0 0 12px;">You're registered!</h2>
-    <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.7;margin:0 0 28px;">{{ session('success') }}</p>
+    <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:#fff;margin:0 0 12px;">{{ $form->success_heading ?: "You're registered!" }}</h2>
+    <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.7;margin:0 0 24px;">{{ session('success') }}</p>
+    @if($waLink)
+    <a href="{{ $waLink }}" target="_blank"
+      style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;background:#25d366;color:#fff;border:none;border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;margin-bottom:12px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.549 4.099 1.508 5.827L.057 23.804a.75.75 0 0 0 .923.923l5.976-1.452A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.93 0-3.736-.51-5.29-1.4l-.377-.22-3.906.949.967-3.795-.244-.39A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      Send Proof of Payment on WhatsApp
+    </a>
+    <p style="font-size:11px;color:rgba(255,255,255,0.3);margin:0 0 16px;">Tap above to send your payment screenshot via WhatsApp</p>
+    @endif
     <button onclick="closeSuccessModal()"
       style="padding:13px 36px;background:#3ee07f;color:#0a1628;border:none;border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">
       Done
