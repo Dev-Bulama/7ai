@@ -1,8 +1,7 @@
 <x-app-layout :title="($form->title ?: $form->name).' — '.($settings['site_name'] ?? '7AI')" :description="$form->description ?? ''">
 
 @php
-  use App\Models\Setting;
-  $paystackKey = Setting::get('paystack_public_key');
+  $paystackKey = \App\Models\Setting::get('paystack_public_key');
   $hasOptionPrices = $form->fields->where('is_active', true)->contains(fn($f) => !empty($f->option_prices) && in_array($f->field_type, ['select','radio']));
   $paymentEnabled = $form->payment_enabled && $paystackKey && ($form->payment_amount > 0 || $hasOptionPrices);
   $amountKobo = (int)($form->payment_amount * 100);
@@ -10,14 +9,14 @@
   $currencySymbol = ['NGN'=>'₦','GHS'=>'₵','KES'=>'KSh','USD'=>'$','ZAR'=>'R'][$currency] ?? $currency;
 
   // Bank transfer details
-  $bankName    = Setting::get('bank_name','');
-  $bankAccNum  = Setting::get('bank_account_number','');
-  $bankAccName = Setting::get('bank_account_name','');
-  $showPaystack = Setting::get('show_paystack_option','1') !== '0';
+  $bankName    = \App\Models\Setting::get('bank_name','');
+  $bankAccNum  = \App\Models\Setting::get('bank_account_number','');
+  $bankAccName = \App\Models\Setting::get('bank_account_name','');
+  $showPaystack = \App\Models\Setting::get('show_paystack_option','1') !== '0';
   $showTransfer = $bankName && $bankAccNum && $bankAccName;
 
   // LearnAI content from settings
-  $la = fn($k,$d='') => Setting::get($k,$d);
+  $la = fn($k,$d='') => \App\Models\Setting::get($k,$d);
 @endphp
 
 <!-- HERO -->
