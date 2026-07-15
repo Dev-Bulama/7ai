@@ -14,9 +14,10 @@
   $showPaystack = \App\Models\Setting::get('show_paystack_option','1') !== '0';
   $showTransfer = $bankName && $bankAccNum && $bankAccName;
 
-  // Payment modal shows when: form has payment enabled AND (Paystack configured OR bank transfer configured)
-  $paystackReady = $paystackKey && ($form->payment_amount > 0 || $hasOptionPrices);
-  $paymentEnabled = $form->payment_enabled && ($paystackReady || $showTransfer);
+  // Paystack is usable when key exists (amount can be per-option, so don't require payment_amount > 0 here)
+  $paystackReady = (bool) $paystackKey;
+  // Show payment modal when form has payment enabled AND at least one method is configured
+  $paymentEnabled = $form->payment_enabled && ($paystackKey || $showTransfer);
 
   // WhatsApp proof settings
   $waEnabled = \App\Models\Setting::get('whatsapp_proof_enabled','0') === '1';
@@ -385,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
 var BANK_NAME    = '{{ addslashes($bankName) }}';
 var BANK_ACC_NUM = '{{ addslashes($bankAccNum) }}';
 var BANK_ACC_NAME= '{{ addslashes($bankAccName) }}';
-var SHOW_PAYSTACK= {{ ($showPaystack && $paystackReady) ? 'true' : 'false' }};
+var SHOW_PAYSTACK= {{ ($showPaystack && $paystackKey) ? 'true' : 'false' }};
 var SHOW_TRANSFER= {{ $showTransfer ? 'true' : 'false' }};
 var FORM_ID      = {{ $form->id }};
 var WA_LINK      = '{{ addslashes($waLink) }}';
@@ -397,13 +398,9 @@ function validateForm() {
     if (!required[i].value.trim()) {
       required[i].focus();
       required[i].style.borderColor = '#f4a0a0';
-      alert('Please fill in all required fields first.');
+      alert('Please fill in all required fields before proceeding to payment.');
       return false;
     }
-  }
-  if (ACTIVE_AMOUNT_KOBO <= 0 && BASE_AMOUNT_KOBO <= 0) {
-    alert('Please select a course before proceeding to payment.');
-    return false;
   }
   return true;
 }
@@ -487,12 +484,16 @@ function initiatePayment() {
   var userEmail  = emailField ? emailField.value.trim() : '';
   if (!userEmail) { alert('Please enter your email address first.'); if (emailField) emailField.focus(); return; }
 
+  var kobo = getEffectiveKobo();
+  if (kobo <= 0) {
+    alert('Please select a course/option to determine the payment amount before paying by card.');
+    return;
+  }
+
   var btn = document.getElementById('paystack-btn');
   btn.disabled = true;
   var savedHTML = btn.innerHTML;
   btn.innerHTML = 'Opening payment...';
-
-  var kobo = getEffectiveKobo();
 
   var handler = PaystackPop.setup({
     key:      '{{ $paystackKey }}',
